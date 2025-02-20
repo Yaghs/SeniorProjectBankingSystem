@@ -97,11 +97,23 @@ document.getElementById("createSubmit").addEventListener('click', async function
             username: username,
             password: password
         }).then(() => {
-            alert("account created");
+            // alert("account created");
             console.log("data saved in firestore for user:", username);
+            localStorage.removeItem("loggedInUser");
+            localStorage.setItem("loggedInUser", username);
+            window.location.href = "../homepage/homePage.html";
+            clearAll();
         }).catch((error) => {
             console.error("firestore error:", error);
             alert("error saving data");
         });
     }
 });
+
+function clearAll() {
+    document.getElementById("firstName").value = "";
+    document.getElementById("lastName").value = "";
+    document.getElementById("email").value = "";
+    document.getElementById("username").value = "";
+    document.getElementById("password").value = "";
+}
