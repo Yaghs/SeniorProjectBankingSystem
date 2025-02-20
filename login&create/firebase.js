@@ -48,10 +48,12 @@ document.getElementById("loginSubmit").addEventListener('click', async function 
         return;
     }
 
-    console.log("login successful for:", username);
-    alert("login successful going to homepage");
+    console.log("login successful for:", username, "going to homepage");
+    localStorage.removeItem("loggedInUser");
+    localStorage.setItem("loggedInUser", username);
+    // alert("login successful going to homepage");
 
-    // window.location.href = "../dashboard.html";
+    window.location.href = "../homepage/homePage.html";
 });
 
 function clearUsername() {
