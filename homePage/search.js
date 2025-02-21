@@ -1,6 +1,7 @@
 const API_KEY = "bc7c4e7c62d9e223e196bbd15978fc51";
 const searchInput = document.getElementById("searchInput");
 const suggestionsDiv = document.getElementById("suggestions");
+const movie = JSON.parse(localStorage.getItem("selectedMovie"));
 
 searchInput.addEventListener("input", async () => {
     const query = searchInput.value.trim();
@@ -41,5 +42,9 @@ function displaySuggestions(movies) {
 
 function selectMovie(movie) {
     localStorage.setItem("selectedMovie", JSON.stringify(movie));
-    window.location.href = "../moviePage/moviePage.html";
+    if (window.location.href.includes("homePage")) {
+        window.location.href = "moviePage.html";
+    } else {
+        window.location.href = "moviePage.html";
+    }
 }
