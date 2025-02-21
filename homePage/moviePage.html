@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script defer type="module" src="moviePage.js"></script>
+    <link rel="stylesheet" href="moviePage.css">
+</head>
+<body>
+    <header>
+        <div class="left">
+            <h1>Project Name</h1>
+        </div>
+        <div class="right">
+            <span id="username">Username</span>
+            <a href="homePage.html">Home</a>
+            <a href="#">Activity</a>
+            <a href="#">+Review</a>
+            <input type="text" id="searchInput" placeholder="Search..." autocomplete="off">
+        </div>
+    </header>
+    <div id="suggestions"></div>
+    <div class="movie-banner" id="movieBanner"></div>
+    <div class="movie-details">
+        <div class="movie-info">
+            <img id="moviePoster" src="" alt="Movie Poster" class="movie-poster">
+            <div class="movie-text">
+                <h1 id="movieTitle"></h1>
+                <h3><span id="releaseYear"></span> Directed by <span class="directorName" id="movieDirector"></span></h3>
+                <p id="movieDescription"></p>
+                <div class="movie-cast">
+                    <h2>Cast</h2>
+                    <ul class="cast-grid" id="castList"></ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const user = localStorage.getItem("loggedInUser");
+            if (user) {
+                document.getElementById("username").textContent = user;
+            }
+        });
+    </script>
+</body>
+</html>

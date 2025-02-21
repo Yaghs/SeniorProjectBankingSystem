@@ -53,7 +53,7 @@ document.getElementById("loginSubmit").addEventListener('click', async function 
     localStorage.setItem("loggedInUser", username);
     // alert("login successful going to homepage");
 
-    window.location.href = "../homepage/homePage.html";
+    window.location.href = "../homePage/homePage.html";
 });
 
 function clearUsername() {
@@ -101,7 +101,7 @@ document.getElementById("createSubmit").addEventListener('click', async function
             console.log("data saved in firestore for user:", username);
             localStorage.removeItem("loggedInUser");
             localStorage.setItem("loggedInUser", username);
-            window.location.href = "../homepage/homePage.html";
+            window.location.href = "../homePage/homePage.html";
             clearAll();
         }).catch((error) => {
             console.error("firestore error:", error);
