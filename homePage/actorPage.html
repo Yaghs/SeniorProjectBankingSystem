@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Actor Page</title>
+    <script defer type="module" src="actorPage.js"></script>
+    <link rel="stylesheet" href="actorPage.css">
+</head>
+<body>
+    <header>
+        <div class="left">
+            <h1>Project Name</h1>
+        </div>
+        <div class="right">
+            <span id="username">Username</span>
+            <a href="../homePage/homePage.html">Home</a>
+            <a href="#">Activity</a>
+            <a href="#">+Review</a>
+            <input type="text" id="searchInput" placeholder="Search..." autocomplete="off">
+        </div>
+    </header>
+    <div id="suggestions"></div>
+
+    <div class="actor-container">
+        <div class="actor-image">
+            <img id="actorImage" src="" alt="Actor Image">
+        </div>
+        <div class="actor-movies">
+            <h2>Known For</h2>
+            <div class="movies-grid" id="knownMovies"></div>
+        </div>
+        <div class="actor-bio">
+            <h2>Biography</h2>
+            <p id="actorBio"></p>
+        </div>
+    </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const user = localStorage.getItem("loggedInUser");
+            if (user) {
+                document.getElementById("username").textContent = user;
+            }
+        });
+    </script>
+</body>
+</html>
