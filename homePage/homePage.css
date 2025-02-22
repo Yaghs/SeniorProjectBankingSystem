@@ -15,7 +15,7 @@ header {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
     position: sticky;
     top: 0;
-    z-index: 10;
+    z-index: 200;
 }
 
 .left h1 {
@@ -82,4 +82,139 @@ header {
 
 .suggestion:hover {
     background: #f0f0f0;
+}
+
+#section-1-gradient {
+    background: linear-gradient(135deg, #4c4c4c, #727272);
+    padding: 60px 240px;
+    color: #fff;
+}
+
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+
+.row {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+
+.col-6 {
+    width: 50%;
+    padding: 0 15px;
+    box-sizing: border-box;
+}
+
+/* Left Column Content Styling */
+.leftSide-col .large {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+}
+
+#username {
+    color: #ffcc00;
+    font-weight: bold;
+}
+
+.leftSide-col p {
+    font-size: 1.25rem;
+    line-height: 1.5;
+    margin: 0;
+}
+
+.Movie_Text {
+    text-align: left;
+    margin: 20px 0 10px 20px;
+    padding: 10px;
+    font-size: 1rem;
+    color: #333;
+}
+
+.Movie_Text span{
+    color: #ffcc00;
+    font-weight: bold;
+}
+
+.carousel-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 60%;
+    margin: auto;
+    position: relative;
+}
+
+
+.carousel-container {
+    overflow: hidden;
+    flex-grow: 1;
+}
+
+
+.carousel {
+    display: flex;
+    flex-wrap: nowrap;
+    transition: transform 0.5s ease-in-out;
+    width: 100%;
+}
+
+
+.carousel .box {
+    font-size: 16px;
+    text-align: center;
+    flex: 1;
+    min-width: calc(100% / 7);
+    margin: 10px;
+    padding: 200px 60px;
+    border-radius: 7px;
+    background-color: #fff;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.15),
+    0 2px 3px 0 rgba(0, 0, 0, 0.1);
+}
+
+
+.arrow {
+    background-color: #333;
+    color: white;
+    border: none;
+    padding: 195px 20px;
+    font-size: 20px;
+    cursor: pointer;
+    border-radius: 5px;
+    box-shadow: 3px 0 10px rgba(0, 0, 0, 0.9);
+    transition: background-color 0.3s;
+}
+
+.arrow.left {
+    margin-right: 10px;
+}
+
+.arrow.right {
+    margin-left: 10px;
+    box-shadow: -3px 0 10px rgba(0, 0, 0, 0.9);
+}
+
+.arrow:hover {
+    background-color: #555;
+}
+
+
+
+.divider {
+    border: none;
+    height: 1px;
+    background-color: #ccc;
+    margin: 60px 0;
+}
+
+.footer {
+    background-color: #333;
+    color: #fff;
+    padding: 20px 30px;
+    text-align: center;
+    font-size: 14px;
 }
