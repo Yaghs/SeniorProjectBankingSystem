@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Community Profile Page</title>
+    <script defer type="module" src="communityProfilePage.js"></script>
+    <link rel="stylesheet" href="communityProfilePage.css">
+    <script type="module" src="search.js"></script>
+</head>
+<body>
+<header>
+    <div class="left">
+        <h1>Project Name</h1>
+    </div>
+    <div class="right">
+        <span id="username">Username</span>
+        <a href="../homePage/homePage.html">Home</a>
+        <a href="#">Activity</a>
+        <a href="#">+Review</a>
+        <input type="text" id="searchInput" placeholder="Search..." autocomplete="off">
+    </div>
+</header>
+<div id="suggestions"></div>
+
+<div class="community-container">
+    <div class="community-header">
+        <div class="community-image">
+            <img id="communityImage" src="" alt="Community Image">
+        </div>
+        <div class="community-info">
+            <h2 id="communityName">Community Group Name</h2>
+            <p id="communityDetails">563 Members | Drama, Horror</p>
+        </div>
+        <button id="joinButton" class="join-button">Join</button>
+    </div>
+    <div class="community-content">
+        <div class="reviews-tab">
+            <h3>Reviews</h3>
+            <div id="reviewsList">Displays recent reviews</div>
+        </div>
+        <div class="members-tab">
+            <h3>Members</h3>
+            <div id="membersList">Displays members</div>
+        </div>
+        <div class="discussion-tab">
+            <h3>Community Discussion</h3>
+            <div id="discussionList">Open Community Discussion Tab. Could be made private for non-members</div>
+        </div>
+    </div>
+</div>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const user = localStorage.getItem("loggedInUser");
+        if (user) {
+            document.getElementById("username").textContent = user;
+        }
+    });
+</script>
+</body>
+</html>
