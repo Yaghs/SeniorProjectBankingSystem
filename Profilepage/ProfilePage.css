@@ -112,7 +112,7 @@ header {
 }
 
 .bio textarea {
-    width: 100%;
+    width: 150%;
     height: 80px;
     #padding: 8px;
     font-size: 14px;
@@ -120,6 +120,69 @@ header {
     border-radius: 5px;
     resize: none; /* Prevents resizing */
     margin-left: 5px;
-    margin-top: 0px;
+
 }
+.following_info {
+    display: flex;
+    justify-content: flex-start;
+    gap: 10px;
+    padding: 20px;
+    margin-left: 390px;
+    font-weight: bold;
+
+}
+p{
+    margin-right: 15px;
+    margin-left: 15px;
+    font-size: 18px;
+}
+
+
+
+.Fav_movies .recent_movies .Fav_moiveItem{
+    list-style: none;
+}
+
+
+.Fav_movies .Fav_moiveItem .movielink{
+    width: 400px;
+    display: block;
+    padding: 18px;
+    border-radius: 12px;
+
+
+}
+
+.Placeholder .movielink .arrow_right{
+    height: 35px;
+    width: 35px;
+    border-radius: 50%;
+    margin: 30px 0 5px;
+
+}
+.Fav_movies .movielink .Placeholder{
+    width: auto;
+    height: 300px;
+    object-fit: cover;
+
+}
+.Placeholder {
+    height: 300px;
+    width: auto;
+    object-fit: cover;
+}
+.dm{
+    font-size: 15px;
+    color: white;
+    align-self: center;
+    margin-right: auto;
+    margin-left: -300px;
+    margin-top: 70px;
+    padding: 5px 40px;
+    background: #65558F;
+    border: #65558F;
+
+
+}
+
 
