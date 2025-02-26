@@ -20,10 +20,15 @@
         </div>
     </header>
     <div id="suggestions"></div>
-    <div class="movie-banner" id="movieBanner"></div>
+    <div class="banner-container" id="bannerContainer">
+        <div class="banner-nav">
+            <button class="nav-arrow banner-left" onclick="prevBanner()">❮</button>
+            <button class="nav-arrow banner-right" onclick="nextBanner()">❯</button>
+        </div>
+    </div>
     <div class="movie-details">
         <div class="movie-info">
-            <img id="moviePoster" src="" alt="Movie Poster" class="movie-poster">
+            <div id="moviePosterContainer"></div>
             <div class="movie-text">
                 <h1 id="movieTitle"></h1>
                 <h3><span id="releaseYear"></span> Directed by <span class="directorName" id="movieDirector"></span></h3>
