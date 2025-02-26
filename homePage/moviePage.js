@@ -2,6 +2,14 @@
 const API_KEY = "bc7c4e7c62d9e223e196bbd15978fc51";
 // retrieves selected movie's data from local storage
 const movie = JSON.parse(localStorage.getItem("selectedMovie"));
+// set our currentPosterIndex to 0, aka the first one
+let currentPosterIndex = 0;
+// have allPosters be an array to hold all alternative posters
+let allPosters = [];
+// set our currentBannerIndex to be 0, aka the first one
+let currentBannerIndex = 0;
+// have all banners be an array to hold all alternative banners
+let allBanners = [];
 
 // waits until html is loaded before we run the code
 document.addEventListener("DOMContentLoaded", () => {
@@ -107,21 +115,23 @@ async function fetchMovieDetails(movieId) {
             // /movie/${movieID} is the endpoint for getting movie details
             // ?api_key=${API_KEY} authenticates request using our api key
             // &append_to_response=credits tells tmdb to include movies cast and crew
-            `https://api.themoviedb.org/3/movie/${movieId}?api_key=${API_KEY}&append_to_response=credits`
+            // ,images&include_image_language=en,null tells tmdb to include multiple movie posters in english
+            `https://api.themoviedb.org/3/movie/${movieId}?api_key=${API_KEY}&append_to_response=credits,images&include_image_language=en,null`
         );
         // convert api response to json
         const data = await response.json();
+        console.log("Movie Data: ", data); // Debugging line to inspect data
 
         // sets text content of movieTitle element to movie's title
         document.getElementById("movieTitle").textContent = data.title;
         // sets background img of movieBanner using movie's backdrop img
         // https://image.tmdb.org/t/p/original base url for hq imgs
         // ${data.backdrop_path} path to backdrop img
-        document.getElementById("movieBanner").style.backgroundImage = `url(https://image.tmdb.org/t/p/original${data.backdrop_path})`;
+        //document.getElementById("movieBanner").style.backgroundImage = `url(https://image.tmdb.org/t/p/original${data.backdrop_path})`;
         // sets src attribute of moviePoster img element
         // https://image.tmdb.org/t/p/w500 base url for poster imgs
         // ${data.poster_path} path to movie's poster
-        document.getElementById("moviePoster").src = `https://image.tmdb.org/t/p/w500${data.poster_path}`;
+        //document.getElementById("moviePoster").src = `https://image.tmdb.org/t/p/w500${data.poster_path}`;
         // displays movies description in movieDescription container
         // if no description is available display "no description available"
         document.getElementById("movieDescription").textContent = data.overview || "No description available.";
@@ -137,7 +147,26 @@ async function fetchMovieDetails(movieId) {
 
         // calls displayCast function to display the movies cast
         displayCast(data.credits.cast);
+        // here we're gonna get alternate posters
+        if (data.images && data.images.posters) {
+            allPosters = data.images.posters;
+            console.log("Posters Retrieved: ", allPosters);
+            displayPoster(0);
+        } else {
+            console.warn("No posters available for this movie.");
+            allPosters = []; // Set to an empty array if no posters are found
+        }
+        // Store all banners
+        if (data.images && data.images.backdrops) {
+            allBanners = data.images.backdrops;
+            console.log("banners retrieved: ", allBanners);
+            displayBanner(0); // Display the first banner
+        } else {
+            console.warn("no banners available.");
+            allBanners = [];
+        }
     } catch (error) {
+        console.error("Error fetching movie details:", error);
         alert("failed to load movie details");
     }
 }
@@ -182,3 +211,56 @@ function selectActor(actorId, actorName) {
     localStorage.setItem("selectedActor", JSON.stringify({ id: actorId, name: actorName }));
     window.location.href = "actorPage.html";
 }
+
+// Function to display alternate posters
+function displayPoster(index) {
+    const posterContainer = document.getElementById("moviePosterContainer");
+    const posterUrl = `https://image.tmdb.org/t/p/w500${allPosters[index].file_path}`;
+    posterContainer.innerHTML = `
+        <img src="${posterUrl}" alt="Alternate Movie Poster" class="alternate-poster">
+        <div class="poster-nav">
+            <button class="nav-arrow" onclick="prevPoster()">❮</button>
+            <h3>View Alternative Posters</h3>
+            <button class="nav-arrow" onclick="nextPoster()">❯</button>
+        </div>
+    `;
+}
+
+window.prevPoster = function() {
+    currentPosterIndex--;
+    if (currentPosterIndex < 0) {
+        currentPosterIndex = allPosters.length - 1; // Go to the last poster if index is negative
+    }
+    displayPoster(currentPosterIndex);
+};
+
+window.nextPoster = function() {
+    currentPosterIndex++;
+    if (currentPosterIndex >= allPosters.length) {
+        currentPosterIndex = 0; // Loop back to the first poster
+    }
+    displayPoster(currentPosterIndex);
+};
+
+window.addEventListener("beforeunload", function() {
+    currentPosterIndex = 0;
+});
+
+// Display the banner based on the current index
+function displayBanner(index) {
+    console.log("Displaying Banner at Index: ", index);
+    const bannerContainer = document.getElementById("bannerContainer");
+    const bannerUrl = `https://image.tmdb.org/t/p/original${allBanners[index].file_path}`;
+    bannerContainer.style.backgroundImage = `url(${bannerUrl})`;
+}
+
+// Event handlers for navigating banners
+window.prevBanner = function() {
+    currentBannerIndex = (currentBannerIndex - 1 + allBanners.length) % allBanners.length;
+    displayBanner(currentBannerIndex);
+};
+
+window.nextBanner = function() {
+    currentBannerIndex = (currentBannerIndex + 1) % allBanners.length;
+    displayBanner(currentBannerIndex);
+};
