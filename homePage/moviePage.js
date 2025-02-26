@@ -147,10 +147,14 @@ async function fetchMovieDetails(movieId) {
 
         // calls displayCast function to display the movies cast
         displayCast(data.credits.cast);
+
+        // calls displayCrew function to display the movies crew
+        displayCrew(data.credits.crew);
+
         // here we're gonna get alternate posters
         if (data.images && data.images.posters) {
             allPosters = data.images.posters;
-            console.log("Posters Retrieved: ", allPosters);
+            // console.log("Posters Retrieved: ", allPosters);
             displayPoster(0);
         } else {
             console.warn("No posters available for this movie.");
@@ -159,7 +163,7 @@ async function fetchMovieDetails(movieId) {
         // Store all banners
         if (data.images && data.images.backdrops) {
             allBanners = data.images.backdrops;
-            console.log("banners retrieved: ", allBanners);
+            // console.log("banners retrieved: ", allBanners);
             displayBanner(0); // Display the first banner
         } else {
             console.warn("no banners available.");
@@ -212,10 +216,13 @@ function selectActor(actorId, actorName) {
     window.location.href = "actorPage.html";
 }
 
-// Function to display alternate posters
+// displays the alternative posters of the movie
 function displayPoster(index) {
+    // selects container where movie poster is displayed
     const posterContainer = document.getElementById("moviePosterContainer");
+    // url of current poster
     const posterUrl = `https://image.tmdb.org/t/p/w500${allPosters[index].file_path}`;
+    // setting inner html of container to display poster and nav
     posterContainer.innerHTML = `
         <img src="${posterUrl}" alt="Alternate Movie Poster" class="alternate-poster">
         <div class="poster-nav">
@@ -226,41 +233,142 @@ function displayPoster(index) {
     `;
 }
 
+// navigate to previous poster
 window.prevPoster = function() {
-    currentPosterIndex--;
+    currentPosterIndex--; // decrease index by 1
+    // if index is negative, go to last poster
     if (currentPosterIndex < 0) {
         currentPosterIndex = allPosters.length - 1; // Go to the last poster if index is negative
     }
+    // display poster at new index
     displayPoster(currentPosterIndex);
 };
 
+// navigate to next poster
 window.nextPoster = function() {
-    currentPosterIndex++;
+    currentPosterIndex++; // increase index by 1
+    // if index goes past array length, go back to first poster
     if (currentPosterIndex >= allPosters.length) {
-        currentPosterIndex = 0; // Loop back to the first poster
+        currentPosterIndex = 0; // loops to first poster
     }
+    // display poster at new index
     displayPoster(currentPosterIndex);
 };
 
+// resets to first poster when you leave the page
 window.addEventListener("beforeunload", function() {
     currentPosterIndex = 0;
 });
 
-// Display the banner based on the current index
+// displays alternative banners
 function displayBanner(index) {
-    console.log("Displaying Banner at Index: ", index);
+    // console.log("Displaying Banner at Index: ", index);
+    // selects container where banner is displayed
     const bannerContainer = document.getElementById("bannerContainer");
+    // url of current banner
     const bannerUrl = `https://image.tmdb.org/t/p/original${allBanners[index].file_path}`;
+    // updates background img of container
     bannerContainer.style.backgroundImage = `url(${bannerUrl})`;
 }
 
-// Event handlers for navigating banners
+// navigate to previous banner
 window.prevBanner = function() {
+    // decrease index by 1, then loop to end if negative
     currentBannerIndex = (currentBannerIndex - 1 + allBanners.length) % allBanners.length;
+    // display the banner at new index
     displayBanner(currentBannerIndex);
 };
 
+// navigate to next banner
 window.nextBanner = function() {
+    // increase index by 1, then loop to start if index goes past array length
     currentBannerIndex = (currentBannerIndex + 1) % allBanners.length;
+    // display banner at new index
     displayBanner(currentBannerIndex);
 };
+
+// initialize tab functionality when the page loads
+document.addEventListener("DOMContentLoaded", () => {
+    const castTab = document.getElementById("castTab"); // tab for cast
+    const crewTab = document.getElementById("crewTab"); // tab for crew
+    const castContent = document.getElementById("castContent"); // content for cast
+    const crewContent = document.getElementById("crewContent"); // content for crew
+
+    // event listeners for cast tab
+    castTab.addEventListener("click", () => {
+        // cast tab is activated
+        castTab.classList.add("active");
+        // crew tab is not activated
+        crewTab.classList.remove("active");
+        // show cast content
+        castContent.style.display = "block";
+        // dont show crew content
+        crewContent.style.display = "none";
+    });
+    // event listeners for crew tab
+    crewTab.addEventListener("click", () => {
+        // crew tab is activated
+        crewTab.classList.add("active");
+        // cast tab is not activated
+        castTab.classList.remove("active");
+        // show crew content
+        crewContent.style.display = "block";
+        // dont show cast content
+        castContent.style.display = "none";
+    });
+});
+
+// displays the crew list
+function displayCrew(crew) {
+    const crewList = document.getElementById("crewList");
+    // clears can existing crew list
+    crewList.innerHTML = "";
+
+    // we are only displaying these roles
+    const relevantRoles = [
+        "Director",
+        "Producer",
+        "Executive Producer",
+        "Novel",
+        "Screenplay",
+        "Director of Photography",
+        "Editor",
+        "Casting",
+        "Original Music Composer",
+        "Costume Design",
+        "Sound Designer",
+        "Sound Mixer",
+        "Visual Effects Supervisor",
+        "Visual Effects Producer"
+    ];
+
+    const roles = {};
+    // organize crew by role
+    crew.forEach(member => {
+        // check if crew member job title included in relevantRoles
+        if (relevantRoles.includes(member.job)) {
+            // check if crew member job title already exists in roles object
+            if (!roles[member.job]) {
+                // if not, initialize empty array that will store the names of the crew members
+                roles[member.job] = [];
+            }
+            // wrap each name in a span for hover effect
+            roles[member.job].push(`<span class="crew-name">${member.name}</span>`);
+        }
+    });
+
+    // display roles in the order defined in relevantRoles array
+    relevantRoles.forEach(role => {
+        // check if role exists in the roles object
+        if (roles[role]) {
+            // create new <li> element
+            const listItem = document.createElement("li");
+            // set the content of the list item
+            // <strong?${role}</strong> displays role in bold lettering
+            // ${roles[role].join(", ")} converts array to string separated by comma
+            listItem.innerHTML = `<strong>${role}</strong>: ${roles[role].join(", ")}`;
+            // adds new list item to crewList
+            crewList.appendChild(listItem);
+        }
+    });
+}
