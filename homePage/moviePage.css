@@ -153,14 +153,13 @@ header {
     padding: 30px 50px;
     display: flex;
     flex-direction: column;
-    gap: 30px;
     margin-top: -40vh;
     z-index: 3;
 }
 
 .movie-info {
     display: flex;
-    gap: 30px;
+    gap: 60px;
     align-items: flex-start;
     margin-left: 0px;
     z-index: 4;
@@ -249,30 +248,39 @@ header {
     border-bottom: 1px solid #ddd;
 }
 
-#suggestions {
-    width: 20%;
-    height: 50%;
-    margin: 0 auto;
-    text-align: left;
-    border: 1px solid #414040;
-    border-radius: 5px;
-    background: white;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    display: none;
-    position: absolute;
-    top: 60px;
-    right: 30px;
-    overflow: hidden;
+.tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
 }
 
-.suggestion {
-    padding: 10px;
+.tab-button {
+    background: transparent;
+    color: white;
+    font-size: 28px;
     cursor: pointer;
-    border-bottom: 1px solid #414040;
 }
 
-.suggestion:hover {
-    background: #f0f0f0;
+.tab-button.active {
+    text-decoration: underline;
+    color: white;
+    cursor: pointer;
+}
+
+.tab-content.active {
+    display: block;
+    cursor: pointer;
+}
+
+.crew-grid {
+    list-style: none;
+    padding: 0;
+}
+
+.crew-grid li {
+    padding: 5px 0;
+    border-bottom: 1px solid #ddd;
+    color: white;
 }
 
 .actor-name {
@@ -282,5 +290,16 @@ header {
 }
 
 .actor-name:hover {
+    color: #56a4f8;
+}
+
+/* Crew Name Hover Effect */
+.crew-name {
+    color: white;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.crew-name:hover {
     color: #56a4f8;
 }

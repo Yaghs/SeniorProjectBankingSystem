@@ -34,10 +34,16 @@
                 <h3><span id="releaseYear"></span> Directed by <span class="directorName" id="movieDirector"></span></h3>
                 <p id="movieDescription"></p>
                 <div class="movie-cast">
-                    <h2>Cast</h2>
-                    <ul class="cast-grid" id="castList">
-
-                    </ul>
+                    <div class="tabs">
+                        <h2 class="tab-button active" id="castTab">Cast</h2>
+                        <h2 class="tab-button" id="crewTab">Crew</h2>
+                    </div>
+                    <div class="tab-content" id="castContent">
+                        <ul class="cast-grid" id="castList"></ul>
+                    </div>
+                    <div class="tab-content" id="crewContent" style="display: none;">
+                        <ul class="crew-grid" id="crewList"></ul>
+                    </div>
                 </div>
             </div>
         </div>
