@@ -151,8 +151,6 @@ async function fetchKnownMovies(actorId) {
 
             // makes movie item clickable
             movieItem.addEventListener("click", () => {
-                // log each movie title for debugging
-                console.log("selected Movie:", movie.title);
                 // save selected movie into localStorage
                 localStorage.setItem("selectedMovie", JSON.stringify(movie));
                 // redirect to moviePage

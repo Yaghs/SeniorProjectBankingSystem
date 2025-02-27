@@ -1,0 +1,141 @@
+body {
+    font-family: Arial, sans-serif;
+    background: #181818;
+    color: #333;
+    margin: 0;
+    padding: 0;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 30px;
+    background-color: #333;
+    color: white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.left h1 {
+    margin: 0;
+    font-size: 24px;
+}
+
+.right {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.right span {
+    color: #ffcc00;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.right a {
+    color: white;
+    text-decoration: none;
+    font-size: 18px;
+    transition: color 0.3s;
+}
+
+.right a:hover {
+    color: #ccc;
+}
+
+.right input[type="text"] {
+    padding: 5px 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    outline: none;
+}
+
+.right input[type="text"]:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+#suggestions {
+    width: 20%;
+    height: 50%;
+    margin: 0 auto;
+    text-align: left;
+    border: 1px solid #414040;
+    border-radius: 5px;
+    background: white;
+    color: black;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    display: none;
+    position: absolute;
+    top: 60px;
+    right: 30px;
+    overflow: hidden;
+}
+
+.suggestion {
+    padding: 10px;
+    cursor: pointer;
+    border-bottom: 1px solid #414040;
+}
+
+.suggestion:hover {
+    background: #f0f0f0;
+}
+
+.crew-container {
+    display: grid;
+    grid-template-columns: 1fr 2fr 1fr;
+    gap: 30px;
+    padding: 30px 50px;
+    color: white;
+}
+
+.crew-image img {
+    width: 100%;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.crew-movies h2,
+.crew-bio h2 {
+    border-bottom: 2px solid #555;
+    padding-bottom: 5px;
+}
+
+.movies-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+}
+
+.movie-item img {
+    width: 100%;
+    border-radius: 10px;
+    transition: transform 0.3s;
+}
+
+.movie-item img:hover {
+    transform: scale(1.05);
+}
+
+.crew-bio {
+    max-height: 65vh;
+    overflow-y: auto;
+    padding: 10px;
+    background: #282828;
+    border-radius: 10px;
+}
+
+.crew-bio p {
+    line-height: 1.6;
+    color: #ccc;
+}
+
+.crew-bio h2 {
+    margin-top: 10px;
+}
