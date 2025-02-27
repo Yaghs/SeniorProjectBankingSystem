@@ -151,6 +151,9 @@ async function fetchMovieDetails(movieId) {
         // calls displayCrew function to display the movies crew
         displayCrew(data.credits.crew);
 
+        // calls resetTabs function to reset tabs back to cast
+        resetTabs();
+
         // here we're gonna get alternate posters
         if (data.images && data.images.posters) {
             allPosters = data.images.posters;
@@ -345,15 +348,16 @@ function displayCrew(crew) {
     const roles = {};
     // organize crew by role
     crew.forEach(member => {
+        console.log("Crew ID:", member.id, "Name:", member.name, "Role:", member.job);
         // check if crew member job title included in relevantRoles
-        if (relevantRoles.includes(member.job)) {
+        if (member.id && relevantRoles.includes(member.job)) {
             // check if crew member job title already exists in roles object
             if (!roles[member.job]) {
                 // if not, initialize empty array that will store the names of the crew members
                 roles[member.job] = [];
             }
             // wrap each name in a span for hover effect
-            roles[member.job].push(`<span class="crew-name">${member.name}</span>`);
+            roles[member.job].push(`<span class="crew-name" data-crew-id="${member.id}" data-crew-name="${member.name}" data-crew-role="${member.job}">${member.name}</span>`);
         }
     });
 
@@ -371,4 +375,49 @@ function displayCrew(crew) {
             crewList.appendChild(listItem);
         }
     });
+
+    // adds event listener when clicking name of crew member
+    crewList.addEventListener("click", function(event) {
+        // set our target
+        const target = event.target;
+        // if the target selected contains the crew name in tmdb, set crewId, crewName and crewJob
+        if (target.classList.contains("crew-name")) {
+            const crewId = target.getAttribute("data-crew-id");
+            const crewName = target.getAttribute("data-crew-name");
+            const crewJob = target.getAttribute("data-crew-role");
+            // call selectCrew function to store these credentials
+            selectCrew(crewId, crewName, crewJob);
+        }
+    });
+}
+
+// function to store crew member information
+function selectCrew(crewId, crewName, crewRole) {
+    // if no crew info returned/available
+    if (!crewId || !crewName || !crewRole) {
+        // console.error("invalid crew data:", crewId, crewName, crewRole);
+        alert("crew info missing");
+        return;
+    }
+    // console.log("selected crew:", crewId, crewName, crewRole); // Debugging line
+    // store the crew member selected info into local storage
+    localStorage.setItem("selectedCrew", JSON.stringify({ id: crewId, name: crewName, role: crewRole }));
+    // open the crewPage to display that info
+    window.location.href = "crewPage.html";
+}
+
+// resets to cast tab when a new movie is loaded
+function resetTabs() {
+    const castTab = document.getElementById("castTab");
+    const crewTab = document.getElementById("crewTab");
+    const castContent = document.getElementById("castContent");
+    const crewContent = document.getElementById("crewContent");
+
+    // Reset tab classes
+    castTab.classList.add("active");
+    crewTab.classList.remove("active");
+
+    // display cast content and hide crew content
+    castContent.style.display = "block";
+    crewContent.style.display = "none";
 }

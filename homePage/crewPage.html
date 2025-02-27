@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Crew Page</title>
+    <script defer type="module" src="crewPage.js"></script>
+    <link rel="stylesheet" href="crewPage.css">
+</head>
+<body>
+    <header>
+        <div class="left">
+            <h1>Project Name</h1>
+        </div>
+        <div class="right">
+            <span id="username">Username</span>
+            <a href="../homePage/homePage.html">Home</a>
+            <a href="#">Activity</a>
+            <a href="#">+Review</a>
+            <input type="text" id="searchInput" placeholder="Search..." autocomplete="off">
+        </div>
+    </header>
+    <div id="suggestions"></div>
+
+    <div class="crew-container">
+        <div class="crew-image">
+            <img id="crewImage" src="" alt="Crew Image">
+        </div>
+        <div class="crew-movies">
+            <h2 id="roleTitle"></h2>
+            <h3 id="crewName"></h3>
+            <div class="movies-grid" id="crewMovies"></div>
+        </div>
+        <div class="crew-bio">
+            <h2>Biography</h2>
+            <p id="crewBio"></p>
+        </div>
+    </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const user = localStorage.getItem("loggedInUser");
+            if (user) {
+                document.getElementById("username").textContent = user;
+            }
+        });
+    </script>
+</body>
+</html>
