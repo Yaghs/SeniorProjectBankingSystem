@@ -3,8 +3,8 @@
 <!-- What is needed to do next,
 add funcations:
    going to dms when button is press
-   add photo to profile
    save bio text
+   follow button for when viewing others profile
 tie it with firebase
   -->
 
@@ -36,63 +36,65 @@ tie it with firebase
     <div class="Profile">
         <!-- Profile Picture -->
         <div class="profile-pic">
-            <img src="https://as1.ftcdn.net/v2/jpg/00/64/67/52/1000_F_64675209_7ve2XQANuzuHjMZXP3aIYIpsDKEbF5dD.jpg" alt="Profile Picture">
-        </div>
+            <img id="profile-pic" src="https://as1.ftcdn.net/v2/jpg/00/64/67/52/1000_F_64675209_7ve2XQANuzuHjMZXP3aIYIpsDKEbF5dD.jpg"
+                 alt="Profile Picture" >
+            <input type="file" id="fileinput" style="display: none;" accept="image/*" />
+            <script src="functions.js"></script>
+            </div>
 
-        <!-- Username info -->
-        <div class="username_display">
-            <h1><span id="username_Id">Username</span></h1>
-            <!-- Bio Section -->
-            <form class="bio">
-                <textarea placeholder="Enter Bio here"></textarea>
-            </form>
-        </div>
-        <!-- Following info-->
-        <div class="following_info">
-            <p>Flims: 0</p>
-            <p>This year: 0</p>
-            <p>Listing: 0</p>
-            <p>Following: 0 </p>
-            <p>Followers: 0</p>
-            <!-- DM button -->
-            <button class="dm">DM</button>
+            <!-- Username info -->
+            <div class="username_display">
+                <h1><span id="username_Id">Username</span></h1>
+                <!-- Bio Section -->
+                <form class="bio">
+                    <textarea placeholder="Enter Bio here"></textarea>
+                </form>
+            </div>
+            <!-- Following info-->
+            <div class="following_info">
+                <p>Flims: 0</p>
+                <p>This year: 0</p>
+                <p>Listing: 0</p>
+                <p>Following: 0 </p>
+                <p>Followers: 0</p>
+                <!-- DM button -->
+                <button class="dm">Direct Message</button>
 
-        </div>
+            </div>
 
-        </div>
+            </div>
 
-        </div>
-
-
-<div class="Fav_Container">
-    <div class="wrapper">
-        <ul class="Fav_movies">
-            <h1>Favorite Movie</h1>
-            <li class="Fav_moiveItem">
-                <a class="movielink">
-                <img src="https://i0.wp.com/thinkmonsters.com/speakinghuman/media/wp-content/uploads/Jaws-Movie-Poster.jpg?w=2160&ssl=1"
-                     alt="test_movie" class="Placeholder">
-                </a>
-
-            </li>
-        </ul>
-
-            <h1>recent Movie</h1>
-        <ul class="recent_movies">
-            <li class="Fav_moiveItem">
-                <a class="movielink">
-                    <img src="https://i0.wp.com/thinkmonsters.com/speakinghuman/media/wp-content/uploads/Jaws-Movie-Poster.jpg?w=2160&ssl=1"
-                         alt="test_movie" class="Placeholder">
-                </a>
-
-            </li>
-        </ul>
-    </div>
-</div>
+            </div>
 
 
+            <div class="Fav_Container">
+                <div class="wrapper">
+                    <ul class="Fav_movies">
+                        <h1>Favorite Movie</h1>
+                        <li class="Fav_moiveItem">
+                            <a class="movielink">
+                                <img
+                                    src="https://i0.wp.com/thinkmonsters.com/speakinghuman/media/wp-content/uploads/Jaws-Movie-Poster.jpg?w=2160&ssl=1"
+                                    alt="test_movie" class="Placeholder"/>
+                            </a>
+
+                        </li>
+                    </ul>
+
+                    <h1>recent Movie</h1>
+                    <ul class="recent_movies">
+                        <li class="Fav_moiveItem">
+                            <a class="movielink">
+                                <img
+                                    src="https://i0.wp.com/thinkmonsters.com/speakinghuman/media/wp-content/uploads/Jaws-Movie-Poster.jpg?w=2160&ssl=1"
+                                    alt="test_movie" class="Placeholder"/>
+                            </a>
+
+                        </li>
+                    </ul>
+                </div>
+            </div>
 
 
-
-</body>
-</html>
+            </body>
+            </html>
