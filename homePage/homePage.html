@@ -4,15 +4,17 @@
     <meta charset="UTF-8">
     <title>Home Page</title>
     <link rel="stylesheet" href="homePage.css">
-    <script type="module" src="search.js"></script>
+    <script defer type="module" src="search.js"></script>
+    <script defer type="module" src="homePage.js"></script>
 </head>
 <body>
-
 <header>
     <div class="left">
-        <h1>Movies Project</h1>
+        <h1>Project Name</h1>
     </div>
+
     <div class="right">
+        <span id="username">Username</span>
         <a href="#">Home</a>
         <a href="#">Activity</a>
         <a href="#">+Review</a>
@@ -20,78 +22,36 @@
     </div>
 </header>
 
-<div class="container" id="section-1-gradient">
-    <div class="row">
-        <div class="col-6">
-            <div class="leftSide-col">
-                <h1 class="large">Welcome <span id="username">Username</span></h1>
-                <p>Discover films! Talk to friends! Enjoy your stay!</p>
-            </div>
-        </div>
-    </div>
+<div class="welcome-message" id="welcomeMessage">
+    <h1 id="greetingText">Welcome back!</h1>
+    <p>Discover films! Talk to friends! Enjoy your stay!</p>
 </div>
-
 <div id="suggestions"></div>
 
-<div class="Movie_Text">
-    <h1>Here are movies we recommend</h1>
-</div>
-
-<!-- First Carousel Section -->
-<div class="carousel-wrapper">
-    <button class="arrow left">&#9664;</button>
-    <div class="carousel-container">
-        <div class="carousel">
-            <div class="box">Box1</div>
-            <div class="box">Box2</div>
-            <div class="box">Box3</div>
-            <div class="box">Box4</div>
-            <div class="box">Box5</div>
-            <div class="box">Box6</div>
-            <div class="box">Box7</div>
-            <div class="box">Box8</div>
-            <div class="box">Box9</div>
-            <div class="box">Box10</div>
+<!-- Popular Movies Section -->
+<div class="popular-movies-section">
+    <h2>Popular Movies</h2>
+    <div class="movie-carousel">
+        <button class="carousel-arrow left-arrow" onclick="prevPopularMovie()">❮</button>
+        <div class="carousel-container" id="popularMoviesContainer">
+            <!-- Movie posters will be injected here -->
         </div>
+        <button class="carousel-arrow right-arrow" onclick="nextPopularMovie()">❯</button>
     </div>
-    <button class="arrow right">&#9654;</button>
 </div>
 
-<!-- Horizontal Divider -->
-<hr class="divider">
 
-<div class="Movie_Text">
-    <h1>Here are movies your friends recommend</h1>
-</div>
-
-<!-- Second Carousel Section -->
-<div class="carousel-wrapper">
-    <button class="arrow left2">&#9664;</button>
-    <div class="carousel-container">
-        <div class="carousel">
-            <div class="box">Box1</div>
-            <div class="box">Box2</div>
-            <div class="box">Box3</div>
-            <div class="box">Box4</div>
-            <div class="box">Box5</div>
-            <div class="box">Box6</div>
-            <div class="box">Box7</div>
-            <div class="box">Box8</div>
-            <div class="box">Box9</div>
-            <div class="box">Box10</div>
-        </div>
-    </div>
-    <button class="arrow right2">&#9654;</button>
-</div>
-
-<hr class="divider">
-
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const user = localStorage.getItem("loggedInUser");
+        if (user) {
+            document.getElementById("username").textContent = user;
+        }
+    });
+</script>
 <footer class="footer">
     <!-- project name will change -->
     <p>&copy; 2025 Movies Project. All rights reserved.</p>
 </footer>
-
-<script src="homePage.js"></script>
-
 </body>
 </html>
