@@ -104,6 +104,14 @@ function selectMovie(movie) {
     document.getElementById("searchInput").value = "";
     // removes suggestions
     document.getElementById("suggestions").style.display = "none";
+    // update the current movie display in the +Review popup
+    document.getElementById("currentMovie").textContent = `${movie.title} (${movie.release_date.split("-")[0]})`;
+    // update the review form container
+    document.getElementById("reviewMovieTitle").textContent = movie.title;
+    document.getElementById("reviewMovieYear").textContent = movie.release_date ? movie.release_date.split("-")[0] : "Unknown";
+    document.getElementById("reviewMoviePoster").src = movie.poster_path
+        ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
+        : "https://via.placeholder.com/300?text=No+Image";
 }
 
 // fetches info on movie using its movieId
@@ -348,7 +356,7 @@ function displayCrew(crew) {
     const roles = {};
     // organize crew by role
     crew.forEach(member => {
-        console.log("Crew ID:", member.id, "Name:", member.name, "Role:", member.job);
+        // console.log("Crew ID:", member.id, "Name:", member.name, "Role:", member.job);
         // check if crew member job title included in relevantRoles
         if (member.id && relevantRoles.includes(member.job)) {
             // check if crew member job title already exists in roles object
@@ -421,3 +429,48 @@ function resetTabs() {
     castContent.style.display = "block";
     crewContent.style.display = "none";
 }
+
+document.addEventListener("DOMContentLoaded", () => {
+    const reviewBtn = document.getElementById("reviewBtn");
+    const reviewModal = document.getElementById("reviewBox");
+    const closeModal = document.querySelectorAll(".close");
+    const currentMovieSpan = document.getElementById("currentMovie");
+    const searchPage = document.getElementById("reviewSearchPage");
+    const reviewForm = document.getElementById("reviewForm");
+    const backBtn = document.getElementById("backBtn");
+
+    // load the current movie title
+    const movie = JSON.parse(localStorage.getItem("selectedMovie"));
+    if (movie) {
+        currentMovieSpan.textContent = `${movie.title} (${movie.release_date.split("-")[0]})`;
+        document.getElementById("reviewMovieTitle").textContent = movie.title;
+        document.getElementById("reviewMovieYear").textContent = movie.release_date.split("-")[0];
+        document.getElementById("reviewMoviePoster").src = `https://image.tmdb.org/t/p/w200${movie.poster_path}`;
+    }
+
+    // opens pop up when +Review is clicked
+    reviewBtn.addEventListener("click", () => {
+        reviewModal.style.display = "flex";
+    });
+
+    // closes pop up when X button is clicked
+    closeModal.forEach(button => {
+        button.addEventListener("click", () => {
+            reviewModal.style.display = "none";
+            searchPage.style.display = "block";
+            reviewForm.style.display = "none";
+        });
+    });
+
+    // transition to review form when clicking movie name
+    currentMovieSpan.addEventListener("click", () => {
+        searchPage.style.display = "none";
+        reviewForm.style.display = "block";
+    });
+
+    // back button to go back to search page
+    backBtn.addEventListener("click", () => {
+        searchPage.style.display = "block";
+        reviewForm.style.display = "none";
+    });
+});

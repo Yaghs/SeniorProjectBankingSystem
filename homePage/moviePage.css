@@ -293,7 +293,6 @@ header {
     color: #56a4f8;
 }
 
-/* Crew Name Hover Effect */
 .crew-name {
     color: white;
     cursor: pointer;
@@ -303,3 +302,292 @@ header {
 .crew-name:hover {
     color: #56a4f8;
 }
+
+.reviewBox {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(5px);
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.reviewBoxContainer {
+    background: #222;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    width: 500px;
+    position: relative;
+    color: white;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.reviewBoxContainer h2 {
+    margin-bottom: 10px;
+    text-align: left;
+    border-bottom: 2px solid #555;
+    padding-bottom: 10px;
+}
+
+.reviewBoxContainer input {
+    width: 80%;
+    padding: 10px;
+    margin-bottom: 10px;
+    margin-top: 10px;
+    border-radius: 5px;
+    border: none;
+}
+
+.reviewBoxContainer p {
+    font-size: 16px;
+    margin-bottom: 10px;
+    span {
+        background: #555555;
+        padding: 5px;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+    span:hover {
+        color: yellow;
+    }
+}
+
+.close {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 24px;
+    cursor: pointer;
+    color: white;
+}
+
+.close:hover {
+    color: yellow;
+}
+
+.reviewForm {
+    display: none;
+    background-color: #222;
+    color: white;
+    border-radius: 8px;
+    width: 60%;
+    max-height: 90vh;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 100;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    overflow: auto;
+}
+
+.reviewFormHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    background-color: #2d3442;
+}
+
+.backBtn {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    padding: 5px 10px;
+    margin: 0;
+    cursor: pointer;
+    font-weight: normal;
+}
+
+.backBtn:hover {
+    color: yellow;
+}
+
+.reviewFormHeader h2 {
+    margin: 0 0 0 15px;
+    font-size: 18px;
+    font-weight: normal;
+}
+
+.reviewFormHeader .left {
+    display: flex;
+    align-items: center;
+}
+
+.reviewFormHeader .close {
+    cursor: pointer;
+    font-size: 24px;
+    color: white;
+}
+
+.reviewFormHeader .close:hover {
+    color: yellow;
+}
+
+.review-movie-details {
+    display: flex;
+    padding: 20px;
+    gap: 20px;
+    margin-right: -50px;
+}
+
+.review-movie-details img {
+    width: 200px;
+    height: auto;
+    border-radius: 8px;
+    align-self: flex-start;
+}
+
+.review-movie-details > div {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.review-movie-details h2 {
+    margin: 0;
+    font-size: 24px;
+    display: inline;
+}
+
+#reviewMovieYear {
+    color: #aaa;
+    margin-left: 10px;
+    font-size: 22px;
+    font-weight: normal;
+}
+
+.movie-title-container {
+    display: flex;
+    align-items: baseline;
+    margin-bottom: 15px;
+}
+
+.watch-options {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    gap: 5px;
+    label {
+        font-size: 15px;
+    }
+}
+
+#watchedDate {
+    background-color: white;
+    color: black;
+    border: none;
+    border-radius: 4px;
+    padding: 3px 8px;
+    margin: 0 15px 0 5px;
+}
+
+#reviewText {
+    width: 87%;
+    height: 150px;
+    background-color: #e9ecf1;
+    border: none;
+    border-radius: 8px;
+    padding: 15px;
+    margin-top: 10px;
+    color: #333;
+    font-size: 16px;
+    resize: none;
+}
+
+.tag-rating-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px 0;
+    margin-top: 10px;
+    gap: 10px;
+}
+
+.tags-container {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    margin-right: 50px;
+}
+
+.tags {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 5px;
+}
+
+.tag-label, .small-note {
+    font-size: 14px;
+    color: #aaa;
+}
+
+.small-note {
+    font-size: 12px;
+    color: #bbb;
+    white-space: nowrap;
+    margin-left: 30px;
+    margin-bottom: 4px;
+}
+
+#reviewTags {
+    width: 95%;
+    padding: 8px;
+    border-radius: 4px;
+    border: none;
+    background: #e9ecf1;
+    color: #333;
+}
+
+.rating-section, .like-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+}
+
+.rating-section {
+    margin-left: 10px;
+}
+
+.rating-section .rating-label {
+    font-size: 14px;
+    margin-bottom: 15px;
+    color: #aaa;
+}
+
+.rating-container .rating-star {
+    font-size: 22px;
+}
+
+.like-section .like-label {
+    font-size: 14px;
+    margin-bottom: 12px;
+    color: #aaa;
+}
+
+.like-section .like-btn {
+    font-size: 25px;
+}
+
+.save-button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 8px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 4px;
+    float: right;
+    width: 20%;
+    align-self: flex-end;
+    margin-right: 60px;
+}
+

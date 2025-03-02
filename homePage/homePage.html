@@ -7,30 +7,30 @@
     <script defer type="module" src="search.js"></script>
 </head>
 <body>
-    <header>
-        <div class="left">
-            <h1>Project Name</h1>
-        </div>
+<header>
+    <div class="left">
+        <h1>Project Name</h1>
+    </div>
 
-        <div class="right">
-            <span id="username">Username</span>
-            <a href="#">Home</a>
-            <a href="#">Activity</a>
-            <a href="#">+Review</a>
-            <input type="text" id="searchInput" placeholder="Search..." autocomplete="off">
-        </div>
-    </header>
+    <div class="right">
+        <span id="username">Username</span>
+        <a href="#">Home</a>
+        <a href="#">Activity</a>
+        <a href="#">+Review</a>
+        <input type="text" id="searchInput" placeholder="Search..." autocomplete="off">
+    </div>
+</header>
 
-    <div id="suggestions"></div>
+<div id="suggestions"></div>
 
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            const user = localStorage.getItem("loggedInUser");
-            if (user) {
-                document.getElementById("username").textContent = user;
-            }
-        });
-    </script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const user = localStorage.getItem("loggedInUser");
+        if (user) {
+            document.getElementById("username").textContent = user;
+        }
+    });
+</script>
 
 </body>
 </html>
