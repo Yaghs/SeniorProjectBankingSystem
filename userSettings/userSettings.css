@@ -1,0 +1,60 @@
+/* Overall page styles */
+body {
+  background-color: #1c1c1c; /* dark background */
+  color: #ffffff;          /* white text */
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+/* Container for the settings content */
+.settings-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* Page header */
+h1 {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+/* Main settings list styling */
+.settings-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* Individual settings item styling */
+.settings-item {
+  padding: 15px 20px;
+  border-bottom: 1px solid #444; /* gray border */
+  cursor: pointer;
+}
+
+/* Hover effect for settings items */
+.settings-item:hover {
+  background-color: #333; /* slightly lighter gray on hover */
+}
+
+/* Styling for nested sub-options list */
+.sub-options {
+  list-style: none;
+  padding-left: 20px;
+  margin-top: 10px;
+}
+
+/* Individual sub-option styling */
+.sub-options li {
+  padding: 10px 0;
+  border-bottom: 1px solid #555;
+}
+
+/* Special styling for the Log Out option */
+.logout {
+  font-weight: bold;
+  color: #ff4444; /* red for prominence */
+  text-align: center;
+}
