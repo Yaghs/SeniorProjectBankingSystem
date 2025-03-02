@@ -1,6 +1,19 @@
 // settings.js
 
 document.addEventListener("DOMContentLoaded", function() {
+  // Other initialization code...
+
+  // Attach event listener to the "About Us" list item
+  const aboutUsItem = document.getElementById("aboutUs");
+  if (aboutUsItem) {
+    aboutUsItem.addEventListener("click", function() {
+      window.location.href = "aboutUs.html";
+    });
+  }
+});
+
+
+document.addEventListener("DOMContentLoaded", function() {
   // Get references to DOM elements
   const form = document.getElementById("settingsForm");
   const messageEl = document.getElementById("message");

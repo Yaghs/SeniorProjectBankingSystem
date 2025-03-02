@@ -1,0 +1,87 @@
+body {
+    background-color: #1c1c1c; /* dark background */
+    color: #ffffff;            /* white text */
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+/* Wrapper to center content horizontally at the top */
+.container-wrapper {
+    width: 100%;
+    text-align: center;
+    padding-top: 20px;  /* spacing from top edge */
+}
+
+.about-container {
+    display: inline-block;
+    max-width: 600px;
+    width: 90%;
+    text-align: center;
+    padding: 20px;
+}
+
+/* Back arrow styling: fixed at the top left of the viewport */
+.return-arrow {
+    position: fixed;
+    top: 25px;
+    left: 35px;
+    text-decoration: none;
+    color: #ffffff;
+    font-size: 36px;
+    z-index: 1000;
+}
+
+/* Heading styling */
+.about-container h1 {
+    margin-bottom: 40px;
+}
+
+/* Accordion styling */
+.accordion details {
+    background-color: #333;
+    border: 1px solid #444;
+    border-radius: 4px;
+    margin-bottom: 20px;
+    padding: 10px;
+    text-align: left;
+    transition: background-color 0.3s;
+}
+
+.accordion details[open] {
+    background-color: #3a3a3a;
+}
+
+.accordion details summary {
+    font-size: 20px;
+    cursor: pointer;
+    padding: 5px;
+    list-style: none;
+}
+
+.accordion details summary::-webkit-details-marker {
+    display: none;
+}
+
+/* Custom arrow using a pseudo-element */
+.accordion details summary::before {
+    content: '▼';
+    display: inline-block;
+    margin-right: 10px;
+    transition: transform 0.3s;
+}
+
+.accordion details[open] summary::before {
+    transform: rotate(-180deg);
+}
+
+/* Terms and Goal content styling */
+.terms-content, .goal-content {
+    text-align: left;
+    margin-top: 10px;
+}
+
+.terms-content p, .goal-content p {
+    line-height: 1.6;
+    margin: 15px 0;
+}
