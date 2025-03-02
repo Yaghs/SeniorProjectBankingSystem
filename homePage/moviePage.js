@@ -110,7 +110,7 @@ function selectMovie(movie) {
     document.getElementById("reviewMovieTitle").textContent = movie.title;
     document.getElementById("reviewMovieYear").textContent = movie.release_date ? movie.release_date.split("-")[0] : "Unknown";
     document.getElementById("reviewMoviePoster").src = movie.poster_path
-        ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
+        ? `https://image.tmdb.org/t/p/original${movie.poster_path}`
         : "https://via.placeholder.com/300?text=No+Image";
 }
 
@@ -445,7 +445,9 @@ document.addEventListener("DOMContentLoaded", () => {
         currentMovieSpan.textContent = `${movie.title} (${movie.release_date.split("-")[0]})`;
         document.getElementById("reviewMovieTitle").textContent = movie.title;
         document.getElementById("reviewMovieYear").textContent = movie.release_date.split("-")[0];
-        document.getElementById("reviewMoviePoster").src = `https://image.tmdb.org/t/p/w200${movie.poster_path}`;
+        document.getElementById("reviewMoviePoster").src = movie.poster_path
+            ? `https://image.tmdb.org/t/p/original${movie.poster_path}`
+            : "https://via.placeholder.com/300?text=No+Image";
     }
 
     // opens pop up when +Review is clicked
