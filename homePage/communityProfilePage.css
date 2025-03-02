@@ -1,0 +1,155 @@
+body {
+    font-family: Arial, sans-serif;
+    background: #181818;
+    color: white;
+    margin: 0;
+    padding: 0;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 30px;
+    background-color: #333;
+    color: white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.left h1 {
+    margin: 0;
+    font-size: 24px;
+}
+
+.right {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.right span {
+    color: #ffcc00;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.right a {
+    color: white;
+    text-decoration: none;
+    font-size: 18px;
+    transition: color 0.3s;
+}
+
+.right a:hover {
+    color: #ccc;
+}
+
+.right input[type="text"] {
+    padding: 5px 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    outline: none;
+}
+
+.right input[type="text"]:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+#suggestions {
+    width: 20%;
+    height: 50%;
+    margin: 0 auto;
+    text-align: left;
+    border: 1px solid #414040;
+    border-radius: 5px;
+    background: white;
+    color: black;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    display: none;
+    position: absolute;
+    top: 60px;
+    right: 30px;
+    overflow: hidden;
+}
+
+.suggestion {
+    padding: 10px;
+    cursor: pointer;
+    border-bottom: 1px solid #414040;
+}
+
+.suggestion:hover {
+    background: #f0f0f0;
+}
+
+.community-container {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.community-header {
+    display: flex;
+    align-items: center;
+    background: #444;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.community-header img {
+    width: 100px;
+    height: 100px;
+    border-radius: 10px;
+    margin-right: 20px;
+}
+
+.community-header .details {
+    flex-grow: 1;
+}
+
+.community-header .join-button {
+    background: green;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-left: auto;
+}
+
+.main-content {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 20px;
+}
+
+.reviews-tab {
+    background: #555;
+    padding: 20px;
+    border-radius: 10px;
+    height: 100%;
+}
+
+.members-tab {
+    background: #444;
+    padding: 20px;
+    border-radius: 10px;
+    margin-top: 20px;
+    height: 100%;
+}
+
+.discussion-tab {
+    background: #333;
+    padding: 20px;
+    border-radius: 10px;
+    margin-top: 20px;
+    height: 100%;
+}
