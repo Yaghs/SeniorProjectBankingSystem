@@ -2,31 +2,36 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>User Settings</title>
+    <title>Settings</title>
     <link rel="stylesheet" href="userSettings.css">
 </head>
 <body>
 <div class="settings-container">
-    <h1>User Settings</h1>
+    <div class="settings-header">
+        <a href="../homePage/homePage.html" class="return-arrow">&#8592;</a>
+        <h1>User Settings</h1>
+    </div>
     <ul class="settings-list">
         <li class="settings-item">
-            Account Center
-            <ul class="sub-options">
-                <li>Email</li>
-                <li>Password</li>
-                <li>Personal Details</li>
-            </ul>
+            Account Center <span class="sub-label">(Email, Password, Personal Details...)</span>
         </li>
         <li class="settings-item">Notifications</li>
         <li class="settings-item">Account Privacy</li>
         <li class="settings-item">Close Friends</li>
-        <li class="settings-item">Block Users</li>
-        <li class="settings-item">Communities Joined</li>
-        <li class="settings-item">Light/Dark Mode</li>
+        <li class="settings-item">Blocked Users</li>
+        <li class="settings-item">Communities You've Joined</li>
+        <li class="settings-item">
+            Light/Dark Mode
+            <label class="switch">
+                <input type="checkbox" id="modeToggle">
+                <span class="slider round"></span>
+            </label>
+        </li>
         <li class="settings-item">Help Center</li>
-        <li class="settings-item">About</li>
+        <li class="settings-item" id="aboutUs">About Us</li>
         <li class="settings-item logout">Log Out</li>
     </ul>
 </div>
+<script src="userSettings.js"></script>
 </body>
 </html>
