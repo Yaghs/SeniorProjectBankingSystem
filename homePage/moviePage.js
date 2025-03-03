@@ -81,7 +81,7 @@ function displaySuggestions(movies) {
         // add css class suggestion for styling
         suggestion.classList.add("suggestion");
         // set text to the movies title
-        suggestion.textContent = movie.title;
+        suggestion.textContent = `${movie.title} (${movie.release_date ? movie.release_date.split("-")[0] : "Unknown"})`;
         // click event listener that calls selectMovie function
         suggestion.addEventListener("click", () => selectMovie(movie));
         // adds suggestions to the suggestion container
@@ -438,8 +438,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const searchPage = document.getElementById("reviewSearchPage");
     const reviewForm = document.getElementById("reviewForm");
     const backBtn = document.getElementById("backBtn");
+    const reviewSearchInput = document.getElementById("reviewSearch");
+    const reviewSuggestions = document.getElementById("reviewSuggestions");
 
-    // load the current movie title
+    const API_KEY = "bc7c4e7c62d9e223e196bbd15978fc51";
+
     const movie = JSON.parse(localStorage.getItem("selectedMovie"));
     if (movie) {
         currentMovieSpan.textContent = `${movie.title} (${movie.release_date.split("-")[0]})`;
@@ -450,17 +453,18 @@ document.addEventListener("DOMContentLoaded", () => {
             : "https://via.placeholder.com/300?text=No+Image";
     }
 
-    // opens pop up when +Review is clicked
+    // open pop-up when +Review is clicked
     reviewBtn.addEventListener("click", () => {
         reviewModal.style.display = "flex";
     });
 
-    // closes pop up when X button is clicked
+    // close pop-up when X button is clicked
     closeModal.forEach(button => {
         button.addEventListener("click", () => {
             reviewModal.style.display = "none";
             searchPage.style.display = "block";
             reviewForm.style.display = "none";
+            reviewSuggestions.style.display = "none"; // Hide search results when closing
         });
     });
 
@@ -470,12 +474,88 @@ document.addEventListener("DOMContentLoaded", () => {
         reviewForm.style.display = "block";
     });
 
-    // back button to go back to search page
+    // back button to return to search page
     backBtn.addEventListener("click", () => {
         searchPage.style.display = "block";
         reviewForm.style.display = "none";
     });
+
+    reviewSearchInput.addEventListener("input", async () => {
+        const query = reviewSearchInput.value.trim();
+        if (query.length < 2) {
+            reviewSuggestions.style.display = "none";
+            return;
+        }
+
+        try {
+            const movies = await fetchMovies(query);
+            displayReviewSuggestions(movies);
+        } catch (error) {
+            console.error("Error fetching search results:", error);
+        }
+    });
+
+    // sends request to tmdb api to search for movies that match what user is typing
+    async function fetchMovies(query) {
+        // await used bc its async
+        // encodeURIComponent used to handle special characters
+        const response = await fetch(
+            `https://api.themoviedb.org/3/search/movie?api_key=${API_KEY}&query=${encodeURIComponent(query)}`
+        );
+        // converts api response to json
+        const data = await response.json();
+        // returns results array from api response
+        return data.results;
+    }
+
+    // displays movie suggestions from the search bar in pop up
+    function displayReviewSuggestions(movies) {
+        reviewSuggestions.innerHTML = ""; // clears previous suggestions
+
+        // checks if no movies were found
+        if (movies.length === 0) {
+            // if non were found we hide the suggestions container
+            reviewSuggestions.style.display = "none";
+            // exit functions
+            return;
+        }
+
+        // loops through each movie in the array
+        movies.forEach(movie => {
+            // create new <div>
+            const suggestion = document.createElement("div");
+            // set text to movie title and year
+            suggestion.textContent = `${movie.title} (${movie.release_date ? movie.release_date.split("-")[0] : "Unknown"})`;
+            // click event listener that calls selectReviewMovie function
+            suggestion.addEventListener("click", () => selectReviewMovie(movie));
+            // adds suggestions to the suggestion container
+            reviewSuggestions.appendChild(suggestion);
+        });
+        // makes suggestion container visible
+        reviewSuggestions.style.display = "block";
+    }
+
+    function selectReviewMovie(movie) {
+        // localStorage.setItem("selectedMovie", JSON.stringify(movie));
+
+        // Update UI in both the search page and the review form
+        // currentMovieSpan.textContent = `${movie.title} (${movie.release_date ? movie.release_date.split("-")[0] : "Unknown"})`;
+        document.getElementById("reviewMovieTitle").textContent = movie.title;
+        document.getElementById("reviewMovieYear").textContent = movie.release_date ? movie.release_date.split("-")[0] : "Unknown";
+        document.getElementById("reviewMoviePoster").src = movie.poster_path
+            ? `https://image.tmdb.org/t/p/original${movie.poster_path}`
+            : "https://via.placeholder.com/300?text=No+Image";
+
+        // hide suggestions after selection
+        reviewSuggestions.style.display = "none";
+
+        // transition to the review form after selecting movie
+        searchPage.style.display = "none";
+        reviewForm.style.display = "block";
+    }
+
 });
+
 
 // stars stores elements with class .rating-star
 const stars = document.querySelectorAll(".rating-star");

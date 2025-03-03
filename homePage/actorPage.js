@@ -71,7 +71,7 @@ function displaySuggestions(movies) {
         // add css class suggestion for styling
         suggestion.classList.add("suggestion");
         // set text to the movies title
-        suggestion.textContent = movie.title;
+        suggestion.textContent = `${movie.title} (${movie.release_date ? movie.release_date.split("-")[0] : "Unknown"})`;
         // click event listener that calls selectMovie function
         suggestion.addEventListener("click", () => selectMovie(movie));
         // adds suggestions to the suggestion container

@@ -32,7 +32,7 @@ function displaySuggestions(movies) {
     movies.forEach(movie => {
         const suggestion = document.createElement("div");
         suggestion.classList.add("suggestion");
-        suggestion.textContent = movie.title;
+        suggestion.textContent = `${movie.title} (${movie.release_date ? movie.release_date.split("-")[0] : "Unknown"})`;
         suggestion.addEventListener("click", () => selectMovie(movie));
         suggestionsDiv.appendChild(suggestion);
     });
