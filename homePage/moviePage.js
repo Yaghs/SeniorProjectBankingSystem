@@ -476,3 +476,125 @@ document.addEventListener("DOMContentLoaded", () => {
         reviewForm.style.display = "none";
     });
 });
+
+// stars stores elements with class .rating-star
+const stars = document.querySelectorAll(".rating-star");
+// keeps track of users selected ratings (set to 0)
+let selectedRating = 0;
+
+// loops through all stars
+stars.forEach(star => {
+    // listens to mouse event (hover)
+    star.addEventListener("mousemove", (e) => {
+        // starValue gets numerical value
+        const starValue = parseInt(star.getAttribute("data-value"));
+        // rect stores position and size of star
+        const rect = star.getBoundingClientRect();
+        // position calculates if cursor is on left or right of star
+        const position = (e.clientX - rect.left) / rect.width;
+
+        // clears previous highlights, resets all stars to empty
+        stars.forEach(s => {
+            s.querySelector('i').classList.remove('highlighted');
+            s.querySelector('i').className = 'bx bx-star';
+        });
+
+        // fills all stars before hovered star
+        stars.forEach(s => {
+            const sValue = parseInt(s.getAttribute("data-value"));
+            if (sValue < starValue) {
+                s.querySelector('i').classList.add('highlighted');
+                s.querySelector('i').className = 'bx bxs-star highlighted'; // Full star
+            }
+        });
+
+        // if you hover over left half of star, fills as half a star
+        if (position <= 0.5) {
+            star.querySelector('i').classList.add('highlighted');
+            star.querySelector('i').className = 'bx bxs-star-half highlighted'; // half star
+        // if you hover over right half of star, fills as full star
+        } else {
+            star.querySelector('i').classList.add('highlighted');
+            star.querySelector('i').className = 'bx bxs-star highlighted'; // full star
+        }
+    });
+
+    // event listener that listens for when user clicks on the star
+    star.addEventListener("click", (e) => {
+        // starValue gets numerical value
+        const starValue = parseInt(star.getAttribute("data-value"));
+        // rect stores position and size of star
+        const rect = star.getBoundingClientRect();
+        // position calculates if cursor is on left or right of star
+        const position = (e.clientX - rect.left) / rect.width;
+
+        // if the user clicks the same rating already selected, reset to 0
+        if (selectedRating === starValue || selectedRating === starValue - 0.5) {
+            selectedRating = 0;
+        } else {
+            // if you click left half, set rating to half the value
+            if (position <= 0.5) {
+                selectedRating = starValue - 0.5;
+            // if you click right half, set rating to full value
+            } else {
+                selectedRating = starValue;
+            }
+        }
+        // call updateStarsDisplay() to visually update stars based on new rating
+        updateStarsDisplay();
+    });
+});
+
+// when mouse leaves rating container, reset stars to reflect selected rating
+document.querySelector('.rating-container').addEventListener('mouseleave', () => {
+    updateStarsDisplay();
+});
+
+// function updates the stars displayed
+function updateStarsDisplay() {
+    // fullStars extracts whole number portion (aka 3 from 3.5)
+    const fullStars = Math.floor(selectedRating);
+    // hasHalfStar checks if rating includes half a star
+    const hasHalfStar = selectedRating % 1 !== 0;
+
+    // loops through each .rating-star element
+    stars.forEach(s => {
+        // retrieves numeric rating from stars data-value
+        // converts it into an integer
+        const starValue = parseInt(s.getAttribute("data-value"));
+        // finds the <i> element inside the star
+        const icon = s.querySelector('i');
+
+        // remove existing highlight and selection
+        icon.classList.remove('highlighted', 'selected');
+
+        // if stars data-value is less than or equal to the selected rating
+        if (starValue <= fullStars) {
+            // change icon to fully filled yellow star
+            // add selected class to indicate its chosen
+            icon.className = 'bx bxs-star selected';
+        // handles half a star
+        } else if (hasHalfStar && starValue === fullStars + 1) {
+            icon.className = 'bx bxs-star-half selected';
+        // handles empty stars
+        } else {
+            icon.className = 'bx bx-star';
+        }
+    });
+}
+
+// selects heart icon for liking the movie
+const likeButton = document.getElementById("likeButton");
+
+// adds or removes .liked when clicked
+likeButton.addEventListener("click", () => {
+    likeButton.classList.toggle("liked");
+
+    // if liked, show filled heart
+    if (likeButton.classList.contains("liked")) {
+        likeButton.innerHTML = "<i class='bx bxs-heart'></i>";
+    // otherwise show empty heart
+    } else {
+        likeButton.innerHTML = "<i class='bx bx-heart'></i>";
+    }
+});
