@@ -440,8 +440,15 @@ document.addEventListener("DOMContentLoaded", () => {
     const backBtn = document.getElementById("backBtn");
     const reviewSearchInput = document.getElementById("reviewSearch");
     const reviewSuggestions = document.getElementById("reviewSuggestions");
+    const watchedDateInput = document.getElementById("watchedDate");
 
     const API_KEY = "bc7c4e7c62d9e223e196bbd15978fc51";
+
+    if (watchedDateInput) {
+        // get today's date in YYYY-MM-DD format
+        const today = new Date().toISOString().split('T')[0];
+        watchedDateInput.value = today; // set input value
+    }
 
     const movie = JSON.parse(localStorage.getItem("selectedMovie"));
     if (movie) {
@@ -536,7 +543,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function selectReviewMovie(movie) {
-        // localStorage.setItem("selectedMovie", JSON.stringify(movie));
+        localStorage.setItem("selectedMovie", JSON.stringify(movie));
 
         // Update UI in both the search page and the review form
         // currentMovieSpan.textContent = `${movie.title} (${movie.release_date ? movie.release_date.split("-")[0] : "Unknown"})`;
@@ -555,7 +562,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 });
-
 
 // stars stores elements with class .rating-star
 const stars = document.querySelectorAll(".rating-star");
@@ -677,4 +683,102 @@ likeButton.addEventListener("click", () => {
     } else {
         likeButton.innerHTML = "<i class='bx bx-heart'></i>";
     }
+});
+
+// wait for entire html to load before running any js code
+document.addEventListener("DOMContentLoaded", () => {
+    const changePosterBtn = document.getElementById("changePosterBtn");
+    const posterModal = document.getElementById("posterModal");
+    const closePosterModal = document.querySelector(".close");
+    const posterGrid = document.getElementById("posterGrid");
+    const savePosterBtn = document.getElementById("savePosterBtn");
+    let selectedPosterUrl = "";
+
+    const API_KEY = "bc7c4e7c62d9e223e196bbd15978fc51";
+
+    // function to fetch posters when a movie is selected
+    async function fetchPosters(movieId) {
+        // initiate request to api to get movie info
+        try {
+            // await bc its async
+            const response = await fetch(
+                `https://api.themoviedb.org/3/movie/${movieId}?api_key=${API_KEY}&append_to_response=images&include_image_language=en,null`
+            );
+            // convert api response to json
+            const data = await response.json();
+            // returns image posters
+            return data.images.posters || [];
+        } catch (error) {
+            // console.error("Error fetching posters:", error);
+            return [];
+        }
+    }
+
+    // function to update the poster grid
+    function updatePosterGrid(posters) {
+        posterGrid.innerHTML = ""; // clear previous posters
+
+        // loops through all posters and returns all of them
+        posters.forEach(poster => {
+            // create new element <img>
+            const img = document.createElement("img");
+            // set img src to tmdb url path
+            img.src = `https://image.tmdb.org/t/p/original${poster.file_path}`;
+            // add event listener for selecting the poster
+            img.addEventListener("click", () => {
+                // remove "selected" class from all previously selected posters
+                document.querySelectorAll(".poster-grid img").forEach(img => img.classList.remove("selected"));
+                // adds selected class to the img that is being clicked
+                img.classList.add("selected");
+                // store img src in selectedPosterUrl
+                selectedPosterUrl = img.src;
+            });
+            // append each new poster in modal
+            posterGrid.appendChild(img);
+        });
+    }
+
+    // open poster modal when "Change Poster" is clicked
+    if (changePosterBtn) {
+        // event listener for when you click on the change poster button
+        changePosterBtn.addEventListener("click", async () => {
+            // retrieves currently selected movie from storage
+            const storedMovie = JSON.parse(localStorage.getItem("selectedMovie"));
+            // error if no movie was found
+            if (!storedMovie) {
+                // console.warn("No movie found in localStorage.");
+                return;
+            }
+            // fetches alternative posters
+            const posters = await fetchPosters(storedMovie.id);
+            // updates grid with posters
+            updatePosterGrid(posters);
+            // displays the posterModal pop up
+            posterModal.style.display = "flex";
+        });
+    }
+
+    // close the poster modal without closing everything
+    const closePosterBtn = posterModal.querySelector(".poster-close"); // ensure we target the close button inside poster modal
+
+    if (closePosterBtn) {
+        closePosterBtn.addEventListener("click", () => {
+            posterModal.style.display = "none"; // only close the poster modal
+            reviewForm.style.display = "block"; // ensure review form remains open
+        });
+    }
+
+    // save selected poster
+    if (savePosterBtn) {
+        // event listener for when you click save
+        savePosterBtn.addEventListener("click", () => {
+            // update review form poster with newly selected poster only if a selection was made
+            if (selectedPosterUrl) {
+                document.getElementById("reviewMoviePoster").src = selectedPosterUrl;
+            }
+            // closes modal after you his save
+            posterModal.style.display = "none";
+        });
+    }
+
 });

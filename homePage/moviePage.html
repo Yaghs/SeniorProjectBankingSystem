@@ -70,8 +70,11 @@
             </header>
 
             <div class="review-movie-details">
-                <img id="reviewMoviePoster" src="" alt="Movie Poster">
-                <div>
+                <div class="review-left-container">
+                    <img id="reviewMoviePoster" src="" alt="Movie Poster">
+                    <button id="changePosterBtn" class="change-poster-btn">Change Poster</button>
+                </div>
+                <div class="review-right-container">
                     <div class="movie-title-container">
                         <h2 id="reviewMovieTitle"></h2>
                         <span id="reviewMovieYear"></span>
@@ -110,6 +113,14 @@
                     </div>
                     <button id="saveReview" class="save-button">Save</button>
                 </div>
+            </div>
+        </div>
+        <div id="posterModal" class="poster-modal">
+            <div class="poster-modal-content">
+                <button class="poster-close">&times;</button>
+                <h2>Choose New Poster</h2>
+                <div class="poster-grid" id="posterGrid"></div>
+                <button id="savePosterBtn" class="save-button">Save</button>
             </div>
         </div>
     </div>
