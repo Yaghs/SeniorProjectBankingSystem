@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>View Review Page</title>
+    <script defer type="module" src="viewReviewPage.js"></script>
+    <link rel="stylesheet" href="viewReviewPage.css">
+</head>
+<body>
+    <header>
+        <div class="left">
+            <h1>Project Name</h1>
+        </div>
+        <div class="right">
+            <span id="username">Username</span>
+            <a href="homePage.html">Home</a>
+            <a href="#">Activity</a>
+            <a href="#" id="reviewBtn">+Review</a>
+            <input type="text" id="searchInput" placeholder="Search..." autocomplete="off">
+        </div>
+    </header>
+    <div id="suggestions"></div>
+
+    <main class="review-container">
+        <div class="review-left">
+            <img id="reviewMoviePoster" src="" alt="Movie Poster">
+        </div>
+        <div class="review-content">
+            <h2 id="reviewMovieTitle"></h2>
+            <p id="reviewText"></p>
+        </div>
+        <div class="review-right">
+            <p><strong>Date Watched:</strong> <span id="watchedDate"></span></p>
+            <p><strong>Seen Before:</strong> <span id="watchedBefore"></span></p>
+            <p><strong>Rating:</strong> <span id="reviewRating"></span></p>
+            <p><strong>Liked:</strong> <span id="reviewLiked"></span></p>
+        </div>
+    </main>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const user = localStorage.getItem("loggedInUser");
+            if (user) {
+                document.getElementById("username").textContent = user;
+            }
+        });
+    </script>
+</body>
+
+
+</html>
