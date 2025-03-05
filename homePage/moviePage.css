@@ -326,8 +326,18 @@ header {
 .icon {
     font-size: 40px;
     cursor: pointer;
-    opacity: 0.6;
-    transition: color 0.3s ease, opacity 0.3s ease;
+}
+
+#reviewedIcon i {
+    color: #00ff00;
+}
+
+#likedIcon i {
+    color: #ff4444;
+}
+
+#watchlistIcon i {
+    color: #ff8800;
 }
 
 .rating-label {
@@ -339,9 +349,17 @@ header {
 
 .rating-stars {
     font-size: 24px;
+    display: flex;
+    justify-content: center;
     padding: 10px 0;
     margin-bottom: 10px;
     border-bottom: 2px solid #555;
+}
+
+.rating-stars .rating-star i.bx,
+.rating-stars .rating-star i.bxs-star,
+.rating-stars .rating-star i.bxs-star-half {
+    color: yellow;
 }
 
 .view-review-btn,
