@@ -1,3 +1,6 @@
+// import firebase dependencies
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getFirestore, doc, setDoc, getDoc,collection } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 // our special api key
 const API_KEY = "bc7c4e7c62d9e223e196bbd15978fc51";
 // retrieves selected movie's data from local storage
@@ -10,6 +13,24 @@ let allPosters = [];
 let currentBannerIndex = 0;
 // have all banners be an array to hold all alternative banners
 let allBanners = [];
+
+// firebase configuration
+const firebaseConfig = {
+    apiKey: "AIzaSyD1LpIBMmZAiQFwberKbx2G29t6fNph3Xg",
+    authDomain: "sample-dc6d0.firebaseapp.com",
+    projectId: "sample-dc6d0",
+    storageBucket: "sample-dc6d0.appspot.com",
+    messagingSenderId: "650782048731",
+    appId: "1:650782048731:web:d2828c5b87f0a4e62367fe",
+    measurementId: "G-WJMEY6J7BR"
+};
+
+// initialize Firebase
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// Log to confirm Firebase initialization
+console.log("firebase initialized successfully");
 
 // waits until html is loaded before we run the code
 document.addEventListener("DOMContentLoaded", () => {
@@ -112,6 +133,8 @@ function selectMovie(movie) {
     document.getElementById("reviewMoviePoster").src = movie.poster_path
         ? `https://image.tmdb.org/t/p/original${movie.poster_path}`
         : "https://via.placeholder.com/300?text=No+Image";
+
+    loadReviewActionBox(movie.title);
 }
 
 // fetches info on movie using its movieId
@@ -429,6 +452,117 @@ function resetTabs() {
     castContent.style.display = "block";
     crewContent.style.display = "none";
 }
+
+document.addEventListener("DOMContentLoaded", async () => {
+    const movie = JSON.parse(localStorage.getItem("selectedMovie"));
+    if (movie) {
+        loadReviewActionBox(movie.title);
+    }
+});
+
+async function loadReviewActionBox(movieTitle) {
+    const user = localStorage.getItem("loggedInUser");
+    if (!user) return;
+
+    const reviewRef = doc(db, "users", user, "reviews", movieTitle);
+
+    try {
+        const reviewSnap = await getDoc(reviewRef);
+
+        if (reviewSnap.exists()) {
+            const reviewData = reviewSnap.data();
+            console.log("Review Data Found:", reviewData);
+
+            document.getElementById("reviewedIcon").innerHTML = "<i class='bx bxs-show'></i>";
+            document.getElementById("likedIcon").innerHTML = reviewData.liked ? "<i class='bx bxs-heart'></i>" : "<i class='bx bx-heart'></i>";
+
+            document.getElementById("ratingLabel").textContent = "Rated";
+
+            const userRating = reviewData.rating || 0;
+            const ratingDisplay = document.getElementById("ratingDisplay");
+            ratingDisplay.innerHTML = ""; // Clear previous stars
+
+            const fullStars = Math.floor(userRating);
+            const hasHalfStar = userRating % 1 !== 0;
+
+            for (let i = 1; i <= 5; i++) {
+                let starClass;
+
+                if (i <= fullStars) {
+                    starClass = "bxs-star";
+                } else if (hasHalfStar && i === fullStars + 1) {
+                    starClass = "bxs-star-half";
+                } else {
+                    starClass = "bx-star";
+                }
+
+                ratingDisplay.innerHTML += `<span class="rating-star"><i class='bx ${starClass}'></i></span>`;
+            }
+
+            document.getElementById("editReviewBtn").addEventListener("click", async () => {
+                try {
+                    const reviewSnap = await getDoc(reviewRef);
+                    if (reviewSnap.exists()) {
+                        const reviewData = reviewSnap.data();
+
+                        document.getElementById("reviewText").value = reviewData.reviewText || "";
+                        document.getElementById("watchedDate").value = reviewData.watchedDate || "";
+                        document.getElementById("watchedBeforeCheckbox").checked = reviewData.watchedBefore || false;
+                        document.getElementById("reviewMoviePoster").src = reviewData.selectedPoster || "https://via.placeholder.com/300?text=No+Image";
+                        document.getElementById("likeButton").classList.toggle("liked", reviewData.liked);
+
+                        const userRating = reviewData.rating || 0;
+                        const fullStars = Math.floor(userRating);
+                        const hasHalfStar = userRating % 1 !== 0;
+
+                        document.querySelectorAll(".rating-stars .rating-star i").forEach((star, index) => {
+                            if (index < fullStars) {
+                                star.className = "bx bxs-star"; // Full star
+                            } else if (hasHalfStar && index === fullStars) {
+                                star.className = "bx bxs-star-half"; // Half star
+                            } else {
+                                star.className = "bx bx-star"; // Empty star
+                            }
+                        });
+
+                        document.getElementById("reviewBox").style.display = "flex";
+                        document.getElementById("reviewSearchPage").style.display = "none";
+                        document.getElementById("reviewForm").style.display = "block";
+                    } else {
+                        console.log("No review found for this movie.");
+                    }
+                } catch (error) {
+                    console.error("Error loading review for editing:", error);
+                }
+            });
+
+            document.getElementById("viewReviewBtn").addEventListener("click", () => {
+                window.location.href = "viewReviewPage.html";
+            });
+
+        } else {
+            console.log("No review found for this movie.");
+            resetReviewActionBox();
+        }
+    } catch (error) {
+        console.error("Error loading review:", error);
+    }
+}
+
+function resetReviewActionBox() {
+    document.getElementById("reviewedIcon").innerHTML = "<i class='bx bx-show'></i>";
+    document.getElementById("likedIcon").innerHTML = "<i class='bx bx-heart'></i>";
+    document.getElementById("ratingLabel").textContent = "Rate";
+
+    document.getElementById("ratingDisplay").innerHTML = `
+        <span class="rating-star"><i class='bx bx-star'></i></span>
+        <span class="rating-star"><i class='bx bx-star'></i></span>
+        <span class="rating-star"><i class='bx bx-star'></i></span>
+        <span class="rating-star"><i class='bx bx-star'></i></span>
+        <span class="rating-star"><i class='bx bx-star'></i></span>
+    `;
+}
+
 
 document.addEventListener("DOMContentLoaded", () => {
     const reviewBtn = document.getElementById("reviewBtn");
@@ -780,5 +914,68 @@ document.addEventListener("DOMContentLoaded", () => {
             posterModal.style.display = "none";
         });
     }
-
 });
+
+// event listener for when you press the save button after writing a review
+document.getElementById("saveReview").addEventListener("click", async () => {
+    // get user ID from localStorage
+    const userID = localStorage.getItem("loggedInUser");
+    // if there is no user logged in, give an alert
+    if (!userID) {
+        alert("you must be logged in to save a review.");
+        return;
+    }
+    // if no movie is selected, give an alert
+    if (!movie) {
+        alert("No movie selected.");
+        return;
+    }
+
+    // get review details
+    const movieTitle = document.getElementById("reviewMovieTitle").textContent;
+    const watchedDate = document.getElementById("watchedDate").value;
+    const watchedBefore = document.getElementById("watchedBeforeCheckbox").checked;
+    const reviewText = document.getElementById("reviewText").value;
+    const rating = selectedRating; // get rating from stars logic
+    const liked = document.getElementById("likeButton").classList.contains("liked");
+    const selectedPoster = document.getElementById("reviewMoviePoster").src;
+
+    // reference to Firestore: Users → userID → Reviews → movieTitle
+    const reviewRef = doc(db, "users", userID, "reviews", movieTitle);
+
+    // data to save
+    const reviewData = {
+        title: movieTitle,
+        watchedDate: watchedDate || "Not Provided",
+        watchedBefore: watchedBefore,
+        reviewText: reviewText || "",
+        rating: rating || 0,
+        liked: liked,
+        selectedPoster: selectedPoster
+    };
+
+    try {
+        await setDoc(reviewRef, reviewData);
+        console.log(`review saved for user: ${userID} → movie: ${movieTitle}`);
+        alert("your review has been saved!");
+
+        // reset form fields after saving
+        document.getElementById("reviewText").value = "";
+        document.getElementById("watchedDate").checked = false;
+        document.getElementById("watchedBeforeCheckbox").checked = false;
+        document.getElementById("reviewMoviePoster").src = movie.poster_path
+            ? `https://image.tmdb.org/t/p/original${movie.poster_path}`
+            : "https://via.placeholder.com/300?text=No+Image";
+        likeButton.classList.remove("liked");
+        selectedRating = 0;
+        updateStarsDisplay();
+
+        // close the review modal after saving
+        document.getElementById("reviewBox").style.display = "none";
+
+    } catch (error) {
+        console.error("error saving review:", error);
+        alert("failed to save review. please try again.");
+    }
+});
+

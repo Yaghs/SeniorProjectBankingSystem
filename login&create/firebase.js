@@ -16,6 +16,9 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
+// Log to confirm Firebase initialization
+console.log("🔥 Firebase Initialized Successfully");
+
 document.getElementById("loginSubmit").addEventListener('click', async function (e) {
     e.preventDefault();
 
