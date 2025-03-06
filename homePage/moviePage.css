@@ -844,3 +844,66 @@ header {
 .save-button:hover {
     background: limegreen;
 }
+
+.trailer-container {
+    text-align: center;
+    margin-top: 10px;
+    display: flex;
+    justify-content: center;
+}
+
+.trailer-button {
+    background: #ff0000;
+    color: white;
+    font-size: 16px;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    justify-content: center;
+}
+
+.trailer-button i {
+    font-size: 20px;
+}
+
+.trailer-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.trailer-modal-content {
+    background: #222;
+    padding: 30px;
+    border-radius: 10px;
+    text-align: center;
+    width: 50%;
+    max-height: 90vh;
+    overflow: hidden;
+    color: white;
+    position: relative;
+}
+
+.close-trailer {
+    position: absolute;
+    top: 5px;
+    right: 10px;
+    font-size: 30px;
+    cursor: pointer;
+    color: white;
+}
+
+.close-trailer:hover {
+    color: yellow;
+}

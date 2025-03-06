@@ -134,7 +134,13 @@ function selectMovie(movie) {
         ? `https://image.tmdb.org/t/p/original${movie.poster_path}`
         : "https://via.placeholder.com/300?text=No+Image";
 
+    // handles review action box functionality when you search a movie
     loadReviewActionBox(movie.title);
+
+    // handles trailer button functionality when you search for a movie
+    setTimeout(() => {
+        attachTrailerButtonListener();
+    }, 100);
 }
 
 // fetches info on movie using its movieId
@@ -255,14 +261,19 @@ function displayPoster(index) {
     // selects container where movie poster is displayed
     const posterContainer = document.getElementById("moviePosterContainer");
     // url of current poster
-    const posterUrl = `https://image.tmdb.org/t/p/w500${allPosters[index].file_path}`;
-    // setting inner html of container to display poster and nav
+    const posterUrl = `https://image.tmdb.org/t/p/original${allPosters[index].file_path}`;
+    // setting inner html of container to display poster and nav and trailer button
     posterContainer.innerHTML = `
         <img src="${posterUrl}" alt="Alternate Movie Poster" class="alternate-poster">
         <div class="poster-nav">
             <button class="nav-arrow" onclick="prevPoster()">❮</button>
             <h3>View Alternative Posters</h3>
             <button class="nav-arrow" onclick="nextPoster()">❯</button>
+        </div>
+        <div class="trailer-container">
+            <button id="viewTrailerBtn" class="trailer-button">
+                <i class='bx bxl-youtube'></i> View Trailer
+            </button>
         </div>
     `;
 }
@@ -927,7 +938,7 @@ document.getElementById("saveReview").addEventListener("click", async () => {
     }
     // if no movie is selected, give an alert
     if (!movie) {
-        alert("No movie selected.");
+        alert("no movie selected.");
         return;
     }
 
@@ -946,18 +957,19 @@ document.getElementById("saveReview").addEventListener("click", async () => {
     // data to save
     const reviewData = {
         title: movieTitle,
-        watchedDate: watchedDate || "Not Provided",
+        watchedDate: watchedDate || "Not Provided", // default if no date applied
         watchedBefore: watchedBefore,
-        reviewText: reviewText || "",
-        rating: rating || 0,
+        reviewText: reviewText || "", // if review text is empty, store empty string
+        rating: rating || 0, // default rating if nothing is selected
         liked: liked,
-        selectedPoster: selectedPoster
+        selectedPoster: selectedPoster // stores chosen poster
     };
 
     try {
+        // saves review to firebase
         await setDoc(reviewRef, reviewData);
-        console.log(`review saved for user: ${userID} → movie: ${movieTitle}`);
-        alert("your review has been saved!");
+        // console.log(`review saved for user: ${userID} → movie: ${movieTitle}`);
+        alert("your review has been saved!"); // alert to tell us we saved the review
 
         // reset form fields after saving
         document.getElementById("reviewText").value = "";
@@ -966,16 +978,92 @@ document.getElementById("saveReview").addEventListener("click", async () => {
         document.getElementById("reviewMoviePoster").src = movie.poster_path
             ? `https://image.tmdb.org/t/p/original${movie.poster_path}`
             : "https://via.placeholder.com/300?text=No+Image";
-        likeButton.classList.remove("liked");
-        selectedRating = 0;
-        updateStarsDisplay();
+        likeButton.classList.remove("liked"); // remove liked class from button
+        selectedRating = 0; // reset rating
+        updateStarsDisplay(); // refresh the stars UI
 
         // close the review modal after saving
         document.getElementById("reviewBox").style.display = "none";
 
     } catch (error) {
-        console.error("error saving review:", error);
+        // console.error("error saving review:", error);
         alert("failed to save review. please try again.");
     }
 });
 
+// function to attach event listener to the view trailer button
+function attachTrailerButtonListener() {
+    // select necessary elements from the DOM
+    const viewTrailerBtn = document.getElementById("viewTrailerBtn");
+    const trailerModal = document.getElementById("trailerModal");
+    const trailerFrame = document.getElementById("trailerFrame");
+    const closeTrailerBtn = document.querySelector(".close-trailer");
+
+    // when the user click the view trailer button
+    if (viewTrailerBtn) {
+        viewTrailerBtn.addEventListener("click", async () => {
+            // retrieve the selected movie from the local storage
+            const movie = JSON.parse(localStorage.getItem("selectedMovie"));
+            // if no movie was selected, alert and exit
+            if (!movie) {
+                alert("no movie selected.");
+                return;
+            }
+
+            try {
+                // fetch trailer videos from tmdb api
+                const response = await fetch(
+                    `https://api.themoviedb.org/3/movie/${movie.id}/videos?api_key=${API_KEY}`
+                );
+                const data = await response.json();
+
+                // checks if move has any trailers available
+                if (data.results.length > 0) {
+                    // find the first youtube trailer in results
+                    const trailer = data.results.find(video => video.type === "Trailer" && video.site === "YouTube");
+                    // if trailer exists, put it in the iframe
+                    if (trailer) {
+                        trailerFrame.src = `https://www.youtube.com/embed/${trailer.key}`;
+                        trailerModal.style.display = "flex"; // show the trailer pop up
+                    } else {
+                        alert("no trailer found for this movie.");
+                    }
+                } else {
+                    alert("no trailer available.");
+                }
+            } catch (error) {
+                console.error("error fetching trailer:", error);
+                alert("failed to load trailer.");
+            }
+        });
+    }
+
+    // when user clicks the close button, we close the trailer pop up
+    if (closeTrailerBtn) {
+        closeTrailerBtn.addEventListener("click", () => {
+            trailerModal.style.display = "none"; // hides pop up
+            trailerFrame.src = ""; // reset trailer when closing
+        });
+    }
+
+    // when user clicks outside the trailer pop up, close it as well
+    window.addEventListener("click", (event) => {
+        if (event.target === trailerModal) {
+            trailerModal.style.display = "none"; // hides pop up
+            trailerFrame.src = ""; // reset trailer when closing
+        }
+    });
+}
+
+// this ensures the trailer button loads upon refreshing the page
+document.addEventListener("DOMContentLoaded", () => {
+    // if movie stored in localStorage, load its details
+    if (movie) {
+        loadReviewActionBox(movie.title); // load review action box element
+        fetchMovieDetails(movie.id); // fetch any movie details
+        // ensure trailer button works properly when refreshed
+        setTimeout(() => {
+            attachTrailerButtonListener(); // Ensure trailer button works when page loads
+        }, 100);
+    }
+});
