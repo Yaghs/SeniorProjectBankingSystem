@@ -705,22 +705,22 @@ header {
     position: relative;
 }
 
-.rating-star i.highlighted,
-.rating-star i.bxs-star.highlighted,
-.rating-star i.bxs-star-half.highlighted {
+#reviewForm .rating-star i.highlighted,
+#reviewForm .rating-star i.bxs-star.highlighted,
+#reviewForm .rating-star i.bxs-star-half.highlighted {
     color: yellow;
 }
 
-.rating-star i.selected,
-.rating-star i.bxs-star.selected,
-.rating-star i.bxs-star-half.selected {
+#reviewForm .rating-star i.selected,
+#reviewForm .rating-star i.bxs-star.selected,
+#reviewForm .rating-star i.bxs-star-half.selected {
     color: yellow;
 }
 
-.rating-star i.bx-star,
-.rating-star i.bxs-star,
-.rating-star i.bxs-star-half {
-    color: #aaa;
+#reviewForm .rating-star i.bx-star,
+#reviewForm .rating-star i.bxs-star,
+#reviewForm .rating-star i.bxs-star-half {
+    color: yellow;
     font-size: 25px;
     margin-bottom: 5px;
     transition: color 0.3s ease;
