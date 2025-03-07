@@ -464,58 +464,95 @@ function resetTabs() {
     crewContent.style.display = "none";
 }
 
+// ensures script runs only after html is fully loaded
 document.addEventListener("DOMContentLoaded", async () => {
+    // gets selected movie from localStorage
     const movie = JSON.parse(localStorage.getItem("selectedMovie"));
+    // if movie is found in localStorage
     if (movie) {
+        // call function to update review action box
         loadReviewActionBox(movie.title);
     }
 });
 
+// function to load the review action box
 async function loadReviewActionBox(movieTitle) {
+    // gets logged in user from localStorage
     const user = localStorage.getItem("loggedInUser");
+    // exit if no user is found
     if (!user) return;
 
+    // firebase reference for users movie review
     const reviewRef = doc(db, "users", user, "reviews", movieTitle);
 
+    // fetch movie review from the db
     try {
+        // fetches review document
         const reviewSnap = await getDoc(reviewRef);
 
+        // checks if review exists for the movie
         if (reviewSnap.exists()) {
+            // retrieve actual review data
             const reviewData = reviewSnap.data();
-            console.log("Review Data Found:", reviewData);
+            // console.log("Review Data Found:", reviewData);
 
+            // change the reviewed icon to show movie has been reviewed
             document.getElementById("reviewedIcon").innerHTML = "<i class='bx bxs-show'></i>";
+            // change the liked icon to show the movie has been liked
             document.getElementById("likedIcon").innerHTML = reviewData.liked ? "<i class='bx bxs-heart'></i>" : "<i class='bx bx-heart'></i>";
-
+            // change label from rate to rated (indicates movie has been rated)
             document.getElementById("ratingLabel").textContent = "Rated";
 
+            // gets the users rating, default is 0
             const userRating = reviewData.rating || 0;
+            // gets ratingDisplay element
             const ratingDisplay = document.getElementById("ratingDisplay");
-            ratingDisplay.innerHTML = ""; // Clear previous stars
+            // clears existing stars before displaying new ones
+            ratingDisplay.innerHTML = "";
 
+            // Math.floor determines numver of full stars
             const fullStars = Math.floor(userRating);
+            // userRating % 1 !=0 checks if rating includes half a star
             const hasHalfStar = userRating % 1 !== 0;
 
+            // loops 5 times to create the stars
             for (let i = 1; i <= 5; i++) {
                 let starClass;
 
                 if (i <= fullStars) {
-                    starClass = "bxs-star";
+                    starClass = "bxs-star"; // full star
                 } else if (hasHalfStar && i === fullStars + 1) {
-                    starClass = "bxs-star-half";
+                    starClass = "bxs-star-half"; // half star
                 } else {
-                    starClass = "bx-star";
+                    starClass = "bx-star"; // empty star
                 }
-
+                // display the rating
                 ratingDisplay.innerHTML += `<span class="rating-star"><i class='bx ${starClass}'></i></span>`;
             }
 
+            // event listener for when edit review is clicked
             document.getElementById("editReviewBtn").addEventListener("click", async () => {
+                // fetch info from db
                 try {
+                    // gets selected movie from localStorage
+                    const movie = JSON.parse(localStorage.getItem("selectedMovie"));
+                    // get logged in user from localStorage
+                    const user = localStorage.getItem("loggedInUser");
+
+                    // if none exist, exit
+                    if (!user || !movie) return;
+
+                    // firebase reference for movie review
+                    const reviewRef = doc(db, "users", user, "reviews", movie.title);
+                    // fetches review document
                     const reviewSnap = await getDoc(reviewRef);
+
+                    // if review doc exists
                     if (reviewSnap.exists()) {
+                        // populate with data
                         const reviewData = reviewSnap.data();
 
+                        // loads saved review text, watched date, watched before, selected poster and liked status
                         document.getElementById("reviewText").value = reviewData.reviewText || "";
                         document.getElementById("watchedDate").value = reviewData.watchedDate || "";
                         document.getElementById("watchedBeforeCheckbox").checked = reviewData.watchedBefore || false;
@@ -523,27 +560,32 @@ async function loadReviewActionBox(movieTitle) {
                         document.getElementById("likeButton").classList.toggle("liked", reviewData.liked);
 
                         const userRating = reviewData.rating || 0;
+                        // Math.floor determines numver of full stars
                         const fullStars = Math.floor(userRating);
+                        // userRating % 1 !=0 checks if rating includes half a star
                         const hasHalfStar = userRating % 1 !== 0;
 
-                        document.querySelectorAll(".rating-stars .rating-star i").forEach((star, index) => {
+                        // ensure stars in review match saved rating
+                        document.querySelectorAll("#reviewForm .rating-container .rating-star i").forEach((star, index) => {
                             if (index < fullStars) {
-                                star.className = "bx bxs-star"; // Full star
+                                star.className = "bx bxs-star"; // full star
                             } else if (hasHalfStar && index === fullStars) {
-                                star.className = "bx bxs-star-half"; // Half star
+                                star.className = "bx bxs-star-half"; // half star
                             } else {
-                                star.className = "bx bx-star"; // Empty star
+                                star.className = "bx bx-star"; // empty star
                             }
                         });
-
+                        // displays review form for editing
                         document.getElementById("reviewBox").style.display = "flex";
                         document.getElementById("reviewSearchPage").style.display = "none";
                         document.getElementById("reviewForm").style.display = "block";
+
                     } else {
-                        console.log("No review found for this movie.");
+                        console.log("No review found. Edit button disabled.");
                     }
+
                 } catch (error) {
-                    console.error("Error loading review for editing:", error);
+                    console.error("error loading review for editing:", error);
                 }
             });
 
@@ -552,7 +594,8 @@ async function loadReviewActionBox(movieTitle) {
             });
 
         } else {
-            console.log("No review found for this movie.");
+            console.log("no review found for this movie.");
+            // since no review exists for the movie, reset the review action box
             resetReviewActionBox();
         }
     } catch (error) {
@@ -560,6 +603,7 @@ async function loadReviewActionBox(movieTitle) {
     }
 }
 
+// resets ui for the review action box
 function resetReviewActionBox() {
     document.getElementById("reviewedIcon").innerHTML = "<i class='bx bx-show'></i>";
     document.getElementById("likedIcon").innerHTML = "<i class='bx bx-heart'></i>";
