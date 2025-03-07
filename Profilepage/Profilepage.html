@@ -2,9 +2,10 @@
 <html lang="en">
 <!-- What is needed to do next,
 add funcations:
-   going to dms when button is press
-   save bio text
+   save/edit bio text
    follow button for when viewing others profile
+   recent = favs
+   going to dms when button is press
 tie it with firebase
   -->
 
@@ -14,13 +15,13 @@ tie it with firebase
 
 
     <script type="module" src="search.js"></script>
-    <title>Project name</title>
+    <title>Plot Twist</title>
 </head>
 <body>
 
 <header>
     <div class="left">
-        <h1>Project Name</h1>
+        <h1>Plot Twist</h1>
     </div>
 
     <div class="right">
@@ -39,15 +40,17 @@ tie it with firebase
             <img id="profile-pic" src="https://as1.ftcdn.net/v2/jpg/00/64/67/52/1000_F_64675209_7ve2XQANuzuHjMZXP3aIYIpsDKEbF5dD.jpg"
                  alt="Profile Picture" >
             <input type="file" id="fileinput" style="display: none;" accept="image/*" />
-            <script src="functions.js"></script>
             </div>
 
             <!-- Username info -->
             <div class="username_display">
                 <h1><span id="username_Id">Username</span></h1>
+
                 <!-- Bio Section -->
                 <form class="bio">
-                    <textarea placeholder="Enter Bio here"></textarea>
+                    <textarea id="Bio" disabled placeholder="Enter Bio here"></textarea>
+                    <button class="Edit" id="Edit" type="button">Edit</button>
+
                 </form>
             </div>
             <!-- Following info-->
@@ -94,7 +97,7 @@ tie it with firebase
                     </ul>
                 </div>
             </div>
-
+                     <script src="functions.js"></script>
 
             </body>
             </html>
