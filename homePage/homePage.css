@@ -219,3 +219,38 @@ header {
     text-align: center;
     font-size: 14px;
 }
+
+/* Dropdown Box after clicking 'Account' */
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #fff;
+  min-width: 100px;
+  box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+  z-index: 1;
+}
+
+.dropdown-content a {
+  color: #333;
+  padding: 8px 15px;
+  text-decoration: none;
+  display: block;
+}
+
+.dropdown-content a.sign-out {
+  color: red;
+}
+.dropdown-content a.sign-out:hover {
+  color: #ff8080;
+}
+
+.dropdown-content a:hover {
+  background-color: #f1f1f1;
+}

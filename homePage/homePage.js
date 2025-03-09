@@ -109,4 +109,20 @@ document.addEventListener("DOMContentLoaded", function() {
             document.querySelector(".arrow.right")
         );
     }
+
+// --- Dropdown Toggle Code ---
+    const accountLink = document.getElementById("accountLink");
+    const dropdownContent = document.querySelector(".dropdown-content");
+
+    accountLink.addEventListener("click", function (event) {
+        event.preventDefault(); // Prevent default link behavior
+        dropdownContent.style.display = dropdownContent.style.display === "block" ? "none" : "block";
+    });
+
+    // Close dropdown when clicking outside
+    window.addEventListener("click", function (event) {
+        if (!event.target.matches("#accountLink")) {
+            dropdownContent.style.display = "none";
+        }
+    });
 });
