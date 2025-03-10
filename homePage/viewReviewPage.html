@@ -5,6 +5,7 @@
     <title>View Review Page</title>
     <script defer type="module" src="viewReviewPage.js"></script>
     <link rel="stylesheet" href="viewReviewPage.css">
+    <link rel='stylesheet' href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css'>
 </head>
 <body>
     <header>
@@ -26,14 +27,29 @@
             <img id="reviewMoviePoster" src="" alt="Movie Poster">
         </div>
         <div class="review-content">
-            <h2 id="reviewMovieTitle"></h2>
+            <h3>Reviewed by <span id="reviewUsername"></span></h3>
+            <h2 id="reviewMovieTitle"> <span id="reviewMovieYear"></span></h2>
+            <p>Watched on: <span id="watchedDate"></span></p>
             <p id="reviewText"></p>
         </div>
-        <div class="review-right">
-            <p><strong>Date Watched:</strong> <span id="watchedDate"></span></p>
-            <p><strong>Seen Before:</strong> <span id="watchedBefore"></span></p>
-            <p><strong>Rating:</strong> <span id="reviewRating"></span></p>
-            <p><strong>Liked:</strong> <span id="reviewLiked"></span></p>
+        <div class="review-action-box">
+            <div class="review-icons">
+                <span id="reviewedIcon" class="icon"><i class='bx bx-show'></i></span>
+                <span id="likedIcon" class="icon"><i class='bx bx-heart'></i></span>
+                <span id="watchlistIcon" class="icon"><i class='bx bx-plus'></i></span>
+            </div>
+
+            <p id="ratingLabel" class="rating-label">Rate</p>
+            <p id="ratingDisplay" class="rating-stars">
+                <span class="rating-star" data-value="1"><i class='bx bx-star'></i></span>
+                <span class="rating-star" data-value="2"><i class='bx bx-star'></i></span>
+                <span class="rating-star" data-value="3"><i class='bx bx-star'></i></span>
+                <span class="rating-star" data-value="4"><i class='bx bx-star'></i></span>
+                <span class="rating-star" data-value="5"><i class='bx bx-star'></i></span>
+            </p>
+
+            <span id="viewReviewBtn" class="view-review-btn">View Review</span>
+            <span id="editReviewBtn" class="edit-review-btn">Edit Review</span>
         </div>
     </main>
     <script>

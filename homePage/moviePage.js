@@ -618,7 +618,6 @@ function resetReviewActionBox() {
     `;
 }
 
-
 document.addEventListener("DOMContentLoaded", () => {
     const reviewBtn = document.getElementById("reviewBtn");
     const reviewModal = document.getElementById("reviewBox");
@@ -1110,4 +1109,22 @@ document.addEventListener("DOMContentLoaded", () => {
             attachTrailerButtonListener(); // Ensure trailer button works when page loads
         }, 100);
     }
+});
+
+document.getElementById("reviewBtn").addEventListener("click", () => {
+    // Reset review form fields
+    document.getElementById("reviewText").value = "";
+    document.getElementById("watchedDate").value = "";
+    document.getElementById("watchedBeforeCheckbox").checked = false;
+    document.getElementById("likeButton").classList.remove("liked");
+
+    // Reset stars to empty
+    document.querySelectorAll(".rating-container .rating-star i").forEach(star => {
+        star.className = "bx bx-star";
+    });
+
+    selectedRating = 0;
+
+    // Open review modal
+    document.getElementById("reviewBox").style.display = "flex";
 });
