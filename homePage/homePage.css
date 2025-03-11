@@ -72,6 +72,7 @@ header {
     top: 60px;
     right: 30px;
     overflow: hidden;
+    z-index: 1000;
 }
 
 .suggestion {
