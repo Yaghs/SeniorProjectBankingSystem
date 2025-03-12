@@ -102,6 +102,6 @@ async function loadMovies(genreId, movieCountElement, movieGrid) {
         // console.error("Error fetching movies:", error);
         document.body.innerHTML = "<h2>Error loading movies.</h2>";
     } finally {
-        loading = false; // Allow new fetches after this one completes
+        loading = false; // allow new fetches after this one completes
     }
 }
