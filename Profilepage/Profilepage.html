@@ -13,8 +13,8 @@ tie it with firebase
     <meta charset="UTF-8">
     <link rel="stylesheet" href="ProfilePage.css">
 
-
-    <script type="module" src="search.js"></script>
+    <script type="module" src="functions.js"></script>
+    <script type="module" src="../homePage/search.js"></script>
     <title>Plot Twist</title>
 </head>
 <body>
@@ -33,7 +33,7 @@ tie it with firebase
         <input type="text" id="searchInput" placeholder="Search..." autocomplete="off">
     </div>
 </header>
-
+<div id="suggestions"></div>
 <div class="Container">
     <div class="Profile">
         <!-- Profile Picture -->
@@ -98,7 +98,13 @@ tie it with firebase
                     </ul>
                 </div>
             </div>
-                     <script src="functions.js"></script>
-
+            <script>
+                document.addEventListener("DOMContentLoaded", function() {
+                    const user = localStorage.getItem("loggedInUser");
+                    if (user) {
+                        document.getElementById("username").textContent = user;
+                    }
+                });
+            </script>
             </body>
             </html>
