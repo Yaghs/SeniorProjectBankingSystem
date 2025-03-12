@@ -12,8 +12,6 @@ tie it with firebase
 <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="ProfilePage.css">
-
-
     <script type="module" src="search.js"></script>
     <title>Plot Twist</title>
 </head>
@@ -21,19 +19,26 @@ tie it with firebase
 
 <header>
     <div class="left">
-        <h1>Plot Twist</h1>
+        <h1>Project Name</h1>
     </div>
 
     <div class="right">
         <span id="username">Username</span>
         <a href="#">Home</a>
+        <div class="dropdown">
+            <a href="#" id="accountLink">Account</a>
+            <div class="dropdown-content">
+                <a href="../Profilepage/Profilepage.html">Profile</a>
+                <a href="../userSettings/userSettings.html">Settings</a>
+                <a href="#" class="sign-out">Sign out</a>
+            </div>
+        </div>
         <a href="#">Activity</a>
         <a href="#">+Review</a>
         <a href="../homePage/createCommunity.html">Communities</a>
         <input type="text" id="searchInput" placeholder="Search..." autocomplete="off">
     </div>
 </header>
-
 <div class="Container">
     <div class="Profile">
         <!-- Profile Picture -->
