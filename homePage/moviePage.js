@@ -485,7 +485,7 @@ async function displayGenre() {
 
     // if theres no valid movieID, exit
     if (!movieId) {
-        // console.error("no movie ID found");
+        console.error("no movie ID found");
         return;
     }
 
@@ -507,7 +507,13 @@ async function displayGenre() {
             // loops through the genres and adds them to the list
             data.genres.forEach(genre => {
                 const listItem = document.createElement("li");
-                listItem.innerHTML = `<span class="genre-name">${genre.name}</span>`;
+                listItem.innerHTML = `<span class="genre-name" data-genre-id="${genre.id}" data-genre-name="${genre.name}">${genre.name}</span>`;
+                listItem.addEventListener("click", () => {
+                    // Save the selected genre in local storage
+                    localStorage.setItem("selectedGenre", JSON.stringify({ id: genre.id, name: genre.name }));
+                    // Redirect to the genre page
+                    window.location.href = "genrePage.html";
+                });
                 genreList.appendChild(listItem);
             });
             // otherwise display no genres available
@@ -515,7 +521,7 @@ async function displayGenre() {
             genreList.innerHTML = "<p>No genres available</p>";
         }
     } catch (error) {
-        // console.error("error fetching genres:", error);
+        console.error("error fetching genres:", error);
         genreList.innerHTML = "<p>Error loading genres</p>";
     }
 }
