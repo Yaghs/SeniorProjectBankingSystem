@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Genre Page</title>
+    <script defer type="module" src="genrePage.js"></script>
+    <link rel="stylesheet" href="genrePage.css">
+</head>
+<body>
+    <header>
+        <div class="left">
+            <h1>Plot Twist</h1>
+        </div>
+        <div class="right">
+            <span id="username">Username</span>
+            <a href="homePage.html">Home</a>
+            <a href="#">Activity</a>
+            <a href="#" id="reviewBtn">+Review</a>
+            <a href="../homePage/createCommunity.html">Communities</a>
+            <input type="text" id="searchInput" placeholder="Search..." autocomplete="off">
+        </div>
+    </header>
+    <div id="suggestions"></div>
+    <div class="genre-menu">
+        <h2>Films</h2>
+        <div class="sort-container">
+            <label for="sortDropdown">Sort by:</label>
+            <select id="sortDropdown">
+                <option value="popularity.desc" selected>Most Popular</option>
+                <option value="release_date.desc">Newest</option>
+                <option value="vote_average.desc">Top Rated</option>
+            </select>
+        </div>
+    </div>
+    <div id="movieInfo">
+        <h2>There are a total of <span id="movieCount">0</span> "<span id="genreTitle"></span>" films</h2>
+    </div>
+    <div id="movieGrid" class="movie-grid"></div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const user = localStorage.getItem("loggedInUser");
+            if (user) {
+                document.getElementById("username").textContent = user;
+            }
+        });
+    </script>
+</body>
+</html>
