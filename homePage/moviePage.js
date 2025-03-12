@@ -529,7 +529,7 @@ function resetTabs() {
     const crewContent = document.getElementById("crewContent");
     const genreContent = document.getElementById("genreContent");
 
-    // Reset tab classes
+    // reset tab classes
     castTab.classList.add("active");
     crewTab.classList.remove("active");
     genreTab.classList.remove("active");
