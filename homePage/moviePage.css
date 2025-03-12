@@ -304,6 +304,16 @@ header {
     color: #56a4f8;
 }
 
+.genre-name {
+    color: white;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.genre-name:hover {
+    color: #56a4f8;
+}
+
 .review-action-box {
     background: #222;
     padding: 20px;

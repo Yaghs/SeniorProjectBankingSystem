@@ -188,6 +188,9 @@ async function fetchMovieDetails(movieId) {
         // calls displayCrew function to display the movies crew
         displayCrew(data.credits.crew);
 
+        // calls displayGenre function to display movie genre
+        displayGenre(data.credits.genre);
+
         // calls resetTabs function to reset tabs back to cast
         resetTabs();
 
@@ -336,8 +339,10 @@ window.nextBanner = function() {
 document.addEventListener("DOMContentLoaded", () => {
     const castTab = document.getElementById("castTab"); // tab for cast
     const crewTab = document.getElementById("crewTab"); // tab for crew
+    const genreTab = document.getElementById("genreTab"); // tab for genre
     const castContent = document.getElementById("castContent"); // content for cast
     const crewContent = document.getElementById("crewContent"); // content for crew
+    const genreContent = document.getElementById("genreContent"); // content for crew
 
     // event listeners for cast tab
     castTab.addEventListener("click", () => {
@@ -345,10 +350,14 @@ document.addEventListener("DOMContentLoaded", () => {
         castTab.classList.add("active");
         // crew tab is not activated
         crewTab.classList.remove("active");
+        // genre tab is not activated
+        genreTab.classList.remove("active");
         // show cast content
         castContent.style.display = "block";
         // dont show crew content
         crewContent.style.display = "none";
+        // dont show genre content
+        genreContent.style.display = "none";
     });
     // event listeners for crew tab
     crewTab.addEventListener("click", () => {
@@ -356,10 +365,29 @@ document.addEventListener("DOMContentLoaded", () => {
         crewTab.classList.add("active");
         // cast tab is not activated
         castTab.classList.remove("active");
+        // genre tab is not activated
+        genreTab.classList.remove("active");
         // show crew content
         crewContent.style.display = "block";
         // dont show cast content
         castContent.style.display = "none";
+        // dont show genre content
+        genreContent.style.display = "none";
+    });
+    // event listeners for crew tab
+    genreTab.addEventListener("click", () => {
+        // genre tab is activated
+        genreTab.classList.add("active");
+        // cast tab is not activated
+        castTab.classList.remove("active");
+        // crew tab is not activated
+        crewTab.classList.remove("active");
+        // show genre content
+        genreContent.style.display = "block";
+        // dont show cast content
+        castContent.style.display = "none";
+        // dont show crew content
+        crewContent.style.display = "none";
     });
 });
 
@@ -448,20 +476,68 @@ function selectCrew(crewId, crewName, crewRole) {
     window.location.href = "crewPage.html";
 }
 
+// this function will display the genre of the movie
+async function displayGenre() {
+    // gets selected movie from the local storage
+    const selectedMovie = JSON.parse(localStorage.getItem("selectedMovie"));
+    // sets the selected movie from local storage to movieID, null if none found
+    const movieId = selectedMovie ? selectedMovie.id : null;
+
+    // if theres no valid movieID, exit
+    if (!movieId) {
+        // console.error("no movie ID found");
+        return;
+    }
+
+    // selects html element where genre will be displayed
+    const genreList = document.getElementById("genreList");
+    // clears existing genre list
+    genreList.innerHTML = "";
+
+    try {
+        // fetches details from the database
+        const response = await fetch(`https://api.themoviedb.org/3/movie/${movieId}?api_key=${API_KEY}&language=en-US`);
+        // await bc its async
+        const data = await response.json();
+
+        // checks if data.genres exists and has more than one genre
+        if (data.genres && data.genres.length > 0) {
+            // clears existing genre list
+            genreList.innerHTML = "";
+            // loops through the genres and adds them to the list
+            data.genres.forEach(genre => {
+                const listItem = document.createElement("li");
+                listItem.innerHTML = `<span class="genre-name">${genre.name}</span>`;
+                genreList.appendChild(listItem);
+            });
+            // otherwise display no genres available
+        } else {
+            genreList.innerHTML = "<p>No genres available</p>";
+        }
+    } catch (error) {
+        // console.error("error fetching genres:", error);
+        genreList.innerHTML = "<p>Error loading genres</p>";
+    }
+}
+
 // resets to cast tab when a new movie is loaded
 function resetTabs() {
     const castTab = document.getElementById("castTab");
     const crewTab = document.getElementById("crewTab");
+    const genreTab = document.getElementById("genreTab");
     const castContent = document.getElementById("castContent");
     const crewContent = document.getElementById("crewContent");
+    const genreContent = document.getElementById("genreContent");
 
     // Reset tab classes
     castTab.classList.add("active");
     crewTab.classList.remove("active");
+    genreTab.classList.remove("active");
 
     // display cast content and hide crew content
     castContent.style.display = "block";
     crewContent.style.display = "none";
+    genreContent.style.display = "none";
 }
 
 // ensures script runs only after html is fully loaded
