@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>View Review Page</title>
+    <script defer type="module" src="viewReviewPage.js"></script>
+    <link rel="stylesheet" href="viewReviewPage.css">
+    <link rel='stylesheet' href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css'>
+</head>
+<body>
+    <header>
+        <div class="left">
+            <h1>Project Name</h1>
+        </div>
+        <div class="right">
+            <span id="username">Username</span>
+            <a href="homePage.html">Home</a>
+            <a href="#">Activity</a>
+            <a href="#" id="reviewBtn">+Review</a>
+            <a href="../homePage/createCommunity.html">Communities</a>
+            <input type="text" id="searchInput" placeholder="Search..." autocomplete="off">
+        </div>
+    </header>
+    <div id="suggestions"></div>
+
+    <main class="review-container">
+        <div class="review-left">
+            <img id="reviewMoviePoster" src="" alt="Movie Poster">
+        </div>
+        <div class="review-content">
+            <h3>Reviewed by <span id="reviewUsername"></span></h3>
+            <h2 id="reviewMovieTitle"> <span id="reviewMovieYear"></span></h2>
+            <p>Watched on: <span id="watchedDate"></span></p>
+            <p id="reviewText"></p>
+        </div>
+        <div class="review-action-box">
+            <div class="review-icons">
+                <span id="reviewedIcon" class="icon"><i class='bx bx-show'></i></span>
+                <span id="likedIcon" class="icon"><i class='bx bx-heart'></i></span>
+                <span id="watchlistIcon" class="icon"><i class='bx bx-plus'></i></span>
+            </div>
+
+            <p id="ratingLabel" class="rating-label">Rate</p>
+            <p id="ratingDisplay" class="rating-stars">
+                <span class="rating-star" data-value="1"><i class='bx bx-star'></i></span>
+                <span class="rating-star" data-value="2"><i class='bx bx-star'></i></span>
+                <span class="rating-star" data-value="3"><i class='bx bx-star'></i></span>
+                <span class="rating-star" data-value="4"><i class='bx bx-star'></i></span>
+                <span class="rating-star" data-value="5"><i class='bx bx-star'></i></span>
+            </p>
+
+            <span id="viewReviewBtn" class="view-review-btn">View Review</span>
+            <span id="editReviewBtn" class="edit-review-btn">Edit Review</span>
+        </div>
+    </main>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const user = localStorage.getItem("loggedInUser");
+            if (user) {
+                document.getElementById("username").textContent = user;
+            }
+        });
+    </script>
+</body>
+
+
+</html>

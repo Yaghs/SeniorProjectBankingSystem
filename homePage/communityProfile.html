@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Community Group Profile</title>
+    <link rel="stylesheet" href="communityProfile.css">
+    <script type="module" src="search.js"></script>
+    <link rel='stylesheet' href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css'>
+</head>
+<body>
+
+<header>
+    <div class="left">
+        <h1>Movies Project</h1>
+    </div>
+    <div class="right">
+        <a href="../homePage/homePage.html">Home</a>
+        <a href="#">Activity</a>
+        <a href="#">+Review</a>
+        <a href="../homePage/createCommunity.html">Communities</a>
+        <label for="searchInput"></label><input type="text" id="searchInput" placeholder="Search..." autocomplete="off">
+    </div>
+</header>
+
+<div id="suggestions"></div>
+
+<!-- Community Banner Image -->
+<div class="community-banner-image-container">
+    <img id="communityBannerImg" src="https://placehold.co/1200x250/333/888?text=Community+Banner" alt="Community Banner">
+</div>
+
+<!-- Community Background Banner -->
+<div class="community-banner">
+    <div class="community-profile-container">
+        <div class="community-profile">
+            <div class="profile-pic">
+                <img id="communityProfilePic" src="https://placehold.co/200x200/444/aaa?text=Profile" alt="Community Profile Picture">
+            </div>
+            <div class="community-info">
+                <h1 id="communityName">Community Group Name</h1>
+                <div class="community-meta">
+                    <span id="memberCount">563 Members</span>
+                    <span class="separator">•</span>
+                    <span id="communityGenres">Drama, Horror</span>
+                </div>
+                <p id="communityBio" class="community-bio">Community description will appear here. This is where you'll see information about what this community is about.</p>
+            </div>
+            <div class="community-actions">
+                <button id="joinButton" class="join-btn">Join</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Tabbed Content Section -->
+<div class="tab-container">
+    <!-- Tab Navigation -->
+    <div class="tab-nav">
+        <button class="tab-btn active" data-tab="reviews">Reviews</button>
+        <button class="tab-btn" data-tab="members">Members</button>
+        <button class="tab-btn" data-tab="discussion">Discussion</button>
+    </div>
+
+    <!-- Tab Content -->
+    <div class="tab-content">
+        <!-- Reviews Tab -->
+        <div id="reviews" class="tab-panel active">
+            <h2>Recent Reviews</h2>
+            <div id="reviewsList" class="reviews-list">
+                <!-- Reviews will be populated here -->
+                <div class="review-item">
+                    <div class="review-header">
+                        <img src="https://placehold.co/40x40/444/aaa?text=User" alt="User avatar" class="user-avatar">
+                        <div class="review-meta">
+                            <h3 class="username">UserName</h3>
+                            <div class="movie-rating">
+                                <span class="movie-title">The Godfather</span>
+                                <span class="rating">★★★★★</span>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="review-text">This is an amazing movie that defined a generation of filmmaking. The acting, direction, and screenplay are all perfect. Highly recommended for any film enthusiast.</p>
+                </div>
+
+                <div class="review-item">
+                    <div class="review-header">
+                        <img src="https://placehold.co/40x40/444/aaa?text=User" alt="User avatar" class="user-avatar">
+                        <div class="review-meta">
+                            <h3 class="username">MovieBuff42</h3>
+                            <div class="movie-rating">
+                                <span class="movie-title">Inception</span>
+                                <span class="rating">★★★★☆</span>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="review-text">Christopher Nolan's mind-bending thriller keeps you guessing until the very end. The visual effects are stunning and the concept is truly original.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Members Tab -->
+        <div id="members" class="tab-panel">
+            <h2>Community Members</h2>
+            <div id="membersList" class="members-grid">
+                <!-- Members will be populated here -->
+                <div class="member-card">
+                    <img src="https://placehold.co/80x80/444/aaa?text=Member" alt="Member avatar" class="member-avatar">
+                    <h3 class="member-name">FilmFan1</h3>
+                    <span class="member-role admin">Admin</span>
+                </div>
+
+                <div class="member-card">
+                    <img src="https://placehold.co/80x80/444/aaa?text=Member" alt="Member avatar" class="member-avatar">
+                    <h3 class="member-name">CinematicGenius</h3>
+                    <span class="member-role">Member</span>
+                </div>
+
+                <div class="member-card">
+                    <img src="https://placehold.co/80x80/444/aaa?text=Member" alt="Member avatar" class="member-avatar">
+                    <h3 class="member-name">MovieLover99</h3>
+                    <span class="member-role">Member</span>
+                </div>
+
+                <div class="member-card">
+                    <img src="https://placehold.co/80x80/444/aaa?text=Member" alt="Member avatar" class="member-avatar">
+                    <h3 class="member-name">PopcornEnthusiast</h3>
+                    <span class="member-role">Member</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Discussion Tab -->
+        <div id="discussion" class="tab-panel">
+            <h2>Community Discussion</h2>
+            <div class="post-form">
+                <label for="newPost"></label><textarea id="newPost" placeholder="Share your thoughts with the community..."></textarea>
+                <button id="submitPost">Post</button>
+            </div>
+
+            <div id="discussionPosts" class="discussion-list">
+                <!-- Discussion posts will be populated here -->
+                <div class="discussion-post">
+                    <div class="post-header">
+                        <img src="https://placehold.co/40x40/444/aaa?text=User" alt="User avatar" class="user-avatar">
+                        <div class="post-meta">
+                            <h3 class="username">DirectorFan</h3>
+                            <span class="post-time">2 hours ago</span>
+                        </div>
+                    </div>
+                    <p class="post-content">What do you all think about the new Scorsese film? I thought the cinematography was absolutely brilliant!</p>
+                    <div class="post-actions">
+                        <button class="like-btn">❤️ 12</button>
+                        <button class="comment-btn">💬 5</button>
+                    </div>
+
+                    <div class="comments-section">
+                        <div class="comment">
+                            <img src="https://placehold.co/30x30/444/aaa?text=User" alt="User avatar" class="user-avatar-small">
+                            <div class="comment-content">
+                                <h4 class="username">FilmStudent</h4>
+                                <p>I agree! The long takes were especially impressive.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="discussion-post">
+                    <div class="post-header">
+                        <img src="https://placehold.co/40x40/444/aaa?text=User" alt="User avatar" class="user-avatar">
+                        <div class="post-meta">
+                            <h3 class="username">HorrorFanatic</h3>
+                            <span class="post-time">Yesterday</span>
+                        </div>
+                    </div>
+                    <p class="post-content">Has anyone seen the new A24 horror film? I'm curious if it lives up to the hype.</p>
+                    <div class="post-actions">
+                        <button class="like-btn">❤️ 8</button>
+                        <button class="comment-btn">💬 3</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer class="footer">
+    <p>&copy; 2025 Movies Project. All rights reserved.</p>
+</footer>
+
+<script type="module" src="communityProfile.js"></script>
+</body>
+</html>

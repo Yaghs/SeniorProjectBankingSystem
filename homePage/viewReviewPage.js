@@ -1,7 +1,51 @@
+// Import Firebase dependencies
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 // our special api key
 const API_KEY = "bc7c4e7c62d9e223e196bbd15978fc51";
-// retrieves selected crew members data from local storage
-const crew = JSON.parse(localStorage.getItem("selectedCrew"));
+
+// Firebase configuration
+const firebaseConfig = {
+    apiKey: "AIzaSyD1LpIBMmZAiQFwberKbx2G29t6fNph3Xg",
+    authDomain: "sample-dc6d0.firebaseapp.com",
+    projectId: "sample-dc6d0",
+    storageBucket: "sample-dc6d0.appspot.com",
+    messagingSenderId: "650782048731",
+    appId: "1:650782048731:web:d2828c5b87f0a4e62367fe",
+    measurementId: "G-WJMEY6J7BR"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+console.log("Firebase initialized for view review page");
+
+// waits until html is loaded before we run the code
+document.addEventListener("DOMContentLoaded", () => {
+    // search bar
+    const searchInput = document.getElementById("searchInput");
+    // suggestions that appear below search bar
+    const suggestionsDiv = document.getElementById("suggestions");
+
+    // checks if search bar exists on page
+    if (searchInput) {
+        // adds input event listener to detect when user starts to type
+        searchInput.addEventListener("input", async () => {
+            // retrieves value in search bar, trims an whitespaces
+            const query = searchInput.value.trim();
+            // starts searching if at least two characters are typed
+            if (query.length < 2) {
+                suggestionsDiv.style.display = "none";
+                return;
+            }
+            // calls fetchMovies to get suggestions, use await bc its async
+            const movies = await fetchMovies(query);
+            // displays those suggestions
+            displaySuggestions(movies);
+        });
+    }
+});
 
 // sends request to tmdb api to search for movies that match what user is typing
 async function fetchMovies(query) {
@@ -50,141 +94,211 @@ function displaySuggestions(movies) {
     suggestionsDiv.style.zIndex = "999";
 }
 
-// waits until html is loaded before we run the code
-document.addEventListener("DOMContentLoaded", () => {
-    // search bar
-    const searchInput = document.getElementById("searchInput");
-    // suggestions that appear below search bar
-    const suggestionsDiv = document.getElementById("suggestions");
+// handles when a user selects a movie
+function selectMovie(movie) {
+    // saves movie object in the local storage
+    localStorage.setItem("selectedMovie", JSON.stringify(movie));
+    if (window.location.href.includes("homePage")) {
+        window.location.href = "moviePage.html";
+    } else {
+        window.location.href = "moviePage.html";
+    }
+}
 
-    // checks if search bar exists on page
-    if (searchInput) {
-        // adds input event listener to detect when user starts to type
-        searchInput.addEventListener("input", async () => {
-            // retrieves value in search bar, trims an whitespaces
-            const query = searchInput.value.trim();
-            // starts searching if at least two characters are typed
-            if (query.length < 2) {
-                suggestionsDiv.style.display = "none";
-                return;
+// Get the logged-in user's username
+const username = localStorage.getItem("loggedInUser");
+if (!username) {
+    alert("You must be logged in to view reviews.");
+    window.location.href = "homePage.html";
+}
+
+// Get the selected movie
+const movie = JSON.parse(localStorage.getItem("selectedMovie"));
+if (!movie) {
+    alert("No movie selected.");
+    window.location.href = "homePage.html";
+}
+
+// Function to fetch and display review
+async function loadReview() {
+    const movieTitle = movie.title;
+    const reviewDoc = doc(db, "users", username, "reviews", movieTitle);
+    const userDoc = doc(db, "users", username);
+    const [reviewSnap, userSnap] = await Promise.all([getDoc(reviewDoc), getDoc(userDoc)]);
+
+    if (reviewSnap.exists()) {
+        const reviewData = reviewSnap.data();
+        const userData = userSnap.data();
+        // console.log("Review Data Retrieved:", reviewData);
+
+        document.getElementById("reviewUsername").textContent = userData.firstName || username;
+        document.getElementById("reviewMovieTitle").textContent = `${reviewData.title} (${new Date(reviewData.watchedDate).getFullYear()})`;
+        document.getElementById("reviewText").textContent = reviewData.reviewText || "No review written.";
+        document.getElementById("watchedDate").textContent = reviewData.watchedDate
+            ? new Date(reviewData.watchedDate).toLocaleDateString('en-US', { day: '2-digit', month: 'short', year: 'numeric' })
+            : "Not Specified";
+
+        // Ensure poster is set
+        document.getElementById("reviewMoviePoster").src = reviewData.selectedPoster || "https://via.placeholder.com/300?text=No+Image";
+
+        document.getElementById("reviewedIcon").innerHTML = "<i class='bx bxs-show'></i>";
+        document.getElementById("likedIcon").innerHTML = reviewData.liked ? "<i class='bx bxs-heart'></i>" : "<i class='bx bx-heart'></i>";
+
+        // Call function to load the action box
+        loadReviewActionBox(movieTitle);
+
+    } else {
+        alert("No review found for this movie.");
+        window.location.href = "homePage.html";
+    }
+}
+
+// Load the review when the page loads
+document.addEventListener("DOMContentLoaded", loadReview);
+
+// function to load the review action box
+async function loadReviewActionBox(movieTitle) {
+    console.log("Loading Review Action Box for:", movieTitle); // Debugging
+    // gets logged in user from localStorage
+    const user = localStorage.getItem("loggedInUser");
+    // exit if no user is found
+    if (!user) return;
+
+    // firebase reference for users movie review
+    const reviewRef = doc(db, "users", user, "reviews", movieTitle);
+
+    // fetch movie review from the db
+    try {
+        // fetches review document
+        const reviewSnap = await getDoc(reviewRef);
+
+        // checks if review exists for the movie
+        if (reviewSnap.exists()) {
+            console.log("Review action box data:", reviewSnap.data()); // Debugging
+            // retrieve actual review data
+            const reviewData = reviewSnap.data();
+            // console.log("Review Data Found:", reviewData);
+
+            // change the reviewed icon to show movie has been reviewed
+            document.getElementById("reviewedIcon").innerHTML = "<i class='bx bxs-show'></i>";
+            // change the liked icon to show the movie has been liked
+            document.getElementById("likedIcon").innerHTML = reviewData.liked ? "<i class='bx bxs-heart'></i>" : "<i class='bx bx-heart'></i>";
+            // change label from rate to rated (indicates movie has been rated)
+            document.getElementById("ratingLabel").textContent = "Rated";
+
+            // gets the users rating, default is 0
+            const userRating = reviewData.rating || 0;
+            // gets ratingDisplay element
+            const ratingDisplay = document.getElementById("ratingDisplay");
+            // clears existing stars before displaying new ones
+            ratingDisplay.innerHTML = "";
+
+            // Math.floor determines numver of full stars
+            const fullStars = Math.floor(userRating);
+            // userRating % 1 !=0 checks if rating includes half a star
+            const hasHalfStar = userRating % 1 !== 0;
+
+            // loops 5 times to create the stars
+            for (let i = 1; i <= 5; i++) {
+                let starClass;
+
+                if (i <= fullStars) {
+                    starClass = "bxs-star"; // full star
+                } else if (hasHalfStar && i === fullStars + 1) {
+                    starClass = "bxs-star-half"; // half star
+                } else {
+                    starClass = "bx-star"; // empty star
+                }
+                // display the rating
+                ratingDisplay.innerHTML += `<span class="rating-star"><i class='bx ${starClass}'></i></span>`;
             }
-            // calls fetchMovies to get suggestions, use await bc its async
-            const movies = await fetchMovies(query);
-            // displays those suggestions
-            displaySuggestions(movies);
-        });
-    }
-    // checks if crew data is available
-    if (crew) {
-        // if true call fetchCrewDetails function
-        fetchCrewDetails(crew.id, crew.name, crew.role);
-    }
-    else {
-            window.location.href = "homePage.html";
-        }
-});
 
-// function fetches information about the crew member using their id, name and role
-async function fetchCrewDetails(crewId, crewName, crewRole) {
-    // initiate request to tmdb api to get info
-    try {
-        // await used bc its async
-        const response = await fetch(
-            // /person/${crewId} is the endpoint to getting crew member details
-            // ?api_key=${API_KEY} authenticates request using our api key
-            `https://api.themoviedb.org/3/person/${crewId}?api_key=${API_KEY}`
-        );
-        // convert api response to json
-        const data = await response.json();
+            // event listener for when edit review is clicked
+            document.getElementById("editReviewBtn").addEventListener("click", async () => {
+                // fetch info from db
+                try {
+                    // gets selected movie from localStorage
+                    const movie = JSON.parse(localStorage.getItem("selectedMovie"));
+                    // get logged in user from localStorage
+                    const user = localStorage.getItem("loggedInUser");
 
-        document.getElementById("roleTitle").textContent = `${getRoleTitle(crewRole)} ${crewName}`;
+                    // if none exist, exit
+                    if (!user || !movie) return;
 
-        // set src of image to display crew members picture
-        // ${data.profile_path} is our path to get crew members img
-        // placeholder img will be used if no img is available
-        document.getElementById("crewImage").src = data.profile_path
-            ? `https://image.tmdb.org/t/p/w500${data.profile_path}`
-            : "https://via.placeholder.com/300?text=No+Image";
+                    // firebase reference for movie review
+                    const reviewRef = doc(db, "users", user, "reviews", movie.title);
+                    // fetches review document
+                    const reviewSnap = await getDoc(reviewRef);
 
-        // display crew members bio in the crewBio container
-        document.getElementById("crewBio").textContent = data.biography || "Biography not available.";
+                    // if review doc exists
+                    if (reviewSnap.exists()) {
+                        // populate with data
+                        const reviewData = reviewSnap.data();
 
-        // calls fetchCrewMovies using crewId and crewRole to get movies this crew member was involved with
-        fetchCrewMovies(crewId, crewRole);
-    } catch (error) {
-        // console.error("error fetching crew details:", error);
-        alert("Failed to load crew details.");
-    }
-}
+                        // loads saved review text, watched date, watched before, selected poster and liked status
+                        document.getElementById("reviewText").value = reviewData.reviewText || "";
+                        document.getElementById("watchedDate").value = reviewData.watchedDate || "";
+                        document.getElementById("watchedBeforeCheckbox").checked = reviewData.watchedBefore || false;
+                        document.getElementById("reviewMoviePoster").src = reviewData.selectedPoster || "https://via.placeholder.com/300?text=No+Image";
+                        document.getElementById("likeButton").classList.toggle("liked", reviewData.liked);
 
-// function fetches movies crew member has been involved with
-async function fetchCrewMovies(crewId, crewRole) {
-    // initiate request to tmdb api to get info
-    try {
-        // await used bc its async
-        // /person/${crewId}/movie_credits tmdb endpoint to get all movies crew member has been in
-        const response = await fetch(
-            `https://api.themoviedb.org/3/person/${crewId}/movie_credits?api_key=${API_KEY}`
-        );
-        // convert api response to json
-        const data = await response.json();
+                        const userRating = reviewData.rating || 0;
+                        // Math.floor determines numver of full stars
+                        const fullStars = Math.floor(userRating);
+                        // userRating % 1 !=0 checks if rating includes half a star
+                        const hasHalfStar = userRating % 1 !== 0;
 
-        // sorts movies be popularity using .sort()
-        const crewMovies = data.crew.filter(movie => movie.job === crewRole)
-            .sort((a, b) => b.popularity - a.popularity);
+                        // ensure stars in review match saved rating
+                        document.querySelectorAll("#reviewForm .rating-container .rating-star i").forEach((star, index) => {
+                            if (index < fullStars) {
+                                star.className = "bx bxs-star"; // full star
+                            } else if (hasHalfStar && index === fullStars) {
+                                star.className = "bx bxs-star-half"; // half star
+                            } else {
+                                star.className = "bx bx-star"; // empty star
+                            }
+                        });
+                        // displays review form for editing
+                        document.getElementById("reviewBox").style.display = "flex";
+                        document.getElementById("reviewSearchPage").style.display = "none";
+                        document.getElementById("reviewForm").style.display = "block";
 
-        // selects container where list of known movies will be displayed
-        const crewMoviesDiv = document.getElementById("crewMovies");
-        crewMoviesDiv.innerHTML = ""; // clear previous entries
+                    } else {
+                        console.log("No review found. Edit button disabled.");
+                    }
 
-        // loop through each movie and display them
-        crewMovies.forEach(movie => {
-            // create new <div>
-            const movieItem = document.createElement("div");
-            // add css class movie-item for styling
-            movieItem.classList.add("movie-item");
-            // sets img and title for each movie
-            movieItem.innerHTML = `
-                <img src="https://image.tmdb.org/t/p/w300${movie.poster_path}" alt="${movie.title}">
-                <p>${movie.title}</p>
-            `;
-            // makes movie item clickable
-            movieItem.addEventListener("click", () => {
-                // save selected movie into localStorage
-                localStorage.setItem("selectedMovie", JSON.stringify(movie));
-                // redirect to moviePage
-                window.location.href = "moviePage.html";
+                } catch (error) {
+                    console.error("error loading review for editing:", error);
+                }
             });
-            // append each movieItem to crewMoviesDiv
-            crewMoviesDiv.appendChild(movieItem);
-        });
+
+            document.getElementById("viewReviewBtn").addEventListener("click", () => {
+                window.location.href = "viewReviewPage.html";
+            });
+
+        } else {
+            console.log("no review found for this movie.");
+            // since no review exists for the movie, reset the review action box
+            resetReviewActionBox();
+        }
     } catch (error) {
-        console.error("Error fetching crew movies:", error);
-        alert("Failed to load crew movies.");
+        console.error("Error loading review:", error);
     }
 }
 
-// function will convert roles to readable titles in display
-function getRoleTitle(job) {
-    const roleTitles = {
-        "Director": "Films Directed By",
-        "Producer": "Films Produced By",
-        "Executive Producer": "Films Executive Produced By",
-        "Novel": "Films Written By",
-        "Screenplay": "Films With Screenplays By",
-        "Director of Photography": "Films Shot By",
-        "Editor": "Films Edited By",
-        "Casting": "Films Cast By",
-        "Original Music Composer": "Films With Music Composed By",
-        "Costume Design": "Films With Costumes Designed By",
-        "Sound Designer": "Films With Sound Designed By",
-        "Sound Mixer": "Films With Sound Mixed By",
-        "Visual Effects Supervisor": "Films With Visual Effects Supervised By",
-        "Visual Effects Producer": "Films With Visual Effects Produced By"
-    };
+// resets ui for the review action box
+function resetReviewActionBox() {
+    document.getElementById("reviewedIcon").innerHTML = "<i class='bx bx-show'></i>";
+    document.getElementById("likedIcon").innerHTML = "<i class='bx bx-heart'></i>";
+    document.getElementById("ratingLabel").textContent = "Rate";
 
-    // default if role is not available
-    return roleTitles[job] || "involved with";
+    document.getElementById("ratingDisplay").innerHTML = `
+        <span class="rating-star"><i class='bx bx-star'></i></span>
+        <span class="rating-star"><i class='bx bx-star'></i></span>
+        <span class="rating-star"><i class='bx bx-star'></i></span>
+        <span class="rating-star"><i class='bx bx-star'></i></span>
+        <span class="rating-star"><i class='bx bx-star'></i></span>
+    `;
 }
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -439,102 +553,5 @@ likeButton.addEventListener("click", () => {
         // otherwise show empty heart
     } else {
         likeButton.innerHTML = "<i class='bx bx-heart'></i>";
-    }
-});
-
-// wait for entire html to load before running any js code
-document.addEventListener("DOMContentLoaded", () => {
-    const changePosterBtn = document.getElementById("changePosterBtn");
-    const posterModal = document.getElementById("posterModal");
-    const closePosterModal = document.querySelector(".close");
-    const posterGrid = document.getElementById("posterGrid");
-    const savePosterBtn = document.getElementById("savePosterBtn");
-    let selectedPosterUrl = "";
-
-    const API_KEY = "bc7c4e7c62d9e223e196bbd15978fc51";
-
-    // function to fetch posters when a movie is selected
-    async function fetchPosters(movieId) {
-        // initiate request to api to get movie info
-        try {
-            // await bc its async
-            const response = await fetch(
-                `https://api.themoviedb.org/3/movie/${movieId}?api_key=${API_KEY}&append_to_response=images&include_image_language=en,null`
-            );
-            // convert api response to json
-            const data = await response.json();
-            // returns image posters
-            return data.images.posters || [];
-        } catch (error) {
-            // console.error("Error fetching posters:", error);
-            return [];
-        }
-    }
-
-    // function to update the poster grid
-    function updatePosterGrid(posters) {
-        posterGrid.innerHTML = ""; // clear previous posters
-
-        // loops through all posters and returns all of them
-        posters.forEach(poster => {
-            // create new element <img>
-            const img = document.createElement("img");
-            // set img src to tmdb url path
-            img.src = `https://image.tmdb.org/t/p/original${poster.file_path}`;
-            // add event listener for selecting the poster
-            img.addEventListener("click", () => {
-                // remove "selected" class from all previously selected posters
-                document.querySelectorAll(".poster-grid img").forEach(img => img.classList.remove("selected"));
-                // adds selected class to the img that is being clicked
-                img.classList.add("selected");
-                // store img src in selectedPosterUrl
-                selectedPosterUrl = img.src;
-            });
-            // append each new poster in modal
-            posterGrid.appendChild(img);
-        });
-    }
-
-    // open poster modal when "Change Poster" is clicked
-    if (changePosterBtn) {
-        // event listener for when you click on the change poster button
-        changePosterBtn.addEventListener("click", async () => {
-            // retrieves currently selected movie from storage
-            const storedMovie = JSON.parse(localStorage.getItem("selectedMovie"));
-            // error if no movie was found
-            if (!storedMovie) {
-                // console.warn("No movie found in localStorage.");
-                return;
-            }
-            // fetches alternative posters
-            const posters = await fetchPosters(storedMovie.id);
-            // updates grid with posters
-            updatePosterGrid(posters);
-            // displays the posterModal pop up
-            posterModal.style.display = "flex";
-        });
-    }
-
-    // close the poster modal without closing everything
-    const closePosterBtn = posterModal.querySelector(".poster-close"); // ensure we target the close button inside poster modal
-
-    if (closePosterBtn) {
-        closePosterBtn.addEventListener("click", () => {
-            posterModal.style.display = "none"; // only close the poster modal
-            reviewForm.style.display = "block"; // ensure review form remains open
-        });
-    }
-
-    // save selected poster
-    if (savePosterBtn) {
-        // event listener for when you click save
-        savePosterBtn.addEventListener("click", () => {
-            // update review form poster with newly selected poster only if a selection was made
-            if (selectedPosterUrl) {
-                document.getElementById("reviewMoviePoster").src = selectedPosterUrl;
-            }
-            // closes modal after you his save
-            posterModal.style.display = "none";
-        });
     }
 });
