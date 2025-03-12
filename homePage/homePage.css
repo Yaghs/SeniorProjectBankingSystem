@@ -15,7 +15,7 @@ header {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
     position: sticky;
     top: 0;
-    z-index: 200;
+    z-index: 10;
 }
 
 .left h1 {
@@ -58,9 +58,40 @@ header {
     box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
 }
 
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #333;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+    z-index: 20;
+    right: 0;
+    border-radius: 5px;
+}
+
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+.dropdown-content a {
+    color: white;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+}
+
+.dropdown-content a:hover {
+    background-color: #575757;
+}
+
 #suggestions {
     width: 20%;
-    height: 50%;
+    height: 35%;
     margin: 0 auto;
     text-align: left;
     border: 1px solid #414040;
@@ -71,7 +102,7 @@ header {
     position: absolute;
     top: 60px;
     right: 30px;
-    overflow: hidden;
+    overflow-y: auto;
 }
 
 .suggestion {
@@ -82,140 +113,104 @@ header {
 
 .suggestion:hover {
     background: #f0f0f0;
-
 }
 
-#section-1-gradient {
-    background: linear-gradient(135deg, #4c4c4c, #727272);
-    padding: 60px 240px;
-    color: #fff;
-}
-
-
-.container {
-    max-width: 1200px;
-    margin: 0 auto;
-}
-
-
-.row {
-    display: flex;
-    flex-wrap: wrap;
-}
-
-
-.col-6 {
-    width: 50%;
-    padding: 0 15px;
-    box-sizing: border-box;
-}
-
-/* Left Column Content Styling */
-.leftSide-col .large {
-    font-size: 2.5rem;
-    margin-bottom: 10px;
-}
-
-#username {
-    color: #ffcc00;
-    font-weight: bold;
-}
-
-.leftSide-col p {
-    font-size: 1.25rem;
-    line-height: 1.5;
-    margin: 0;
-}
-
-.Movie_Text {
-    text-align: left;
-    margin: 20px 0 10px 20px;
+.welcome-message {
+    text-align: center;
+    margin-top: 20px;
     padding: 10px;
-    font-size: 1rem;
-    color: #333;
+    color: #ffffff;
 }
 
-.Movie_Text span{
-    color: #ffcc00;
-    font-weight: bold;
+.welcome-message h1 {
+    font-size: 2.5em;
+    margin-bottom: 1px;
 }
 
-.carousel-wrapper {
+.welcome-message p {
+    font-size: 1.2em;
+    color: #cccccc;
+}
+
+footer {
+    bottom: 0;
+    left: 0;
+    height: 10rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: white;
+}
+
+.popular-movies-section {
+    padding: 20px;
+    text-align: left;
+}
+
+.popular-movies-section h2 {
+    color: white;
+    border-bottom: 2px solid #555;
+}
+
+.movie-carousel {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 60%;
-    margin: auto;
     position: relative;
 }
 
-
 .carousel-container {
-    overflow: hidden;
-    flex-grow: 1;
-}
-
-
-.carousel {
     display: flex;
-    flex-wrap: nowrap;
-    transition: transform 0.5s ease-in-out;
+    overflow: hidden;
+    width: 90%;
+    gap: 10px;
+    scroll-behavior: smooth;
+    padding: 15px 0;
+}
+
+.movie-item {
+    min-width: 200px;
+    transition: transform 0.3s;
+    overflow: visible;
+    position: relative;
+}
+
+.movie-item img {
     width: 100%;
-}
-
-
-.carousel .box {
-    font-size: 16px;
-    text-align: center;
-    flex: 1;
-    min-width: calc(100% / 7);
-    margin: 10px;
-    padding: 200px 60px;
-    border-radius: 7px;
-    background-color: #fff;
-    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.15),
-    0 2px 3px 0 rgba(0, 0, 0, 0.1);
-}
-
-
-.arrow {
-    background-color: #333;
-    color: white;
-    border: none;
-    padding: 195px 20px;
-    font-size: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     cursor: pointer;
-    border-radius: 5px;
-    box-shadow: 3px 0 10px rgba(0, 0, 0, 0.9);
-    transition: background-color 0.3s;
+    transition: transform 0.3s, border-radius 0.3s;
 }
 
-.arrow.left {
-    margin-right: 10px;
+.movie-item img:hover {
+    transform: scale(1.05);
+    border-radius: 10px;
+    z-index: 10;
 }
 
-.arrow.right {
-    margin-left: 10px;
-    box-shadow: -3px 0 10px rgba(0, 0, 0, 0.9);
-}
-
-.arrow:hover {
-    background-color: #555;
-}
-
-
-
-.divider {
+.carousel-arrow {
+    background: transparent;
     border: none;
-    height: 1px;
-    background-color: #ccc;
-    margin: 60px 0;
+    font-size: 2em;
+    cursor: pointer;
+    color: #fff;
+    z-index: 10;
+    transition: color 0.3s;
 }
 
-.footer {
-    background-color: #333;
-    color: #fff;
-    padding: 20px 30px;
-    text-align: center;
-    font-size: 14px;
+.carousel-arrow:hover {
+    color: yellow;
+    transform: scale(1.3);
+}
+
+.left-arrow {
+    position: absolute;
+    left: 20px;
+}
+
+.right-arrow {
+    position: absolute;
+    right: 20px;
 }

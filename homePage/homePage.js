@@ -1,112 +1,102 @@
-document.addEventListener("DOMContentLoaded", function() {
-    // Update username from localStorage
-    const user = localStorage.getItem("loggedInUser");
-    if (user) {
-        document.getElementById("username").textContent = user;
-    }
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-app.js";
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-firestore.js";
 
-    //Function for the corousel effect for the boxes
-    function initializeCarousel(wrapper, leftArrow, rightArrow) {
-        // This function sets up the carousel for a given wrapper element
-        // and attaches event listeners to the provided left and right arrow buttons.
-        const carousel = wrapper.querySelector(".carousel");
-        // Create an array from all children of the carousel (each box).
-        const boxes = Array.from(carousel.children);
-        // Set the number of boxes that should be visible at one time.
-        const visibleBoxes = 3; // Adjust this value if needed.
-        // For infinite scrolling, clone each box once and add one set at the beginning
-        // and one set at the end of the carousel.
-        boxes.forEach((box) => {
-            const cloneLeft = box.cloneNode(true);
-            const cloneRight = box.cloneNode(true);
-            carousel.insertBefore(cloneLeft, carousel.firstChild);
-            carousel.appendChild(cloneRight);
-        });
-        // Set the starting index of the carousel to the first original box.
-        // Because we've prepended clones, the original boxes now start at index 'visibleBoxes'.
-        let index = visibleBoxes;
-        // Store the total number of original boxes.
-        const totalBoxes = boxes.length;
-        // Calculate the width of one box plus additional horizontal margin.
-        // Here, we assume a total margin of 20px (10px on each side).
-        const boxWidth = boxes[0].offsetWidth + 20;
+const TMDB_API_KEY = "bc7c4e7c62d9e223e196bbd15978fc51";
+const TMDB_BASE_URL = "https://api.themoviedb.org/3";
 
-        // Define a function to update the carousel's position based on the current index.
-        // The 'animate' parameter controls whether the movement is animated.
-        function updateCarousel(animate = true) {
-            // Set the CSS transition property if animation is desired.
-            carousel.style.transition = animate ? "transform 0.5s ease-in-out" : "none";
-            // Update the CSS transform to slide the carousel to the correct position.
-            carousel.style.transform = `translateX(${-index * boxWidth}px)`;
+const firebaseConfig = {
+    apiKey: "AIzaSyD1LpIBMmZAiQFwberKbx2G29t6fNph3Xg",
+    authDomain: "sample-dc6d0.firebaseapp.com",
+    projectId: "sample-dc6d0",
+    storageBucket: "sample-dc6d0.appspot.com",
+    messagingSenderId: "650782048731",
+    appId: "1:650782048731:web:d2828c5b87f0a4e62367fe",
+    measurementId: "G-WJMEY6J7BR"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+async function updateGreeting() {
+    const username = localStorage.getItem("loggedInUser");
+    if (username) {
+        try {
+            const userRef = doc(db, "users", username);
+            const userSnap = await getDoc(userRef);
+            if (userSnap.exists()) {
+                document.getElementById("greetingText").textContent = `Welcome back, ${userSnap.data().firstName}!`;
+            } else {
+                console.error("User not found in Firebase");
+            }
+        } catch (error) {
+            console.error("Error fetching user data:", error);
         }
-
-        // Initialize the carousel position without animation.
-        updateCarousel(false);
-
-        rightArrow.addEventListener("click", () => {
-            // Increment the index to move right.
-            index++;
-            // Update the carousel with animation.
-            updateCarousel();
-            // If the index goes below the first original box,
-            // wait for the transition to complete, then reset the index to the end.
-            if (index >= totalBoxes + visibleBoxes) {
-                setTimeout(() => {
-                    // Set the index to the last original box's position.
-                    index = visibleBoxes;
-                    // Update the carousel instantly (without animation).
-                    updateCarousel(false);
-                }, 500); // Match the transition duration
-            }
-        });
-
-        leftArrow.addEventListener("click", () => {
-            // Decrement the index to move left.
-            index--;
-            // Update the carousel with animation.
-            updateCarousel();
-            // If the index goes below the first original box,
-            // wait for the transition to complete, then reset the index to the end.
-            if (index < visibleBoxes) {
-                setTimeout(() => {
-                    // Set the index to the last original box's position.
-                    index = totalBoxes + visibleBoxes - 1;
-                    // Update the carousel instantly (without animation).
-                    updateCarousel(false);
-                }, 500); // Timeout matches the transition duration.
-            }
-        });
+    } else {
+        console.error("No logged-in user.");
     }
+}
 
-    // Selects all carousel wrapper elements on the page.
-    const carouselWrappers = document.querySelectorAll(".carousel-wrapper");
+document.addEventListener("DOMContentLoaded", updateGreeting);
 
-    // Check if there are at least two carousel wrappers.
-    if (carouselWrappers.length >= 2) {
-        // Initializes the first carousel:
-        // - Uses the first wrapper.
-        // - Selects the left arrow using the class '.arrow.left'.
-        // - Selects the right arrow using the class '.arrow.right'.
-        initializeCarousel(
-            carouselWrappers[0],
-            document.querySelector(".arrow.left"),
-            document.querySelector(".arrow.right")
-        );
-        // Initializes the second carousel:
-        // - Uses the second wrapper.
-        // - Selects the left arrow using the class '.arrow.left2'.
-        // - Selects the right arrow using the class '.arrow.right2'.
-        initializeCarousel(
-            carouselWrappers[1],
-            document.querySelector(".arrow.left2"),
-            document.querySelector(".arrow.right2")
-        );
-    } else if (carouselWrappers.length === 1) {
-        // If there's only one carousel wrapper, initialize it using the first set of arrows.
-        initializeCarousel(
-            carouselWrappers[0],
-            document.querySelector(".arrow.left"),
-            document.querySelector(".arrow.right")
-        );
+let currentSlide = 0;
+let totalSlides = 0;
+
+async function loadPopularMovies() {
+    try {
+        const response = await fetch(`${TMDB_BASE_URL}/movie/popular?api_key=${TMDB_API_KEY}&language=en-US&page=1`);
+        const data = await response.json();
+        totalSlides = data.results.length;
+
+        const container = document.getElementById("popularMoviesContainer");
+        container.innerHTML = "";
+
+        data.results.forEach(movie => {
+            const movieItem = document.createElement("div");
+            movieItem.classList.add("movie-item");
+            movieItem.innerHTML = `
+                <img src="https://image.tmdb.org/t/p/w300${movie.poster_path}" alt="${movie.title}" onclick="goToMoviePage(${movie.id})">
+            `;
+            container.appendChild(movieItem);
+        });
+    } catch (error) {
+        console.error("Error fetching popular movies:", error);
     }
-});
+}
+
+function goToMoviePage(movieId) {
+    fetch(`${TMDB_BASE_URL}/movie/${movieId}?api_key=${TMDB_API_KEY}&language=en-US&append_to_response=credits,videos`)
+        .then(response => response.json())
+        .then(movie => {
+            localStorage.setItem("selectedMovie", JSON.stringify(movie));
+            window.location.href = "moviePage.html";
+        })
+        .catch(error => console.error("Error fetching movie details:", error));
+}
+
+window.prevPopularMovie = function() {
+    const container = document.getElementById("popularMoviesContainer");
+    if (currentSlide > 0) {
+        currentSlide--;
+    } else {
+        currentSlide = totalSlides - 1;
+    }
+    container.scrollTo({
+        left: currentSlide * 220,
+        behavior: "smooth"
+    });
+};
+
+window.nextPopularMovie = function() {
+    const container = document.getElementById("popularMoviesContainer");
+    if (currentSlide < totalSlides - 1) {
+        currentSlide++;
+    } else {
+        currentSlide = 0;
+    }
+    container.scrollTo({
+        left: currentSlide * 220,
+        behavior: "smooth"
+    });
+};
+
+document.addEventListener("DOMContentLoaded", loadPopularMovies);
