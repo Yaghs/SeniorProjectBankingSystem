@@ -1,6 +1,9 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-app.js";
 import { getFirestore, doc, getDoc, updateDoc, arrayUnion, arrayRemove, collection, query, where, getDocs, orderBy, limit, addDoc, Timestamp, deleteDoc, writeBatch } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-firestore.js";
 
+// our special api key
+const API_KEY = "bc7c4e7c62d9e223e196bbd15978fc51";
+
 // Firebase configuration
 const firebaseConfig = {
     apiKey: "AIzaSyD1LpIBMmZAiQFwberKbx2G29t6fNph3Xg",
@@ -105,11 +108,10 @@ async function loadMembers(membersList) {
                 const isAdmin = communitySnap.data().createdBy === username;
 
                 memberCard.innerHTML = `
-                    <img src=src="https://placehold.co/80x80/444/aaa?text=Member" alt="${userData.username}'s avatar" class="member-avatar">
+                    <img src="https://placehold.co/80x80/444/aaa?text=Member" alt="${userData.username}'s avatar" class="member-avatar">
                     <h3 class="member-name">${userData.username}</h3>
                     <span class="member-role${isAdmin ? ' admin' : ''}">${isAdmin ? 'Admin' : 'Member'}</span>
                 `;
-
                 membersContainer.appendChild(memberCard);
             }
         }
@@ -118,61 +120,229 @@ async function loadMembers(membersList) {
     }
 }
 
+// Make movie titles clickable
+function makeMovieTitlesClickable() {
+    document.querySelectorAll('.movie-title').forEach(title => {
+        title.addEventListener('click', async () => {
+            const movieTitle = title.textContent;
+            // Search for movie in TMDB
+            try {
+                const response = await fetch(
+                    `https://api.themoviedb.org/3/search/movie?api_key=${API_KEY}&query=${encodeURIComponent(movieTitle)}`
+                );
+                const data = await response.json();
+                if (data.results && data.results.length > 0) {
+                    // Store the first result and navigate to movie page
+                    localStorage.setItem("selectedMovie", JSON.stringify(data.results[0]));
+                    window.location.href = "moviePage.html";
+                }
+            } catch (error) {
+                console.error("Error searching for movie:", error);
+            }
+        });
+    });
+}
+
 // Load reviews
 async function loadReviews() {
     try {
         const reviewsContainer = document.getElementById("reviewsList");
-        reviewsContainer.innerHTML = "";
 
-        // Get reviews associated with this community
-        const reviewsQuery = query(
-            collection(db, "reviews"),
-            where("communityId", "==", communityId),
-            orderBy("createdAt", "desc"),
-            limit(10)
-        );
+        // Add loading indicator
+        reviewsContainer.innerHTML = `<div class="loading-indicator">Loading reviews from community members...</div>`;
 
-        const reviewsSnapshot = await getDocs(reviewsQuery);
+        // Get the community data to access member list
+        const communityRef = doc(db, "communities", communityId);
+        const communitySnap = await getDoc(communityRef);
 
-        if (reviewsSnapshot.empty) {
-            reviewsContainer.innerHTML = `<p class="no-items">No reviews yet. Be the first to share your thoughts!</p>`;
+        if (!communitySnap.exists()) {
+            console.error("Community not found");
+            reviewsContainer.innerHTML = `<p class="no-items">Error loading community information.</p>`;
             return;
         }
 
-        for (const reviewDoc of reviewsSnapshot) {
-            const reviewData = reviewDoc.data();
-            reviewData.reviewText = undefined;
-            reviewData.movieTitle = undefined;
-            reviewData.rating = undefined;
+        const communityData = communitySnap.data();
+        const membersList = communityData.members || [];
 
-            // Get user info
-            const userRef = doc(db, "users", reviewData.username);
-            const userSnap = await getDoc(userRef);
-            const userData = userSnap.exists() ? userSnap.data() : { username: reviewData.username };
+        // Array to store all reviews
+        let allReviews = [];
 
-            const reviewItem = document.createElement("div");
-            reviewItem.className = "review-item";
+        // Create a batch of promises to fetch reviews from all members
+        const reviewPromises = membersList.map(async (username) => {
+            try {
+                // Get the user reviews collection
+                const userReviewsRef = collection(db, "users", username, "reviews");
+                const userReviewsSnapshot = await getDocs(userReviewsRef);
 
-            const stars = "★".repeat(reviewData.rating) + "☆".repeat(5 - reviewData.rating);
+                if (!userReviewsSnapshot.empty) {
+                    // Get user info once for all reviews
+                    const userRef = doc(db, "users", username);
+                    const userSnap = await getDoc(userRef);
+                    const userData = userSnap.exists() ? userSnap.data() : { username: username };
 
-            reviewItem.innerHTML = `
-                <div class="review-header">
-                    <img src="https://placehold.co/40x40/444/aaa?text=User" alt="${userData.username}'s avatar" class="user-avatar">
-                    <div class="review-meta">
-                        <h3 class="username">${userData.username}</h3>
-                        <div class="movie-rating">
-                            <span class="movie-title">${reviewData.movieTitle}</span>
-                            <span class="rating">${stars}</span>
-                        </div>
-                    </div>
-                </div>
-                <p class="review-text">${reviewData.reviewText}</p>
-            `;
+                    // Process each review from this user
+                    userReviewsSnapshot.docs.forEach(reviewDoc => {
+                        const reviewData = reviewDoc.data();
 
-            reviewsContainer.appendChild(reviewItem);
+                        // Skip reviews without movie titles or ratings
+                        if (!reviewData.title) return;
+
+                        // Add review to array with additional metadata
+                        allReviews.push({
+                            id: reviewDoc.id,
+                            username: username,
+                            userData: userData,
+                            reviewData: reviewData,
+                            // Convert timestamp to Date object for sorting if available
+                            timestamp: reviewData.watchedDate ? new Date(reviewData.watchedDate) : new Date(0)
+                        });
+                    });
+                }
+            } catch (error) {
+                console.error(`Error fetching reviews for member ${username}:`, error);
+                // Continue with other members even if one fails
+            }
+        });
+
+        // Wait for all review promises to resolve
+        await Promise.all(reviewPromises);
+
+        // Sort reviews by watched date (newest first)
+        allReviews.sort((a, b) => b.timestamp - a.timestamp);
+
+        // Clear container after all reviews are fetched
+        reviewsContainer.innerHTML = "";
+
+        if (allReviews.length === 0) {
+            reviewsContainer.innerHTML = `<p class="no-items">No reviews yet from community members. Be the first to share your thoughts!</p>`;
+            return;
         }
+
+        // Display sorted reviews (limit to 10 initially)
+        const reviewsToShow = allReviews.slice(0, 10);
+        reviewsToShow.forEach(review => {
+            const reviewItem = createReviewElement(review);
+            reviewsContainer.appendChild(reviewItem);
+        });
+
+        // Make movie titles clickable
+        makeMovieTitlesClickable();
+
+        // Add "View More" button if there are more reviews
+        if (allReviews.length > 10) {
+            const viewMoreBtn = document.createElement("button");
+            viewMoreBtn.className = "view-more-btn";
+            viewMoreBtn.textContent = `View more reviews (${allReviews.length - 10} more)`;
+            viewMoreBtn.addEventListener("click", () => loadMoreReviews(allReviews, 10));
+            reviewsContainer.appendChild(viewMoreBtn);
+        }
+
     } catch (error) {
-        console.error("Error loading reviews:", error);
+        console.error("Error loading member reviews:", error);
+        document.getElementById("reviewsList").innerHTML = `<p class="no-items">Error loading reviews. Please try again later.</p>`;
+    }
+}
+
+// Helper function to create a review element
+function createReviewElement(review) {
+    const { userData, reviewData } = review;
+
+    // Create review item container
+    const reviewItem = document.createElement("div");
+    reviewItem.className = "review-item";
+
+    // Format date as "Month Day, Year" if available
+    let formattedDate = "";
+    if (reviewData.watchedDate && reviewData.watchedDate !== "Not Provided") {
+        try {
+            const date = new Date(reviewData.watchedDate);
+            formattedDate = date.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+        } catch (e) {
+            formattedDate = reviewData.watchedDate;
+        }
+    }
+
+    // Generate stars based on the rating
+    const rating = reviewData.rating || 0;
+    const fullStars = Math.floor(rating);
+    const hasHalfStar = rating % 1 !== 0;
+    let stars = '';
+
+    for (let i = 1; i <= 5; i++) {
+        if (i <= fullStars) {
+            stars += '★'; // full star
+        } else if (hasHalfStar && i === fullStars + 1) {
+            stars += '½'; // half star
+        } else {
+            stars += '☆'; // empty star
+        }
+    }
+
+    // Get user avatar - use placeholder if not available
+    const userAvatar = userData.profilePicture || "https://placehold.co/40x40/444/aaa?text=User";
+
+    // Get movie poster if available, or use placeholder
+    const moviePoster = reviewData.selectedPoster || `https://placehold.co/100x150/333/aaa?text=${encodeURIComponent(reviewData.title)}`;
+
+    // Construct the HTML for the review
+    reviewItem.innerHTML = `
+        <div class="review-header">
+            <img src="${userAvatar}" alt="${userData.username}'s avatar" class="user-avatar">
+            <div class="review-meta">
+                <h3 class="username">${userData.username}</h3>
+                <div class="movie-rating">
+                    <span class="movie-title">${reviewData.title}</span>
+                    <span class="rating">${stars} ${rating.toFixed(1)}</span>
+                </div>
+            </div>
+        </div>
+        <div class="review-content">
+            <div class="movie-poster-container">
+                <img src="${moviePoster}" alt="${reviewData.title} poster" class="movie-poster">
+            </div>
+            <div class="review-text-container">
+                <p class="review-text">${reviewData.reviewText || "No review text provided."}</p>
+                ${formattedDate ? `<p class="review-date">Watched on: ${formattedDate}</p>` : ''}
+                ${reviewData.liked ? '<p class="review-liked"><i class="bx bxs-heart" style="color: #ff4d4d;"></i> Liked this movie</p>' : ''}
+            </div>
+        </div>
+    `;
+
+    return reviewItem;
+}
+
+// Function to load more reviews when "View More" is clicked
+function loadMoreReviews(allReviews, currentCount) {
+    const reviewsContainer = document.getElementById("reviewsList");
+
+    // Remove the "View More" button
+    const viewMoreBtn = reviewsContainer.querySelector(".view-more-btn");
+    if (viewMoreBtn) {
+        viewMoreBtn.remove();
+    }
+
+    // Show the next batch of reviews (10 more)
+    const nextBatch = allReviews.slice(currentCount, currentCount + 10);
+
+    nextBatch.forEach(review => {
+        const reviewItem = createReviewElement(review);
+        reviewsContainer.appendChild(reviewItem);
+    });
+
+    // Make newly added movie titles clickable
+    makeMovieTitlesClickable();
+
+    // Add "View More" button if there are still more reviews
+    if (allReviews.length > currentCount + 10) {
+        const newViewMoreBtn = document.createElement("button");
+        newViewMoreBtn.className = "view-more-btn";
+        newViewMoreBtn.textContent = `View more reviews (${allReviews.length - (currentCount + 10)} more)`;
+        newViewMoreBtn.addEventListener("click", () => loadMoreReviews(allReviews, currentCount + 10));
+        reviewsContainer.appendChild(newViewMoreBtn);
     }
 }
 
