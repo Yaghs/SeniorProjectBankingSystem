@@ -508,6 +508,10 @@ async function displayGenre() {
             data.genres.forEach(genre => {
                 const listItem = document.createElement("li");
                 listItem.innerHTML = `<span class="genre-name">${genre.name}</span>`;
+                listItem.addEventListener("click", () => {
+                    localStorage.setItem("selectedGenre", JSON.stringify({ id: genre.id, name: genre.name }));
+                    window.location.href = "genrePage.html"; // Redirect to genre page
+                });
                 genreList.appendChild(listItem);
             });
             // otherwise display no genres available
