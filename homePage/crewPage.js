@@ -103,7 +103,7 @@ async function fetchCrewDetails(crewId, crewName, crewRole) {
         // ${data.profile_path} is our path to get crew members img
         // placeholder img will be used if no img is available
         document.getElementById("crewImage").src = data.profile_path
-            ? `https://image.tmdb.org/t/p/w500${data.profile_path}`
+            ? `https://image.tmdb.org/t/p/original${data.profile_path}`
             : "https://via.placeholder.com/300?text=No+Image";
 
         // display crew members bio in the crewBio container
