@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-app.js";
-import { getFirestore, doc, setDoc, getDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-firestore.js";
+import { getFirestore, doc, setDoc, getDoc, collection, getDocs, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-firestore.js";
 
 const TMDB_API_KEY = "bc7c4e7c62d9e223e196bbd15978fc51";
 
@@ -238,3 +238,64 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
     }
 });
+
+// load the 6 most recent reviews and display them in the profile page
+async function loadRecentReviews() {
+    const userID = localStorage.getItem("loggedInUser");
+    console.log("Fetching reviews for user ID:", userID);
+    if (!userID) {
+        console.log("No logged-in user.");
+        return;
+    }
+
+    const db = getFirestore();
+    const reviewsRef = collection(db, "users", userID, "reviews");
+    const recentQuery = query(reviewsRef, orderBy("timestamp", "desc"), limit(6));
+
+    try {
+        const querySnapshot = await getDocs(recentQuery);
+        const recentReviewsContainer = document.getElementById("recentReviewsContainer");
+        recentReviewsContainer.innerHTML = ""; // clear existing reviews
+
+        // console.log("Fetched reviews count:", querySnapshot.size);
+
+        querySnapshot.forEach(docSnap => {
+            const reviewData = docSnap.data();
+            // console.log("Review found:", reviewData);
+
+            const reviewCard = document.createElement("div");
+            reviewCard.classList.add("review-card");
+
+            // generate star rating with half-star support
+            let starsHtml = "";
+            const fullStars = Math.floor(reviewData.rating);
+            const halfStar = reviewData.rating % 1 !== 0;
+
+            for (let i = 0; i < fullStars; i++) {
+                starsHtml += "<i class='bx bxs-star'></i>";
+            }
+            if (halfStar) {
+                starsHtml += "<i class='bx bxs-star-half'></i>";
+            }
+
+            reviewCard.innerHTML = `
+                <img src="${reviewData.selectedPoster || 'https://via.placeholder.com/120x180?text=No+Image'}" alt="${reviewData.title}">
+                <div class="review-icons">
+                    <div class="rating">${starsHtml}</div>
+                    ${reviewData.liked ? "<i class='bx bxs-heart'></i>" : ""}
+                    ${reviewData.watchedBefore ? "<i class='bx bxs-show'></i>" : ""}
+                    ${reviewData.reviewText ? "<i class='bx bxs-comment-detail'></i>" : ""}
+                </div>
+            `;
+
+            recentReviewsContainer.appendChild(reviewCard);
+        });
+
+        // console.log("Recent reviews loaded successfully!");
+    } catch (error) {
+        console.error("Error fetching recent reviews:", error);
+    }
+}
+
+// Load recent reviews when profile page loads
+document.addEventListener("DOMContentLoaded", loadRecentReviews);
