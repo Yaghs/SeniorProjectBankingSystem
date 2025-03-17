@@ -52,14 +52,13 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 });
 
-// function to fetch and display movies
 async function loadMovies(genreId, movieCountElement, movieGrid) {
     if (loading) return; // prevent multiple fetches
     loading = true;
 
     try {
         const response = await fetch(
-            `https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}&with_genres=${genreId}&sort_by=${sortBy}&page=${currentPage}&language=en-US&with_original_language=en`
+            `https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}&with_genres=${genreId}&sort_by=${sortBy}&vote_count.gte=50&page=${currentPage}&language=en-US&with_original_language=en`
         );
         const data = await response.json();
 
@@ -69,20 +68,24 @@ async function loadMovies(genreId, movieCountElement, movieGrid) {
         }
 
         data.results.slice(0, 35).forEach((movie) => {
-            const movieCard = document.createElement("div");
-            movieCard.classList.add("movie-card");
+            // Check if movie is already displayed
+            if (!document.querySelector(`[data-movie-id="${movie.id}"]`)) {
+                const movieCard = document.createElement("div");
+                movieCard.classList.add("movie-card");
+                movieCard.setAttribute("data-movie-id", movie.id); // store movie id to prevent duplicates
 
-            movieCard.innerHTML = `
-                <img src="https://image.tmdb.org/t/p/original${movie.poster_path}" alt="${movie.title}">
-                <p>${movie.title}</p>
-            `;
+                movieCard.innerHTML = `
+                    <img src="https://image.tmdb.org/t/p/original${movie.poster_path}" alt="${movie.title}">
+                    <p>${movie.title}</p>
+                `;
 
-            movieCard.addEventListener("click", () => {
-                localStorage.setItem("selectedMovie", JSON.stringify(movie));
-                window.location.href = "moviePage.html";
-            });
+                movieCard.addEventListener("click", () => {
+                    localStorage.setItem("selectedMovie", JSON.stringify(movie));
+                    window.location.href = "moviePage.html";
+                });
 
-            movieGrid.appendChild(movieCard);
+                movieGrid.appendChild(movieCard);
+            }
         });
 
         currentPage++; // move to next page
@@ -94,3 +97,5 @@ async function loadMovies(genreId, movieCountElement, movieGrid) {
         loading = false; // allow new fetches after this one completes
     }
 }
+
+

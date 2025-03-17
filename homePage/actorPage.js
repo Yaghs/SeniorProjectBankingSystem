@@ -101,7 +101,7 @@ async function fetchActorDetails(actorId) {
         // ${data.profile_path} is our path to get actors img
         // placeholder img will be used if no img is available
         document.getElementById("actorImage").src = data.profile_path
-            ? `https://image.tmdb.org/t/p/w500${data.profile_path}`
+            ? `https://image.tmdb.org/t/p/original${data.profile_path}`
             : "https://via.placeholder.com/300?text=No+Image";
 
         // display actors bio in the actorBio container
