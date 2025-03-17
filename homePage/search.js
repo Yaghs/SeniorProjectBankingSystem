@@ -43,8 +43,8 @@ function displaySuggestions(movies) {
 function selectMovie(movie) {
     localStorage.setItem("selectedMovie", JSON.stringify(movie));
     if (window.location.href.includes("homePage")) {
-        window.location.href = "moviePage.html";
+        window.location.href = "../homePage/moviePage.html";
     } else {
-        window.location.href = "moviePage.html";
+        window.location.href = "../homePage/moviePage.html";
     }
 }

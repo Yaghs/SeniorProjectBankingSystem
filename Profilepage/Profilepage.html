@@ -78,41 +78,48 @@ tie it with firebase
 
             </div>
 
-
-            <div class="Fav_Container">
-                <div class="wrapper">
-                    <ul class="Fav_movies">
-                        <h1>Favorite Movie</h1>
-                        <li class="Fav_moiveItem">
-                            <a class="movielink">
-                                <img
-                                    src="https://i0.wp.com/thinkmonsters.com/speakinghuman/media/wp-content/uploads/Jaws-Movie-Poster.jpg?w=2160&ssl=1"
-                                    alt="test_movie" class="Placeholder"/>
-                            </a>
-
-                        </li>
-                    </ul>
-
-                    <h1>recent Movie</h1>
-                    <ul class="recent_movies">
-                        <li class="Fav_moiveItem">
-                            <a class="movielink">
-                                <img
-                                    src="https://i0.wp.com/thinkmonsters.com/speakinghuman/media/wp-content/uploads/Jaws-Movie-Poster.jpg?w=2160&ssl=1"
-                                    alt="test_movie" class="Placeholder"/>
-                            </a>
-
-                        </li>
-                    </ul>
+    <!-- Updated Favorite Films Section -->
+    <div class="Fav_Container">
+        <div class="wrapper">
+            <ul class="Fav_movies">
+                <h1>Favorite Films</h1>
+                <div class="favorite-grid">
+                    <div class="fav-placeholder" data-index="1">+</div>
+                    <div class="fav-placeholder" data-index="2">+</div>
+                    <div class="fav-placeholder" data-index="3">+</div>
+                    <div class="fav-placeholder" data-index="4">+</div>
+                    <div class="fav-placeholder" data-index="5">+</div>
+                    <div class="fav-placeholder" data-index="6">+</div>
                 </div>
+            </ul>
+        </div>
+    </div>
+    <div id="favBox" class="favBox">
+        <!-- Pop-up for movie search -->
+        <div class="favBoxContainer" id="favSearchPage">
+            <span class="close">&times;</span>
+            <h2>Add to your films</h2>
+            <input type="text" id="favSearch" placeholder="Search for a movie...">
+            <div id="favSuggestions" class="fav-suggestions"></div>
+        </div>
+
+        <!-- Pop-up for poster selection -->
+        <div id="posterModal" class="poster-modal">
+            <div class="poster-modal-content">
+                <button class="poster-close">&times;</button>
+                <h2>Choose New Poster</h2>
+                <div class="poster-grid" id="posterGrid"></div>
+                <button id="savePosterBtn" class="save-button">Save</button>
             </div>
-            <script>
-                document.addEventListener("DOMContentLoaded", function() {
-                    const user = localStorage.getItem("loggedInUser");
-                    if (user) {
-                        document.getElementById("username").textContent = user;
-                    }
-                });
-            </script>
-            </body>
-            </html>
+        </div>
+    </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const user = localStorage.getItem("loggedInUser");
+            if (user) {
+                document.getElementById("username").textContent = user;
+            }
+        });
+    </script>
+    </body>
+</html>
