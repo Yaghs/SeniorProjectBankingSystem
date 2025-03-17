@@ -50,18 +50,22 @@ async function loadPopularMovies() {
         const container = document.getElementById("popularMoviesContainer");
         container.innerHTML = "";
 
-        data.results.forEach(movie => {
-            const movieItem = document.createElement("div");
-            movieItem.classList.add("movie-item");
-            movieItem.innerHTML = `
-                <img src="https://image.tmdb.org/t/p/w300${movie.poster_path}" alt="${movie.title}" onclick="goToMoviePage(${movie.id})">
-            `;
-            container.appendChild(movieItem);
-        });
+        data.results
+            .filter(movie => movie.original_language === "en") // only include english movies
+            .forEach(movie => {
+                const movieItem = document.createElement("div");
+                movieItem.classList.add("movie-item");
+                movieItem.innerHTML = `
+                    <img src="https://image.tmdb.org/t/p/original${movie.poster_path}" alt="${movie.title}" onclick="goToMoviePage(${movie.id})">
+                `;
+                container.appendChild(movieItem);
+            });
+
     } catch (error) {
         console.error("Error fetching popular movies:", error);
     }
 }
+
 
 function goToMoviePage(movieId) {
     fetch(`${TMDB_BASE_URL}/movie/${movieId}?api_key=${TMDB_API_KEY}&language=en-US&append_to_response=credits,videos`)
