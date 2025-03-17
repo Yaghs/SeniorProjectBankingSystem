@@ -43,7 +43,7 @@ let totalSlides = 0;
 
 async function loadPopularMovies() {
     try {
-        const response = await fetch(`${TMDB_BASE_URL}/movie/popular?api_key=${TMDB_API_KEY}&language=en-US&page=1`);
+        const response = await fetch(`${TMDB_BASE_URL}/discover/movie?api_key=${TMDB_API_KEY}&language=en-US&region=US&sort_by=popularity.desc&vote_count.gte=50&page=1`);
         const data = await response.json();
         totalSlides = data.results.length;
 
@@ -57,6 +57,7 @@ async function loadPopularMovies() {
                 movieItem.classList.add("movie-item");
                 movieItem.innerHTML = `
                     <img src="https://image.tmdb.org/t/p/original${movie.poster_path}" alt="${movie.title}" onclick="goToMoviePage(${movie.id})">
+                    <p class="movie-title">${movie.title}</p>
                 `;
                 container.appendChild(movieItem);
             });
@@ -66,8 +67,8 @@ async function loadPopularMovies() {
     }
 }
 
-
-function goToMoviePage(movieId) {
+// make goToMoviePage globally accessible
+window.goToMoviePage = function(movieId) {
     fetch(`${TMDB_BASE_URL}/movie/${movieId}?api_key=${TMDB_API_KEY}&language=en-US&append_to_response=credits,videos`)
         .then(response => response.json())
         .then(movie => {
@@ -75,7 +76,7 @@ function goToMoviePage(movieId) {
             window.location.href = "moviePage.html";
         })
         .catch(error => console.error("Error fetching movie details:", error));
-}
+};
 
 window.prevPopularMovie = function() {
     const container = document.getElementById("popularMoviesContainer");

@@ -190,6 +190,11 @@ footer {
     z-index: 10;
 }
 
+.movie-title {
+    color: white;
+    text-align: center;
+}
+
 .carousel-arrow {
     background: transparent;
     border: none;
