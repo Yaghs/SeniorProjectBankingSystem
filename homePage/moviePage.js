@@ -1,6 +1,6 @@
 // import firebase dependencies
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getFirestore, doc, setDoc, getDoc,collection } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getFirestore, doc, setDoc, getDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 // our special api key
 const API_KEY = "bc7c4e7c62d9e223e196bbd15978fc51";
 // retrieves selected movie's data from local storage
@@ -1087,7 +1087,8 @@ document.getElementById("saveReview").addEventListener("click", async () => {
         reviewText: reviewText || "", // if review text is empty, store empty string
         rating: rating || 0, // default rating if nothing is selected
         liked: liked,
-        selectedPoster: selectedPoster // stores chosen poster
+        selectedPoster: selectedPoster, // stores chosen poster
+        timestamp: serverTimestamp() // add timestamp for sorting
     };
 
     try {

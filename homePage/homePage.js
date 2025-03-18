@@ -61,7 +61,6 @@ async function loadPopularMovies() {
                 `;
                 container.appendChild(movieItem);
             });
-
     } catch (error) {
         console.error("Error fetching popular movies:", error);
     }
