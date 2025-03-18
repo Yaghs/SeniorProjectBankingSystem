@@ -32,16 +32,15 @@ async function updateProfilePage() {
 
             if (userSnap.exists()) {
                 const userData = userSnap.data();
-                document.getElementById("username").textContent = userData.username; // update header
-                document.getElementById("username_Id").textContent = userData.firstName; // update profile username
+                document.getElementById("username_Id").textContent = userData.username; // Update profile username
             } else {
-                console.error("user not found in firebase.");
+                console.error("User not found in Firebase.");
             }
         } catch (error) {
-            console.error("error fetching user data:", error);
+            console.error("Error fetching user data:", error);
         }
     } else {
-        console.error("no logged-in user found.");
+        console.error("No logged-in user found.");
     }
 }
 

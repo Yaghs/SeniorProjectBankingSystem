@@ -5,6 +5,7 @@ body {
     background: #181818;
 }
 
+/* HEADER */
 header {
     display: flex;
     justify-content: space-between;
@@ -15,7 +16,7 @@ header {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
     position: sticky;
     top: 0;
-    z-index: 10;
+    z-index: 10; /* Keeps header above all elements */
 }
 
 .left h1 {
@@ -58,6 +59,7 @@ header {
     box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
 }
 
+/* DROPDOWN */
 .dropdown {
     position: relative;
     display: inline-block;
@@ -89,6 +91,7 @@ header {
     background-color: #575757;
 }
 
+/* SUGGESTIONS BOX */
 #suggestions {
     width: 20%;
     height: 35%;
@@ -115,6 +118,7 @@ header {
     background: #f0f0f0;
 }
 
+/* WELCOME MESSAGE */
 .welcome-message {
     text-align: center;
     margin-top: 20px;
@@ -132,6 +136,7 @@ header {
     color: #cccccc;
 }
 
+/* FOOTER */
 footer {
     bottom: 0;
     left: 0;
@@ -141,8 +146,26 @@ footer {
     align-items: center;
     justify-content: center;
     color: white;
+    background-color: #333;
 }
 
+.footer-links {
+    margin-top: 10px;
+}
+
+.footer-links a {
+    color: white;
+    text-decoration: none;
+    margin: 0 10px;
+    font-size: 1rem;
+    transition: color 0.3s ease;
+}
+
+.footer-links a:hover {
+    color: gray;
+}
+
+/* POPULAR MOVIES SECTION */
 .popular-movies-section {
     padding: 20px;
     text-align: left;
@@ -153,11 +176,13 @@ footer {
     border-bottom: 2px solid #555;
 }
 
+/* MOVIE CAROUSEL */
 .movie-carousel {
     display: flex;
     align-items: center;
     justify-content: center;
     position: relative;
+    margin-top: 40px; /* Ensures space below header */
 }
 
 .carousel-container {
@@ -195,27 +220,106 @@ footer {
     text-align: center;
 }
 
+/* FIX FOR ARROWS OVER HEADER */
 .carousel-arrow {
     background: transparent;
     border: none;
     font-size: 2em;
     cursor: pointer;
     color: #fff;
-    z-index: 10;
-    transition: color 0.3s;
-}
-
-.carousel-arrow:hover {
-    color: yellow;
-    transform: scale(1.3);
+    z-index: 5;
+    transition: color 0.3s, transform 0.3s;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
 }
 
 .left-arrow {
-    position: absolute;
     left: 20px;
+    z-index: 2; /* Ensures it stays below header */
 }
 
 .right-arrow {
-    position: absolute;
     right: 20px;
 }
+
+/* DID YOU KNOW SECTION */
+.did-you-know-section {
+    padding: 20px;
+    text-align: left;
+}
+
+.did-you-know-section h2 {
+    color: white;
+    border-bottom: 2px solid #555;
+    padding-bottom: 5px;
+}
+
+.did-you-know-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #181818;
+    color: white;
+    padding: 20px;
+    border-radius: 8px;
+    margin: 20px auto;
+    font-size: 1.1rem;
+    max-width: 90%;
+}
+
+.did-you-know-text {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: left;
+    text-align: left;
+    padding-right: 15px;
+}
+
+.did-you-know-text h3 {
+    font-size: 2rem;
+    color: white;
+    margin-bottom: 15px;
+}
+
+.did-you-know-text p {
+    font-size: 1.2rem;
+    line-height: 1.5;
+    max-width: 80%;
+}
+
+.did-you-know-container img {
+    width: 300px;
+    height: 300px;
+    border-radius: 10px;
+    object-fit: cover;
+    margin-left: 15px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+/* RESPONSIVE DESIGN */
+@media (max-width: 768px) {
+    .did-you-know-container {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .did-you-know-text {
+        padding-right: 0;
+    }
+
+    .did-you-know-container img {
+        margin: 10px 0 0 0;
+        width: 120px;
+        height: 120px;
+    }
+
+    .carousel-arrow {
+        font-size: 1.5em;
+    }
+}
+
+
+
+

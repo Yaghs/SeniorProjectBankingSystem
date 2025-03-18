@@ -104,4 +104,56 @@ window.nextPopularMovie = function() {
     });
 };
 
+async function getRandomActorFact() {
+    try {
+        const response = await fetch(`https://api.themoviedb.org/3/person/popular?api_key=${TMDB_API_KEY}&language=en-US&page=1`);
+        const data = await response.json();
+
+        if (data.results.length === 0) {
+            throw new Error("No actors found.");
+        }
+
+
+        const randomActor = data.results[Math.floor(Math.random() * data.results.length)];
+
+
+        const actorDetailsResponse = await fetch(`https://api.themoviedb.org/3/person/${randomActor.id}?api_key=${TMDB_API_KEY}&language=en-US`);
+        const actorDetails = await actorDetailsResponse.json();
+
+
+        const actorMoviesResponse = await fetch(`https://api.themoviedb.org/3/person/${randomActor.id}/movie_credits?api_key=${TMDB_API_KEY}&language=en-US`);
+        const actorMoviesData = await actorMoviesResponse.json();
+
+        let bio = actorDetails.biography;
+        if (!bio || bio.length < 50) {
+            bio = "This actor's biography is not available.";
+        } else {
+
+            let sentences = bio.split(". ");
+            bio = sentences.slice(0, 2).join(". ") + ".";
+        }
+
+        let movies = "No notable movies found.";
+        if (actorMoviesData.cast.length > 0) {
+            movies = actorMoviesData.cast
+                .slice(0, 3)
+                .map(movie => movie.title)
+                .join(", ");
+        }
+
+        document.getElementById("actorName").textContent = actorDetails.name;
+        document.getElementById("actorImage").src = `https://image.tmdb.org/t/p/w200${actorDetails.profile_path}`;
+        document.getElementById("actorFact").innerHTML = `
+             ${bio}<br>
+        `;
+    } catch (error) {
+        console.error("Error fetching actor fact:", error);
+        document.getElementById("actorFact").textContent = "Could not load an actor fact.";
+    }
+}
+
+// Call the function when the page loads
+document.addEventListener("DOMContentLoaded", getRandomActorFact);
+
+
 document.addEventListener("DOMContentLoaded", loadPopularMovies);
