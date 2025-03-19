@@ -5,28 +5,6 @@ const actor = JSON.parse(localStorage.getItem("selectedActor"));
 
 // waits until html is loaded before we run the code
 document.addEventListener("DOMContentLoaded", () => {
-    // search bar
-    const searchInput = document.getElementById("searchInput");
-    // suggestions that appear below search bar
-    const suggestionsDiv = document.getElementById("suggestions");
-
-    // checks if search bar exists on page
-    if (searchInput) {
-        // adds input event listener to detect when user starts to type
-        searchInput.addEventListener("input", async () => {
-            // retrieves value in search bar, trims an whitespaces
-            const query = searchInput.value.trim();
-            // starts searching if at least two characters are typed
-            if (query.length < 2) {
-                suggestionsDiv.style.display = "none";
-                return;
-            }
-            // calls fetchMovies to get suggestions, use await bc its async
-            const movies = await fetchMovies(query);
-            // displays those suggestions
-            displaySuggestions(movies);
-        });
-    }
     // checks if actor is stored in local storage
     if (actor) {
         // fetch details on that actor based on their actor id
@@ -37,52 +15,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 });
 
-// sends request to tmdb api to search for movies that match what user is typing
-async function fetchMovies(query) {
-    // await used bc its async
-    // encodeURIComponent used to handle special characters
-    const response = await fetch(
-        `https://api.themoviedb.org/3/search/movie?api_key=${API_KEY}&query=${encodeURIComponent(query)}`
-    );
-    // converts api response to json
-    const data = await response.json();
-    // returns results array from api response
-    return data.results;
-}
-
-// displays the movie suggestions from the search bar
-function displaySuggestions(movies) {
-    // initialize our suggestions container as suggestionDiv
-    const suggestionsDiv = document.getElementById("suggestions");
-    suggestionsDiv.innerHTML = ""; // clears previous suggestions
-
-    // checks if no movies were found
-    if (movies.length === 0) {
-        // if none were found we hide the suggestions container
-        suggestionsDiv.style.display = "none";
-        // exit function
-        return;
-    }
-
-    // loops through each movie in the array
-    movies.forEach(movie => {
-        // create new <div>
-        const suggestion = document.createElement("div");
-        // add css class suggestion for styling
-        suggestion.classList.add("suggestion");
-        // set text to the movies title
-        suggestion.textContent = `${movie.title} (${movie.release_date ? movie.release_date.split("-")[0] : "Unknown"})`;
-        // click event listener that calls selectMovie function
-        suggestion.addEventListener("click", () => selectMovie(movie));
-        // adds suggestions to the suggestion container
-        suggestionsDiv.appendChild(suggestion);
-    });
-
-    // make suggestion container visible
-    suggestionsDiv.style.display = "block";
-    // makes sure suggestion container is above all other elements on page
-    suggestionsDiv.style.zIndex = "999";
-}
 
 // fetches information about the actor using their id
 async function fetchActorDetails(actorId) {
@@ -163,17 +95,6 @@ async function fetchKnownMovies(actorId) {
     } catch (error) {
         console.error("error fetching known movies:", error);
         alert("failed to load known movies.");
-    }
-}
-
-// handles when a user selects a movie
-function selectMovie(movie) {
-    // saves movie object in the local storage
-    localStorage.setItem("selectedMovie", JSON.stringify(movie));
-    if (window.location.href.includes("homePage")) {
-        window.location.href = "moviePage.html";
-    } else {
-        window.location.href = "moviePage.html";
     }
 }
 

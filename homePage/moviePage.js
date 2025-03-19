@@ -34,28 +34,6 @@ console.log("firebase initialized successfully");
 
 // waits until html is loaded before we run the code
 document.addEventListener("DOMContentLoaded", () => {
-    // search bar
-    const searchInput = document.getElementById("searchInput");
-    // suggestions that appear below search bar
-    const suggestionsDiv = document.getElementById("suggestions");
-
-    // checks if search bar exists on page
-    if (searchInput) {
-        // adds input event listener to detect when user starts to type
-        searchInput.addEventListener("input", async () => {
-            // retrieves value in search bar, trims an whitespaces
-            const query = searchInput.value.trim();
-            // starts searching if at least two characters are typed
-            if (query.length < 2) {
-                suggestionsDiv.style.display = "none";
-                return;
-            }
-            // calls fetchMovies to get suggestions, use await bc its async
-            const movies = await fetchMovies(query);
-            // displays those suggestions
-            displaySuggestions(movies);
-        });
-    }
     // checks if movie is stored in local storage
     if (movie) {
         // set to movie title
@@ -67,81 +45,6 @@ document.addEventListener("DOMContentLoaded", () => {
         window.location.href = "homePage.html";
     }
 });
-
-// sends request to tmdb api to search for movies that match what user is typing
-async function fetchMovies(query) {
-    // await used bc its async
-    // encodeURIComponent used to handle special characters
-    const response = await fetch(
-        `https://api.themoviedb.org/3/search/movie?api_key=${API_KEY}&query=${encodeURIComponent(query)}`
-    );
-    // converts api response to json
-    const data = await response.json();
-    // returns results array from api response
-    return data.results;
-}
-
-// displays the movie suggestions from the search bar
-function displaySuggestions(movies) {
-    // initialize our suggestions container as suggestionDiv
-    const suggestionsDiv = document.getElementById("suggestions");
-    suggestionsDiv.innerHTML = ""; // clears previous suggestions
-
-    // checks if no movies were found
-    if (movies.length === 0) {
-        // if none were found we hide the suggestions container
-        suggestionsDiv.style.display = "none";
-        // exit function
-        return;
-    }
-
-    // loops through each movie in the array
-    movies.forEach(movie => {
-        // create new <div>
-        const suggestion = document.createElement("div");
-        // add css class suggestion for styling
-        suggestion.classList.add("suggestion");
-        // set text to the movies title
-        suggestion.textContent = `${movie.title} (${movie.release_date ? movie.release_date.split("-")[0] : "Unknown"})`;
-        // click event listener that calls selectMovie function
-        suggestion.addEventListener("click", () => selectMovie(movie));
-        // adds suggestions to the suggestion container
-        suggestionsDiv.appendChild(suggestion);
-    });
-
-    // make suggestion container visible
-    suggestionsDiv.style.display = "block";
-    // makes sure suggestion container is above all other elements on page
-    suggestionsDiv.style.zIndex = "999";
-}
-
-// handles when a user selects a movie
-function selectMovie(movie) {
-    // saves movie object in the local storage
-    localStorage.setItem("selectedMovie", JSON.stringify(movie));
-    // calls fetchMovieDetails to get movie details base on movie id
-    fetchMovieDetails(movie.id);
-    // clears search bar
-    document.getElementById("searchInput").value = "";
-    // removes suggestions
-    document.getElementById("suggestions").style.display = "none";
-    // update the current movie display in the +Review popup
-    document.getElementById("currentMovie").textContent = `${movie.title} (${movie.release_date.split("-")[0]})`;
-    // update the review form container
-    document.getElementById("reviewMovieTitle").textContent = movie.title;
-    document.getElementById("reviewMovieYear").textContent = movie.release_date ? movie.release_date.split("-")[0] : "Unknown";
-    document.getElementById("reviewMoviePoster").src = movie.poster_path
-        ? `https://image.tmdb.org/t/p/original${movie.poster_path}`
-        : "https://via.placeholder.com/300?text=No+Image";
-
-    // handles review action box functionality when you search a movie
-    loadReviewActionBox(movie.title);
-
-    // handles trailer button functionality when you search for a movie
-    setTimeout(() => {
-        attachTrailerButtonListener();
-    }, 100);
-}
 
 // fetches info on movie using its movieId
 async function fetchMovieDetails(movieId) {
