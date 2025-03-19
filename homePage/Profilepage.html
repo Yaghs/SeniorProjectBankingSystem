@@ -13,8 +13,8 @@ tie it with firebase
     <meta charset="UTF-8">
     <link rel="stylesheet" href="ProfilePage.css">
     <link rel='stylesheet' href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css'>
-    <script type="module" src="functions.js"></script>
-    <script type="module" src="../homePage/search.js"></script>
+    <script type="module" src="functions(profile).js"></script>
+    <script type="module" src="search.js"></script>
     <title>Plot Twist</title>
 </head>
 <body>
@@ -36,7 +36,7 @@ tie it with firebase
         </div>
         <a href="#">Activity</a>
         <a href="#">+Review</a>
-        <a href="../homePage/createCommunity.html">Communities</a>
+        <a href="createCommunity.html">Communities</a>
         <input type="text" id="searchInput" placeholder="Search..." autocomplete="off">
     </div>
 </header>
@@ -63,9 +63,23 @@ tie it with firebase
             </div>
             <!-- Following info-->
             <div class="following_info">
-                <p>Flims: 0</p>
+                <p id="Flims">Flims: 0</p>
+                <script>
+                    document.addEventListener('DOMContentLoaded', () => {
+                        const Film = document.getElementById('Flims');
+                        let current = parseInt(localStorage.getItem('filmCount') || 0);
+                        Film.textContent = `Flims: ${current}`;
+                    });
+                </script>
                 <p>This year: 0</p>
-                <p>Listing: 0</p>
+                <p id="Listing">Listing: 0</p>
+              <script>
+                  document.addEventListener('DOMContentLoaded', () => {
+                      const Listing = document.getElementById('Listing');
+                      let current = parseInt(localStorage.getItem('listCount') || 0);
+                      Listing.textContent = `Listing: ${current}`;
+                  });
+              </script>
                 <p>Following: 0 </p>
                 <p>Followers: 0</p>
                 <!-- DM button -->

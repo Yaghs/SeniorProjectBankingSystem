@@ -296,5 +296,7 @@ async function loadRecentReviews() {
     }
 }
 
+
+
 // Load recent reviews when profile page loads
 document.addEventListener("DOMContentLoaded", loadRecentReviews);
