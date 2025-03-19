@@ -32,7 +32,7 @@ async function updateProfilePage() {
 
             if (userSnap.exists()) {
                 const userData = userSnap.data();
-                document.getElementById("username_Id").textContent = userData.username; // Update profile username
+                document.getElementById("username_Id").textContent = userData.firstName;
             } else {
                 console.error("User not found in Firebase.");
             }
