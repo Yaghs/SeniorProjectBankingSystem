@@ -12,6 +12,16 @@ document.addEventListener("DOMContentLoaded", function() {
   }
 });
 
+document.addEventListener("DOMContentLoaded", function() {
+  // Attach event listener to the "Account Center" list item
+  const accountCenterItem = document.getElementById("accountCenter");
+  if (accountCenterItem) {
+    accountCenterItem.addEventListener("click", function() {
+      window.location.href = "accountCenter.html";
+    });
+  }
+});
+
 
 document.addEventListener("DOMContentLoaded", function() {
   // Get references to DOM elements
