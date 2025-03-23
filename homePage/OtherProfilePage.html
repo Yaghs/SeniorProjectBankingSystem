@@ -5,90 +5,98 @@
 <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="OtherProfilePage.css">
+    <link rel='stylesheet' href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css'>
     <script type="module" src="search.js"></script>
-
+    <script type="module" src="functions.js"></script>
     <title>Plot Twist</title>
 </head>
-<body>
+    <body>
 
-<header>
-    <div class="left">
-        <h1>Project Name</h1>
-    </div>
-
-    <div class="right">
-        <span id="username">Username</span>
-        <a href="#">Home</a>
-        <div class="dropdown">
-            <a href="#" id="accountLink">Account</a>
-            <div class="dropdown-content">
-                <a href="Profilepage.html">Profile</a>
-                <a href="../userSettings/userSettings.html">Settings</a>
-                <a href="#" class="sign-out">Sign out</a>
-            </div>
-        </div>
-        <a href="#">Activity</a>
-        <a href="#">+Review</a>
-        <a href="createCommunity.html">Communities</a>
-        <input type="text" id="searchInput" placeholder="Search..." autocomplete="off">
-    </div>
-</header>
-<div class="Container">
-    <div class="Profile">
-        <!-- Profile Picture -->
-        <div class="profile-pic">
-            <img id="profile-pic" src="https://as1.ftcdn.net/v2/jpg/00/64/67/52/1000_F_64675209_7ve2XQANuzuHjMZXP3aIYIpsDKEbF5dD.jpg"
-                 alt="Profile Picture" >
-            <input type="file" id="fileinput" style="display: none;" accept="image/*" />
-            </div>
-
-            <!-- Username info -->
-            <div class="username_display">
-                <h1><span id="username_Id">Username</span></h1>
-
-                <!-- Bio Section -->
-                <form class="bio">
-                    <textarea id="Bio" disabled placeholder="Enter Bio here"></textarea>
-
-                </form>
-            </div>
-            <!-- Following info-->
-            <div class="following_info">
-                <p>Flims: 0</p>
-                <p>This year: 0</p>
-                <p>Listing: 0</p>
-                <p>Following: 0 </p>
-                <p id="Follow">Followers: 0</p>
-
-            </div>
-        <!-- DM button -->
-        <button class="dm">Direct Message</button>
-
-        <button id='Follow_button' class="Follow">Follow</button>
-            </div>
-            </div>
-
-            <div class="Fav_Container">
-            <div class="wrapper">
-              <ul class="Fav_movies">
-                <h1>Favorite Movie</h1>
-                   <li class="Fav_moiveItem">
-                   </li>
-                    </ul>
-            </div>
-         </div>
-
-        <div class="recent_Container">
-            <div class="wrapper">
-                <ul class="recent_movies">
-                    <h1>Recent Movie</h1>
-                    <li class="Fav_moiveItem">
-                    </li>
-                </ul>
-            </div>
+    <header>
+        <div class="left">
+            <h1>Plot Twist</h1>
         </div>
 
+        <div class="right">
+            <span id="username">Username</span>
+            <a href="homePage.html">Home</a>
+            <div class="dropdown">
+                <a href="#" id="accountLink">Account</a>
+                <div class="dropdown-content">
+                    <a href="Profilepage.html">Profile</a>
+                    <a href="../userSettings/userSettings.html">Settings</a>
+                    <a href="#" class="sign-out">Sign out</a>
+                </div>
+            </div>
+            <a href="#">Activity</a>
+            <a href="#">+Review</a>
+            <a href="createCommunity.html">Communities</a>
+            <input type="text" id="searchInput" placeholder="Search..." autocomplete="off">
+        </div>
+    </header>
+    <div class="Container">
+        <div class="Profile">
+            <!-- Profile Picture -->
+            <div class="profile-pic">
+                <img id="profile-pic" src="https://as1.ftcdn.net/v2/jpg/00/64/67/52/1000_F_64675209_7ve2XQANuzuHjMZXP3aIYIpsDKEbF5dD.jpg"
+                     alt="Profile Picture" >
+                <input type="file" id="fileinput" style="display: none;" accept="image/*" />
+                </div>
 
-           <script src="functions.js"></script>
+                <!-- Username info -->
+                <div class="username_display">
+                    <h1><span id="username_Id">Username</span></h1>
 
- </html>
+                    <!-- Bio Section -->
+                    <form class="bio">
+                        <textarea id="Bio" disabled placeholder="Enter Bio here"></textarea>
+
+                    </form>
+                </div>
+                <!-- Following info-->
+                <div class="following_info">
+                    <p>Flims: 0</p>
+                    <p>This year: 0</p>
+                    <p>Listing: 0</p>
+                    <p>Following: 0 </p>
+                    <p id="Follow">Followers: 0</p>
+
+                </div>
+            <!-- DM button -->
+            <button class="dm">Direct Message</button>
+
+            <button id='Follow_button' class="Follow">Follow</button>
+        </div>
+    </div>
+
+    <div class="Fav_Container">
+        <div class="wrapper">
+            <ul class="Fav_movies">
+                <h1>Favorite Films</h1>
+                <div class="favorite-grid">
+                    <div class="fav-placeholder" data-index="1">+</div>
+                    <div class="fav-placeholder" data-index="2">+</div>
+                    <div class="fav-placeholder" data-index="3">+</div>
+                    <div class="fav-placeholder" data-index="4">+</div>
+                    <div class="fav-placeholder" data-index="5">+</div>
+                    <div class="fav-placeholder" data-index="6">+</div>
+                </div>
+            </ul>
+        </div>
+    </div>
+    <div class="recentContainer">
+        <div class="recentMovies">
+            <h1>Recent Activity</h1>
+            <div class="recent-grid" id="recentReviewsContainer"></div>
+        </div>
+    </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const user = localStorage.getItem("loggedInUser");
+            if (user) {
+                document.getElementById("username").textContent = user;
+            }
+        });
+    </script>
+    </body>
+</html>
