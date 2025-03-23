@@ -1,4 +1,3 @@
-/* Overall dark theme styling */
 body {
   background-color: #1c1c1c;
   color: #ffffff;
@@ -7,7 +6,6 @@ body {
   padding: 0;
 }
 
-/* Back arrow styling: fixed at the top left of the viewport */
 .return-arrow {
   position: fixed;
   top: 25px;
@@ -18,7 +16,6 @@ body {
   z-index: 1000;
 }
 
-/* Centered container similar to Account Center */
 .settings-container {
   max-width: 600px;
   margin: 80px auto;
@@ -27,7 +24,6 @@ body {
   border-radius: 8px;
 }
 
-/* Header centered inside container */
 .settings-header {
   text-align: center;
   margin-bottom: 30px;
@@ -38,21 +34,18 @@ body {
   font-size: 28px;
 }
 
-/* Settings items styling */
 .settings-item {
   padding: 15px 20px;
   font-size: 18px;
   cursor: pointer;
 }
 
-/* Divider styling between options */
 .divider {
   border: 0;
   border-top: 1px solid #444;
   margin: 0;
 }
 
-/* Sub-label styling */
 .sub-label {
   color: #aaaaaa;
   font-style: italic;
@@ -64,14 +57,12 @@ body {
   background-color: #333;
 }
 
-/* Special styling for the Log Out option */
 .logout {
   font-weight: bold;
   color: #ff4444;
   text-align: center;
 }
 
-/* Slider (toggle switch) styling */
 .switch {
   position: relative;
   display: inline-block;
