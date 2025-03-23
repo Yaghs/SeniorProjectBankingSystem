@@ -55,8 +55,61 @@
             <div class="review-action-box">
                 <div class="review-icons">
                     <span id="reviewedIcon" class="icon"><i class='bx bx-show'></i></span>
+                    <script>
+                        document.addEventListener('DOMContentLoaded', () => {
+                            const film = document.getElementById('reviewedIcon');
+
+                            film.addEventListener("click", () => {
+                                let current = parseInt(localStorage.getItem('filmCount') || 0);
+                                current++;
+                                localStorage.setItem('filmCount', current);
+                                console.log("Film Count Updated:", current);
+                                alert("Added to Filmlist! Current Count: " + current);
+
+                                // Disable further clicks
+                                film.style.pointerEvents = 'none';
+                                film.style.opacity = '0.5';
+                            });
+                        });
+                    </script>
                     <span id="likedIcon" class="icon"><i class='bx bx-heart'></i></span>
                     <span id="watchlistIcon" class="icon"><i class='bx bx-plus'></i></span>
+                    <script>
+                        document.addEventListener('DOMContentLoaded', () => {
+                            const watch = document.getElementById('watchlistIcon');
+                            let addtocurrent = localStorage.getItem("isAdded")==='true';
+
+                            if (addtocurrent) {
+                                watch.innerHTML =" <i class='bx bx-minus'></i>";
+                            } else {
+                                watch.innerHTML = "<i class='bx bx-plus'></i>";
+                            }
+
+
+                            watch.addEventListener("click", () => {
+                                let current = parseInt(localStorage.getItem('listCount') || 0);
+
+                                if(addtocurrent) {
+                                    current--
+                                    localStorage.setItem("isAdded", 'false');
+                                    watch.innerHTML = "<i class='bx bx-plus'></i>"
+                                    alert("Remove to Watchlist! Current Count: " + current);
+
+                                } else {
+                                    current++;
+                                    localStorage.setItem('isAdded', 'true');
+                                    watch.innerHTML = "<i class='bx bx-minus'></i>";
+                                    alert("Added to Watchlist! Current Count: " + current);
+
+                                }
+                                localStorage.setItem('listCount', current);
+                                console.log("Listing Count Updated:", current);
+                                addtocurrent=!addtocurrent;
+
+                            });
+                        });
+                    </script>
+
                 </div>
 
                 <p id="ratingLabel" class="rating-label">Rate</p>
