@@ -16,14 +16,38 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const Follow = document.getElementById('Follow');
 const Follow_button = document.getElementById('Follow_button');
-
 Follow_button.addEventListener('click', function () {
     let current_Follower = parseInt(Follow.textContent.split(": ")[1]);
-    if(current_Follower >= 0){
-        current_Follower = (current_Follower === 0) ? current_Follower + 1 : current_Follower - 1;
+
+    const isNowFollowing = !Follow_button.classList.contains("following");
+
+    if (isNowFollowing) {
+        current_Follower += 1;
+        Follow_button.classList.add("following");
+        Follow_button.textContent = "Following";
+    } else {
+        current_Follower -= 1;
+        Follow_button.classList.remove("following");
+        Follow_button.textContent = "Follow";
     }
+
     Follow.textContent = `Followers: ${current_Follower}`;
 });
+
+Follow_button.addEventListener('mouseenter', () => {
+    if (Follow_button.classList.contains("following")) {
+        Follow_button.textContent = "Unfollow";
+        Follow_button.classList.add("unfollow-hover");
+    }
+});
+
+Follow_button.addEventListener('mouseleave', () => {
+    if (Follow_button.classList.contains("following")) {
+        Follow_button.textContent = "Following";
+        Follow_button.classList.remove("unfollow-hover");
+    }
+});
+
 
 function getQueryParam(param) {
     const urlParams = new URLSearchParams(window.location.search);
