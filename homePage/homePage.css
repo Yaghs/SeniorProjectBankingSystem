@@ -176,13 +176,84 @@ footer {
     border-bottom: 2px solid #555;
 }
 
+/* FRIENDS MOVIES SECTION */
+.new-from-friends {
+    padding: 20px;
+    text-align: left;
+}
+
+.new-from-friends h2 {
+    color: white;
+    border-bottom: 2px solid #555;
+}
+
+.friend-movie-item {
+    min-width: 200px;
+    max-width: 200px;
+    transition: transform 0.3s;
+    overflow: visible;
+    position: relative;
+}
+
+.friend-movie-item img {
+    width: 100%;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    transition: transform 0.3s, border-radius 0.3s;
+}
+
+.friend-movie-item img:hover {
+    transform: scale(1.05);
+    border-radius: 10px;
+    z-index: 10;
+}
+
+.review-author {
+    text-align: center;
+    color: white;
+    font-size: 14px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.review-author:hover {
+    color: yellow;
+    transform: scale(1.05);
+    cursor: pointer;
+}
+
+/* Give extra space to the first and last movie items */
+.movie-item:first-child,
+.friend-movie-item:first-child {
+    margin-left: 10px; /* or whatever matches your carousel padding */
+}
+
+.movie-item:last-child,
+.friend-movie-item:last-child {
+    margin-right: 10px;
+}
+
+
+.review-icons {
+    display: flex;
+    justify-content: center;
+    gap: 4px;
+    margin-top: 5px;
+    flex-wrap: wrap;
+    width: 100%;
+    color: lightgrey;
+}
+
 /* MOVIE CAROUSEL */
 .movie-carousel {
     display: flex;
     align-items: center;
     justify-content: center;
     position: relative;
-    margin-top: 40px; /* Ensures space below header */
+    margin-top: 20px; /* Ensures space below header */
 }
 
 .carousel-container {
@@ -235,12 +306,12 @@ footer {
 }
 
 .left-arrow {
-    left: 20px;
+    left: 10px;
     z-index: 2; /* Ensures it stays below header */
 }
 
 .right-arrow {
-    right: 20px;
+    right: 10px;
 }
 
 /* DID YOU KNOW SECTION */
