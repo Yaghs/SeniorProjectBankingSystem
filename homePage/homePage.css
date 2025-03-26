@@ -169,6 +169,7 @@ footer {
 .popular-movies-section {
     padding: 20px;
     text-align: left;
+    margin-bottom: -30px;
 }
 
 .popular-movies-section h2 {
