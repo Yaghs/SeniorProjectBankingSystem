@@ -94,13 +94,11 @@
                                     localStorage.setItem("isAdded", 'false');
                                     watch.innerHTML = "<i class='bx bx-plus'></i>"
                                     alert("Remove to Watchlist! Current Count: " + current);
-
                                 } else {
                                     current++;
                                     localStorage.setItem('isAdded', 'true');
                                     watch.innerHTML = "<i class='bx bx-minus'></i>";
                                     alert("Added to Watchlist! Current Count: " + current);
-
                                 }
                                 localStorage.setItem('listCount', current);
                                 console.log("Listing Count Updated:", current);
