@@ -1,3 +1,4 @@
+
 // OtherProfilePage.js
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import {getFirestore, doc, getDoc, collection, getDocs, query, orderBy, limit} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
@@ -158,3 +159,4 @@ async function loadRecentReviews(userID) {
 }
 
 document.addEventListener("DOMContentLoaded", loadOtherUserProfile);
+
