@@ -32,6 +32,7 @@ async function updateProfilePage() {
 
             if (userSnap.exists()) {
                 const userData = userSnap.data();
+
                 document.getElementById("username_Id").textContent = userData.firstName;
                 await updateFollowCounts(username);
                 await updateFollowersCount(username);
@@ -43,6 +44,7 @@ async function updateProfilePage() {
         }
     } else {
         console.error("No logged-in user found.");
+
     }
 }
 

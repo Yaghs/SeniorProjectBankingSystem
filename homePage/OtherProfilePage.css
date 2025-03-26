@@ -135,50 +135,12 @@ header {
     flex-direction: column;
 }
 
-.user-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 80px;
-    max-width: 400px;
-    margin-bottom: 5px;
-}
 
-.username_display h1 {
-    font-size: 34px;
-    color: white;
-}
-
-#Follow_button {
-    font-size: 18px;
-    padding: 5px 12px;
-    border-radius: 5px;
-    border: none;
-    background-color: #444;
-    color: white;
-    cursor: pointer;
-    width: 100px;
-    text-align: center;
-    transition: background-color 0.3s ease;
-}
-
-#Follow_button:hover {
-    background-color: #666;
-}
-
-#Follow_button.following {
-    background-color: yellow;
-    color: black;
-}
-
-#Follow_button.following:hover {
-    background-color: #f87204;
-    color: black;
-}
 
 .bio textarea {
     width: 100%;
     height: 80px;
+
     font-size: 14px;
     border: 1px solid #ccc;
     border-radius: 5px;
@@ -187,15 +149,19 @@ header {
 
 }
 
+
+
 .following_info {
     display: flex;
     justify-content: flex-start;
     gap: 10px;
+
     margin-left: 200px;
     margin-top: 10px;
     font-weight: bold;
     color: white;
 }
+
 
 p{
     margin-right: 15px;
@@ -208,6 +174,8 @@ p{
     border-bottom: 2px solid #555;
     margin-right: 40px;
 }
+
+
 
 .favorite-grid {
     display: grid;
@@ -237,6 +205,7 @@ p{
     border-radius: 8px;
     object-fit: cover;
 }
+
 
 .Placeholder .movielink .arrow_right{
     height: 35px;
@@ -335,24 +304,32 @@ p{
 }
 
 .reviewBoxContainer {
+
     background: #222;
     padding: 20px;
     border-radius: 10px;
     text-align: center;
     width: 600px;
+
+
     position: relative;
+
     color: white;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
+
 .reviewBoxContainer h2 {
+
     margin-bottom: 10px;
     text-align: left;
     border-bottom: 2px solid #555;
     padding-bottom: 10px;
 }
 
+
 .reviewBoxContainer input {
+
     width: 80%;
     padding: 10px;
     margin-bottom: 10px;
@@ -360,6 +337,7 @@ p{
     border-radius: 5px;
     border: none;
 }
+
 
 .reviewBoxContainer p {
     font-size: 16px;
@@ -376,6 +354,7 @@ p{
 }
 
 .review-suggestions {
+
     display: none;
     position: absolute;
     background: #333;
@@ -392,13 +371,17 @@ p{
     z-index: 10;
 }
 
+
 .review-suggestions div {
+
     padding: 10px;
     cursor: pointer;
     border-bottom: 1px solid #444;
 }
 
+
 .review-suggestions div:hover {
+
     background: #555;
 }
 
@@ -414,6 +397,7 @@ p{
 .close:hover {
     color: yellow;
 }
+
 
 .reviewForm {
     display: none;
@@ -699,6 +683,7 @@ p{
     margin-right: 60px;
 }
 
+
 .poster-modal {
     display: none;
     position: fixed;
@@ -777,4 +762,6 @@ p{
 
 .save-button:hover {
     background: limegreen;
+
 }
+
