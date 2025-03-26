@@ -135,16 +135,12 @@ header {
     flex-direction: column;
 }
 
-.username_display h1 {
-    font-size: 34px;
-    color: white;
-    margin-bottom: 10px;
-}
+
 
 .bio textarea {
-    width: 150%;
+    width: 100%;
     height: 80px;
-    #padding: 8px;
+
     font-size: 14px;
     border: 1px solid #ccc;
     border-radius: 5px;
@@ -152,14 +148,21 @@ header {
     margin-left: 5px;
 
 }
+
+
+
 .following_info {
     display: flex;
     justify-content: flex-start;
     gap: 10px;
-    margin-left: 250px;
+
+    margin-left: 200px;
+    margin-top: 10px;
     font-weight: bold;
     color: white;
 }
+
+
 p{
     margin-right: 15px;
     margin-left: 15px;
@@ -172,19 +175,7 @@ p{
     margin-right: 40px;
 }
 
-.favBox {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.7);
-    backdrop-filter: blur(5px);
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-}
+
 
 .favorite-grid {
     display: grid;
@@ -215,29 +206,130 @@ p{
     object-fit: cover;
 }
 
-.favBoxContainer {
+
+.Placeholder .movielink .arrow_right{
+    height: 35px;
+    width: 35px;
+    border-radius: 50%;
+    margin: 30px 0 5px;
+
+}
+
+.recentMovies h1 {
+    color: white;
+    border-bottom: 2px solid #555;
+    margin-right: 40px;
+    margin-left: 40px;
+}
+
+.recent-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 10px;
+    border-radius: 8px;
+    margin-left: 25px;
+    margin-top: 35px;
+    margin-bottom: 20px;
+}
+
+.review-card {
+    width: 180px;
+    height: 270px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 10px;
+    margin-right: 30px;
+    flex-direction: column;
+}
+
+.review-card img {
+    width: 180px;
+    height: 270px;
+    border-radius: 8px;
+    object-fit: cover;
+    margin-left: 30px;
+}
+
+.review-icons {
+    display: flex;
+    justify-content: center;
+    margin-left: 20px;
+    gap: 4px;
+    margin-top: 5px;
+    flex-wrap: wrap;
+    width: 100%;
+    color: lightgrey;
+}
+
+.Fav_movies .movielink .Placeholder{
+    width: auto;
+    height: 300px;
+    object-fit: cover;
+
+}
+
+.Placeholder {
+    height: 300px;
+    width: auto;
+    object-fit: cover;
+}
+
+.dm{
+    font-size: 15px;
+    color: white;
+    align-self: center;
+    margin-right: auto;
+    margin-left: -300px;
+    margin-top: 70px;
+    padding: 5px 40px;
+    background: #65558F;
+    border: #65558F;
+}
+
+.reviewBox {
     display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(5px);
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.reviewBoxContainer {
+
     background: #222;
     padding: 20px;
     border-radius: 10px;
     text-align: center;
     width: 600px;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+
+
+    position: relative;
+
     color: white;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-.favBoxContainer h2 {
+
+.reviewBoxContainer h2 {
+
     margin-bottom: 10px;
     text-align: left;
     border-bottom: 2px solid #555;
     padding-bottom: 10px;
 }
 
-.favBoxContainer input {
+
+.reviewBoxContainer input {
+
     width: 80%;
     padding: 10px;
     margin-bottom: 10px;
@@ -246,23 +338,23 @@ p{
     border: none;
 }
 
-.favBoxContainer p {
+
+.reviewBoxContainer p {
     font-size: 16px;
     margin-bottom: 10px;
+    span {
+        background: #555555;
+        padding: 5px;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+    span:hover {
+        color: yellow;
+    }
 }
 
-.clickable {
-    background: #555;
-    padding: 5px;
-    border-radius: 5px;
-    cursor: pointer;
-}
+.review-suggestions {
 
-.clickable:hover {
-    color: yellow;
-}
-
-.fav-suggestions {
     display: none;
     position: absolute;
     background: #333;
@@ -279,13 +371,17 @@ p{
     z-index: 10;
 }
 
-.fav-suggestions div {
+
+.review-suggestions div {
+
     padding: 10px;
     cursor: pointer;
     border-bottom: 1px solid #444;
 }
 
-.fav-suggestions div:hover {
+
+.review-suggestions div:hover {
+
     background: #555;
 }
 
@@ -301,6 +397,292 @@ p{
 .close:hover {
     color: yellow;
 }
+
+
+.reviewForm {
+    display: none;
+    background-color: #222;
+    color: white;
+    border-radius: 8px;
+    width: 60%;
+    max-height: 90vh;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 100;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    overflow: auto;
+}
+
+.reviewFormHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    background-color: #2d3442;
+}
+
+.backBtn {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    padding: 5px 10px;
+    margin: 0;
+    cursor: pointer;
+    font-weight: normal;
+}
+
+.backBtn:hover {
+    color: yellow;
+}
+
+.reviewFormHeader h2 {
+    margin: 0 0 0 15px;
+    font-size: 18px;
+    font-weight: normal;
+}
+
+.reviewFormHeader .left {
+    display: flex;
+    align-items: center;
+}
+
+.reviewFormHeader .close {
+    cursor: pointer;
+    font-size: 24px;
+    color: white;
+}
+
+.reviewFormHeader .close:hover {
+    color: yellow;
+}
+
+.review-movie-details {
+    display: flex;
+    padding: 20px;
+    gap: 20px;
+    margin-right: -50px;
+}
+
+.review-left-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    margin-right: -30vw;
+}
+
+.review-left-container img {
+    width: 200px;
+    height: auto;
+    border-radius: 8px;
+    align-self: flex-start;
+}
+
+.review-left-container button {
+    width: 150px;
+    background: #444;
+    color: white;
+    text-align: center;
+    padding: 8px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    align-self: flex-start;
+    margin-left: 25px;
+}
+
+.change-poster-btn:hover {
+    background: yellow;
+    color: black;
+}
+
+.review-movie-details > div {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.review-movie-details h2 {
+    margin: 0;
+    font-size: 24px;
+    display: inline;
+}
+
+#reviewMovieYear {
+    color: #aaa;
+    margin-left: 10px;
+    font-size: 22px;
+    font-weight: normal;
+}
+
+.movie-title-container {
+    display: flex;
+    align-items: baseline;
+    margin-bottom: 15px;
+}
+
+.watch-options {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    gap: 5px;
+    label {
+        font-size: 15px;
+    }
+}
+
+#watchedDate {
+    background-color: white;
+    color: black;
+    border: none;
+    border-radius: 4px;
+    padding: 3px 8px;
+    margin: 0 15px 0 5px;
+}
+
+#reviewText {
+    width: 87%;
+    height: 150px;
+    background-color: #e9ecf1;
+    border: none;
+    border-radius: 8px;
+    padding: 15px;
+    margin-top: 10px;
+    color: #333;
+    font-size: 16px;
+    resize: none;
+}
+
+.tag-rating-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px 0;
+    margin-top: 10px;
+    gap: 10px;
+}
+
+.tags-container {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    margin-right: 50px;
+}
+
+.tags {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 5px;
+}
+
+.tag-label, .small-note {
+    font-size: 14px;
+    color: #aaa;
+}
+
+.small-note {
+    font-size: 12px;
+    color: #bbb;
+    white-space: nowrap;
+    margin-left: 30px;
+    margin-bottom: 4px;
+}
+
+#reviewTags {
+    width: 95%;
+    padding: 8px;
+    border-radius: 4px;
+    border: none;
+    background: #e9ecf1;
+    color: #333;
+}
+
+.rating-section, .like-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+}
+
+.rating-section {
+    margin-left: 10px;
+    margin-bottom: 15px;
+}
+
+.rating-section .rating-label {
+    font-size: 14px;
+    margin-bottom: 10px;
+    color: #aaa;
+}
+
+.rating-container {
+    display: flex;
+    position: relative;
+}
+
+#reviewForm .rating-star i.highlighted,
+#reviewForm .rating-star i.bxs-star.highlighted,
+#reviewForm .rating-star i.bxs-star-half.highlighted {
+    color: yellow;
+}
+
+#reviewForm .rating-star i.selected,
+#reviewForm .rating-star i.bxs-star.selected,
+#reviewForm .rating-star i.bxs-star-half.selected {
+    color: yellow;
+}
+
+#reviewForm .rating-star i.bx-star,
+#reviewForm .rating-star i.bxs-star,
+#reviewForm .rating-star i.bxs-star-half {
+    color: yellow;
+    font-size: 25px;
+    margin-bottom: 5px;
+    transition: color 0.3s ease;
+    cursor: pointer;
+}
+
+
+.like-section .like-label {
+    font-size: 14px;
+    margin-bottom: 10px;
+    color: #aaa;
+}
+
+.like-btn i {
+    font-size: 25px;
+    margin-bottom: 5px;
+    color: #aaa;
+    transition: color 0.3s ease;
+    cursor: pointer;
+}
+
+.like-btn:hover i {
+    color: yellow;
+}
+
+.like-btn.liked i {
+    color: yellow;
+}
+
+.save-button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 8px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 4px;
+    float: right;
+    width: 20%;
+    align-self: flex-end;
+    margin-right: 60px;
+}
+
 
 .poster-modal {
     display: none;
@@ -380,53 +762,6 @@ p{
 
 .save-button:hover {
     background: limegreen;
-}
-
-.Placeholder .movielink .arrow_right{
-    height: 35px;
-    width: 35px;
-    border-radius: 50%;
-    margin: 30px 0 5px;
 
 }
-.Fav_movies .movielink .Placeholder{
-    width: auto;
-    height: 300px;
-    object-fit: cover;
-
-}
-.Placeholder {
-    height: 300px;
-    width: auto;
-    object-fit: cover;
-}
-.dm{
-    font-size: 15px;
-    color: white;
-    align-self: center;
-    margin-right: auto;
-    margin-left: -300px;
-    margin-top: 70px;
-    padding: 5px 40px;
-    background: #65558F;
-    border: #65558F;
-
-
-}
-/* Follow Button */
-.Follow {
-    font-size: 15px;
-    color: white;
-    align-self: center;
-    margin-right: auto;
-    margin-left: -800px;
-    margin-top: 70px;
-    padding: 5px 40px;
-    background: #65558F;
-    border: #65558F;
-    cursor: pointer;
-}
-
-
-
 

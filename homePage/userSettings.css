@@ -1,80 +1,74 @@
 body {
-  background-color: #1c1c1c; /* dark background */
-  color: #ffffff;          /* white text */
+  background-color: #1c1c1c;
+  color: #ffffff;
   font-family: Arial, sans-serif;
   margin: 0;
   padding: 0;
 }
 
-/* Container for the settings content aligned to the left */
-.settings-container {
-  max-width: 500px;
-  margin: 20px; /* adds space from the top and left */
-  padding: 20px;
-  text-align: left;
+.return-arrow {
+  position: fixed;
+  top: 25px;
+  left: 35px;
+  text-decoration: none;
+  color: #ffffff;
+  font-size: 36px;
+  z-index: 1000;
 }
 
-/* Header section with return arrow and title */
+.settings-container {
+  max-width: 600px;
+  margin: 80px auto;
+  padding: 20px;
+  background-color: #2a2a2a;
+  border-radius: 8px;
+}
+
 .settings-header {
-  display: flex;
-  align-items: center;
+  text-align: center;
   margin-bottom: 30px;
 }
 
-.return-arrow {
-  text-decoration: none;
-  color: #ffffff;
-  font-size: 24px;
-  margin-right: 10px;
-  cursor: pointer;
-}
-
-/* Page header left aligned */
-h1 {
-  text-align: left;
+.settings-header h1 {
   margin: 0;
+  font-size: 28px;
 }
 
-/* Main settings list styling */
-.settings-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-/* Individual settings item styling */
 .settings-item {
   padding: 15px 20px;
-  border-bottom: 1px solid #444; /* gray border */
+  font-size: 18px;
   cursor: pointer;
 }
 
-/* Hover effect for settings items */
-.settings-item:hover {
-  background-color: #333; /* slightly lighter gray on hover */
+.divider {
+  border: 0;
+  border-top: 1px solid #444;
+  margin: 0;
 }
 
-/* Styling for the sub-label in the Account Center */
 .sub-label {
-  color: #aaaaaa; /* gray text */
+  color: #aaaaaa;
   font-style: italic;
   margin-left: 5px;
 }
 
-/* Special styling for the Log Out option */
+/* Hover effect for settings items */
+.settings-item:hover {
+  background-color: #333;
+}
+
 .logout {
   font-weight: bold;
-  color: #ff4444; /* red for prominence */
+  color: #ff4444;
   text-align: center;
 }
 
-/* Slider (toggle switch) styling */
 .switch {
   position: relative;
   display: inline-block;
   width: 47px;
   height: 20px;
-  margin-left: 285px;
+  margin-left: 405px;
 }
 
 .switch input {

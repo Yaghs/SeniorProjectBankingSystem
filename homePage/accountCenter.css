@@ -1,0 +1,121 @@
+body {
+  background-color: #1c1c1c;
+  color: #ffffff;
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+.return-arrow {
+  position: fixed;
+  top: 25px;
+  left: 35px;
+  text-decoration: none;
+  color: #ffffff;
+  font-size: 36px;
+  z-index: 1000;
+}
+
+.account-container {
+  max-width: 600px;
+  margin: 80px auto;
+  padding: 20px;
+  background-color: #2a2a2a;
+  border-radius: 8px;
+}
+
+.account-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.account-header h1 {
+  margin: 0;
+  font-size: 28px;
+}
+
+.username-section,
+.password-section {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+
+.username-label,
+.password-label {
+  font-weight: bold;
+}
+
+.change-link {
+  color: #007bff;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.change-link:hover {
+  text-decoration: underline;
+}
+
+.username-edit,
+.password-edit {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.confirm-button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.confirm-button:hover {
+  background-color: #0056b3;
+}
+
+.username-input,
+.password-input {
+  padding: 6px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  color: #000;
+}
+
+.toggle-password {
+  cursor: pointer;
+  font-size: 18px;
+  user-select: none;
+  margin-left: 5px;
+  color: #ffffff;
+}
+
+.success-message {
+  color: #32CD32;
+  font-weight: bold;
+  margin-top: 10px;
+}
+
+.divider {
+  border: 0;
+  border-top: 1px solid #444;
+  margin: 20px 0;
+}
+
+.info-section {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+
+.info-label {
+  font-weight: bold;
+}
