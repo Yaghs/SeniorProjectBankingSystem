@@ -85,16 +85,15 @@ tie it with firebase
                 <p>This year: 0</p>
                 <p id="Listing">Listing: 0</p>
 
-                <script>
-                    document.addEventListener('DOMContentLoaded', () => {
-                        const Listing = document.getElementById('Listing');
-                        let current = parseInt(localStorage.getItem('listCount') || 0);
-                        Listing.textContent = `Listing: ${current}`;
-                    });
-                </script>
-
-                <p>Following: 0 </p>
-                <p>Followers: 0</p>
+              <script>
+                  document.addEventListener('DOMContentLoaded', () => {
+                      const Listing = document.getElementById('Listing');
+                      let current = parseInt(localStorage.getItem('listCount') || 0);
+                      Listing.textContent = `Listing: ${current}`;
+                  });
+              </script>
+                <p id="FollowingCount">Following: 0</p>
+                <p id="FollowersCount">Followers: 0</p>
                 <!-- DM button -->
                 <button class="dm">Direct Message</button>
 

@@ -136,9 +136,16 @@ header {
 }
 
 .username_display h1 {
+    display: flex;
+    align-items: center;
     font-size: 34px;
     color: white;
     margin-bottom: 10px;
+    gap: 20px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
 }
 
 .bio textarea {

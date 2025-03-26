@@ -34,6 +34,8 @@ async function updateProfilePage() {
                 const userData = userSnap.data();
 
                 document.getElementById("username_Id").textContent = userData.firstName;
+                await updateFollowCounts(username);
+                await updateFollowersCount(username);
             } else {
                 console.error("User not found in Firebase.");
             }
@@ -297,6 +299,31 @@ async function loadRecentReviews() {
         console.error("Error fetching recent reviews:", error);
     }
 }
+
+async function updateFollowCounts(username) {
+    try {
+        const followingRef = collection(db, "users", username, "following");
+        const followingSnap = await getDocs(followingRef);
+        const followingCount = followingSnap.size;
+
+        document.getElementById("FollowingCount").textContent = `Following: ${followingCount}`;
+    } catch (error) {
+        console.error("error fetching following count:", error);
+    }
+}
+
+async function updateFollowersCount(username) {
+    try {
+        const followersRef = collection(db, "users", username, "followers");
+        const followersSnap = await getDocs(followersRef);
+        const followersCount = followersSnap.size;
+
+        document.getElementById("FollowersCount").textContent = `Followers: ${followersCount}`;
+    } catch (error) {
+        console.error("error fetching followers count:", error);
+    }
+}
+
 
 // Load recent reviews when profile page loads
 document.addEventListener("DOMContentLoaded", loadRecentReviews);
