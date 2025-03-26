@@ -149,7 +149,46 @@ header {
 
 }
 
+.user-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 80px;
+    max-width: 400px;
+    margin-bottom: 5px;
+}
 
+.username_display h1 {
+    font-size: 34px;
+    color: white;
+}
+
+#Follow_button {
+    font-size: 18px;
+    padding: 5px 12px;
+    border-radius: 5px;
+    border: none;
+    background-color: #444;
+    color: white;
+    cursor: pointer;
+    width: 100px;
+    text-align: center;
+    transition: background-color 0.3s ease;
+}
+
+#Follow_button:hover {
+    background-color: #666;
+}
+
+#Follow_button.following {
+    background-color: yellow;
+    color: black;
+}
+
+#Follow_button.following:hover {
+    background-color: #f87204;
+    color: black;
+}
 
 .following_info {
     display: flex;
