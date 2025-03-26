@@ -1,6 +1,6 @@
 // OtherProfilePage.js
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import {getFirestore, doc, getDoc, collection, getDocs, query, orderBy, limit} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import {getFirestore, doc, getDoc, collection, getDocs, query, orderBy, limit, setDoc, deleteDoc} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 const firebaseConfig = {
     apiKey: "AIzaSyD1LpIBMmZAiQFwberKbx2G29t6fNph3Xg",
@@ -16,37 +16,128 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const Follow = document.getElementById('Follow');
 const Follow_button = document.getElementById('Follow_button');
-Follow_button.addEventListener('click', function () {
-    let current_Follower = parseInt(Follow.textContent.split(": ")[1]);
+// Handle follow button click
+Follow_button.addEventListener('click', async function () {
+    const currentUser = localStorage.getItem("loggedInUser");
+    const targetUser = getQueryParam("user");
+
+    if (!currentUser || !targetUser) return;
 
     const isNowFollowing = !Follow_button.classList.contains("following");
 
-    if (isNowFollowing) {
-        current_Follower += 1;
-        Follow_button.classList.add("following");
-        Follow_button.textContent = "Following";
-    } else {
-        current_Follower -= 1;
-        Follow_button.classList.remove("following");
-        Follow_button.textContent = "Follow";
-    }
+    const followingRef = doc(db, "users", currentUser, "following", targetUser);
+    const followerRef = doc(db, "users", targetUser, "followers", currentUser);
 
-    Follow.textContent = `Followers: ${current_Follower}`;
+    try {
+        if (isNowFollowing) {
+            await Promise.all([
+                setDoc(followingRef, { username: targetUser })
+                    .then(() => console.log("following doc saved")),
+                setDoc(followerRef, { username: currentUser })
+                    .then(() => console.log("follower doc saved"))
+            ]);
+
+            Follow_button.classList.add("following");
+            Follow_button.textContent = "Following";
+            updateFollowerCount(1);
+            console.log("Saving to:", `users/${currentUser}/following/${targetUser}`);
+
+        } else {
+            await Promise.all([
+                deleteDoc(followingRef),
+                deleteDoc(followerRef)
+            ]);
+
+            Follow_button.classList.remove("following");
+            Follow_button.textContent = "Follow";
+            updateFollowerCount(-1);
+        }
+    } catch (error) {
+        console.error("error updating follow status:", error);
+    }
 });
 
+// hover effect for unfollowing
 Follow_button.addEventListener('mouseenter', () => {
     if (Follow_button.classList.contains("following")) {
         Follow_button.textContent = "Unfollow";
-        Follow_button.classList.add("unfollow-hover");
     }
 });
-
 Follow_button.addEventListener('mouseleave', () => {
     if (Follow_button.classList.contains("following")) {
         Follow_button.textContent = "Following";
-        Follow_button.classList.remove("unfollow-hover");
     }
 });
+
+// checks if current user is following target user
+async function checkIfFollowing(currentUser, targetUser) {
+    const followRef = doc(db, "users", currentUser, "following", targetUser);
+
+    try {
+        const followSnap = await getDoc(followRef);
+        if (followSnap.exists()) {
+            Follow_button.classList.add("following");
+            Follow_button.textContent = "Following";
+        } else {
+            Follow_button.classList.remove("following");
+            Follow_button.textContent = "Follow";
+        }
+    } catch (error) {
+        console.error("error checking follow status:", error);
+    }
+}
+
+// count followers of the target user
+async function updateFollowerCountDisplay(targetUser) {
+    try {
+        let followerCount = 0;
+
+        // Get all user documents (to check who has this user in their 'following' list)
+        const usersCollection = collection(db, "users");
+        const usersSnap = await getDocs(usersCollection);
+
+        for (const userDoc of usersSnap.docs) {
+            const followingRef = doc(db, "users", userDoc.id, "following", targetUser);
+            const followingSnap = await getDoc(followingRef);
+            if (followingSnap.exists()) {
+                followerCount++;
+            }
+        }
+
+        const followerText = document.getElementById("Follow");
+        if (followerText) {
+            followerText.textContent = `Followers: ${followerCount}`;
+        }
+
+    } catch (error) {
+        console.error("Error counting followers:", error);
+    }
+}
+
+async function updateFollowingCountDisplay(targetUser) {
+    try {
+        const followingRef = collection(db, "users", targetUser, "following");
+        const followingSnap = await getDocs(followingRef);
+        const count = followingSnap.size;
+
+        const followingText = document.getElementById("Following");
+        if (followingText) {
+            followingText.textContent = `Following: ${count}`;
+        }
+    } catch (error) {
+        console.error("Error counting following:", error);
+    }
+}
+
+// update followers count visually
+function updateFollowerCount(change) {
+    const followerElement = document.getElementById("Follow");
+    if (!followerElement) return;
+
+    let currentCount = parseInt(followerElement.textContent.split(": ")[1] || "0");
+    currentCount += change;
+    followerElement.textContent = `Followers: ${currentCount}`;
+}
 
 
 function getQueryParam(param) {
@@ -158,3 +249,14 @@ async function loadRecentReviews(userID) {
 }
 
 document.addEventListener("DOMContentLoaded", loadOtherUserProfile);
+
+document.addEventListener("DOMContentLoaded", async () => {
+    const currentUser = localStorage.getItem("loggedInUser");
+    const targetUser = getQueryParam("user");
+
+    if (!currentUser || !targetUser) return;
+
+    await checkIfFollowing(currentUser, targetUser);
+    await updateFollowerCountDisplay(targetUser);
+    await updateFollowingCountDisplay(targetUser);
+});
