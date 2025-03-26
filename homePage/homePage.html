@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>Home Page</title>
     <link rel="stylesheet" href="homePage.css">
+    <link rel='stylesheet' href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css'>
     <script defer type="module" src="search.js"></script>
     <script defer type="module" src="homePage.js"></script>
     <script type="module" src="+review.js"></script>
@@ -47,6 +48,18 @@
             <!-- Movie posters will be injected here -->
         </div>
         <button class="carousel-arrow right-arrow" onclick="nextPopularMovie()">❯</button>
+    </div>
+</div>
+
+<!-- new from friends -->
+<div class="new-from-friends">
+    <h2>New From Friends</h2>
+    <div class="movie-carousel">
+        <button class="carousel-arrow left-arrow" onclick="prevFriendMovie()">❮</button>
+        <div class="carousel-container" id="friendsMoviesContainer">
+            <!-- Movie posters will be injected here -->
+        </div>
+        <button class="carousel-arrow right-arrow" onclick="nextFriendMovie()">❯</button>
     </div>
 </div>
 
