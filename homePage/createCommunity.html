@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <title>Create Community Group</title>
     <link rel="stylesheet" href="createCommunity.css">
+    <script type="module" src="search.js"></script>
+    <script type="module" src="+review.js"></script>
 </head>
 <body>
 
@@ -12,12 +14,22 @@
         <h1>Movies Project</h1>
     </div>
     <div class="right">
-        <a href="../homePage/homePage.html">Home</a>
+        <a href="homePage.html">Home</a>
+        <div class="dropdown">
+            <a href="#" id="accountLink">Account</a>
+            <div class="dropdown-content">
+                <a href="Profilepage.html">Profile</a>
+                <a href="userSettings.html">Settings</a>
+                <a href="#" class="sign-out">Sign out</a>
+            </div>
+        </div>
         <a href="#">Activity</a>
         <a href="#">+Review</a>
         <a href="../homePage/communities.html">Communities</a>
+        <input type="text" id="searchInput" placeholder="Search..." autocomplete="off">
     </div>
 </header>
+<div id="suggestions"></div>
 
 <div class="container" id="section-1-gradient">
     <div class="row">
