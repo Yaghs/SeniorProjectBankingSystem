@@ -20,9 +20,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const movie = JSON.parse(localStorage.getItem("selectedMovie"));
     if (movie) {
-        currentMovieSpan.textContent = `${movie.title} (${movie.release_date.split("-")[0]})`;
+        currentMovieSpan.textContent = `${movie.title} (${movie.release_date?.split("-")[0] || "Unknown"})`;
         document.getElementById("reviewMovieTitle").textContent = movie.title;
-        document.getElementById("reviewMovieYear").textContent = movie.release_date.split("-")[0];
         document.getElementById("reviewMoviePoster").src = movie.poster_path
             ? `https://image.tmdb.org/t/p/original${movie.poster_path}`
             : "https://via.placeholder.com/300?text=No+Image";
