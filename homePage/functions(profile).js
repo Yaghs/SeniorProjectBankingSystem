@@ -201,7 +201,8 @@ document.addEventListener("DOMContentLoaded", async () => {
             const movieData = {
                 title: movie.title,
                 poster: posterUrl,
-                index: index // store data-index to correctly load movies
+                index: index,
+                year: movie.release_date ? movie.release_date.split("-")[0] : "Unknown"
             };
             await setDoc(movieRef, movieData);
             alert("Your favorite movie has been saved!");
@@ -231,10 +232,48 @@ document.addEventListener("DOMContentLoaded", async () => {
                 if (placeholder) {
                     placeholder.innerHTML = `<img src="${movieData.poster}" width="180px" height="270px" style="border-radius:10px;">`;
                     placeholder.setAttribute("data-title", movieData.title);
+
+                    // remove any previous event listeners
+                    const newPlaceholder = placeholder.cloneNode(true);
+                    placeholder.parentNode.replaceChild(newPlaceholder, placeholder);
+
+                    // redirect to movie page on click, but first fetch full TMDB movie
+                    newPlaceholder.addEventListener("click", async () => {
+                        try {
+                            const response = await fetch(
+                                `https://api.themoviedb.org/3/search/movie?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(movieData.title)}`
+                            );
+                            const data = await response.json();
+
+                            // try to find the best match based on both title and year
+                            let tmdbMovie = data.results.find(movie =>
+                                movie.title.toLowerCase() === movieData.title.toLowerCase() &&
+                                movie.release_date &&
+                                movie.release_date.startsWith(movieData.year)
+                            );
+
+                            if (!tmdbMovie) {
+                                console.warn("Exact match not found, falling back to first result.");
+                                tmdbMovie = data.results[0];
+                            }
+
+                            if (!tmdbMovie || !tmdbMovie.id) {
+                                alert("Failed to load movie details.");
+                                return;
+                            }
+
+                            localStorage.setItem("selectedMovie", JSON.stringify(tmdbMovie));
+                            window.location.href = "moviePage.html";
+                        } catch (error) {
+                            console.error("Error fetching TMDB movie:", error);
+                            alert("Could not load movie details.");
+                        }
+                    });
+
                 }
             });
 
-            favoriteGrid.style.opacity = "1"; // Reveal grid after loading
+            favoriteGrid.style.opacity = "1"; // reveal grid after loading
             console.log("Favorite movies loaded successfully!");
         } catch (error) {
             console.error("Error loading favorite movies:", error);
