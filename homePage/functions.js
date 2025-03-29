@@ -191,6 +191,33 @@ async function loadFavoriteMovies(userID) {
             if (placeholder) {
                 placeholder.innerHTML = `<img src="${movieData.poster}" width="180px" height="270px" style="border-radius:10px;">`;
                 placeholder.setAttribute("data-title", movieData.title);
+
+                // remove existing listeners and attach new one
+                const newPlaceholder = placeholder.cloneNode(true);
+                placeholder.parentNode.replaceChild(newPlaceholder, placeholder);
+
+                newPlaceholder.addEventListener("click", async () => {
+                    try {
+                        const response = await fetch(`https://api.themoviedb.org/3/search/movie?api_key=bc7c4e7c62d9e223e196bbd15978fc51&query=${encodeURIComponent(movieData.title)}`);
+                        const data = await response.json();
+
+                        // match title and year if possible
+                        const matchedMovie = data.results.find(
+                            m => m.title === movieData.title && m.release_date?.includes(movieData.year)
+                        ) || data.results[0]; // fallback
+
+                        if (!matchedMovie || !matchedMovie.id) {
+                            alert("Failed to load movie details.");
+                            return;
+                        }
+
+                        localStorage.setItem("selectedMovie", JSON.stringify(matchedMovie));
+                        window.location.href = "moviePage.html";
+                    } catch (error) {
+                        console.error("Error fetching TMDB movie:", error);
+                        alert("Could not load movie details.");
+                    }
+                });
             }
         });
 
@@ -200,6 +227,7 @@ async function loadFavoriteMovies(userID) {
         console.error("Error loading favorite movies:", error);
     }
 }
+
 
 async function loadRecentReviews(userID) {
     const reviewsRef = collection(db, "users", userID, "reviews");
