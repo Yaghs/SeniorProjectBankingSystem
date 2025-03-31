@@ -48,14 +48,14 @@ async function loadReview() {
         // console.log("Review Data Retrieved:", reviewData);
 
         document.getElementById("reviewUsername").textContent = userData.firstName || username;
-        document.getElementById("reviewMovieTitle").textContent = `${reviewData.title} (${new Date(reviewData.watchedDate).getFullYear()})`;
-        document.getElementById("reviewText").textContent = reviewData.reviewText || "No review written.";
-        document.getElementById("watchedDate").textContent = reviewData.watchedDate
+        document.getElementById("MovieTitle").textContent = `${reviewData.title} (${new Date(reviewData.watchedDate).getFullYear()})`;
+        document.getElementById("Text").textContent = reviewData.reviewText || "No review written.";
+        document.getElementById("watchDate").textContent = reviewData.watchedDate
             ? new Date(reviewData.watchedDate).toLocaleDateString('en-US', { day: '2-digit', month: 'short', year: 'numeric' })
             : "Not Specified";
 
         // Ensure poster is set
-        document.getElementById("reviewMoviePoster").src = reviewData.selectedPoster || "https://via.placeholder.com/300?text=No+Image";
+        document.getElementById("MoviePoster").src = reviewData.selectedPoster || "https://via.placeholder.com/300?text=No+Image";
 
         document.getElementById("reviewedIcon").innerHTML = "<i class='bx bxs-show'></i>";
         document.getElementById("likedIcon").innerHTML = reviewData.liked ? "<i class='bx bxs-heart'></i>" : "<i class='bx bx-heart'></i>";
@@ -109,7 +109,7 @@ async function loadReviewActionBox(movieTitle) {
             // clears existing stars before displaying new ones
             ratingDisplay.innerHTML = "";
 
-            // Math.floor determines numver of full stars
+            // Math.floor determines number of full stars
             const fullStars = Math.floor(userRating);
             // userRating % 1 !=0 checks if rating includes half a star
             const hasHalfStar = userRating % 1 !== 0;
@@ -159,7 +159,7 @@ async function loadReviewActionBox(movieTitle) {
                         document.getElementById("likeButton").classList.toggle("liked", reviewData.liked);
 
                         const userRating = reviewData.rating || 0;
-                        // Math.floor determines numver of full stars
+                        // Math.floor determines number of full stars
                         const fullStars = Math.floor(userRating);
                         // userRating % 1 !=0 checks if rating includes half a star
                         const hasHalfStar = userRating % 1 !== 0;
@@ -217,257 +217,17 @@ function resetReviewActionBox() {
     `;
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-    const reviewBtn = document.getElementById("reviewBtn");
-    const reviewModal = document.getElementById("reviewBox");
-    const closeModal = document.querySelectorAll(".close");
-    const currentMovieSpan = document.getElementById("currentMovie");
-    const searchPage = document.getElementById("reviewSearchPage");
-    const reviewForm = document.getElementById("reviewForm");
-    const backBtn = document.getElementById("backBtn");
-    const reviewSearchInput = document.getElementById("reviewSearch");
-    const reviewSuggestions = document.getElementById("reviewSuggestions");
-    const watchedDateInput = document.getElementById("watchedDate");
+const closeButtons = document.querySelectorAll(".close");
+const reviewBox = document.getElementById("reviewBox");
+const reviewForm = document.getElementById("reviewForm");
+const reviewSearchPage = document.getElementById("reviewSearchPage");
+const reviewSuggestions = document.getElementById("reviewSuggestions");
 
-    const API_KEY = "bc7c4e7c62d9e223e196bbd15978fc51";
-
-    if (watchedDateInput) {
-        // get today's date in YYYY-MM-DD format
-        const today = new Date().toISOString().split('T')[0];
-        watchedDateInput.value = today; // set input value
-    }
-
-    const movie = JSON.parse(localStorage.getItem("selectedMovie"));
-    if (movie) {
-        currentMovieSpan.textContent = `${movie.title} (${movie.release_date.split("-")[0]})`;
-        document.getElementById("reviewMovieTitle").textContent = movie.title;
-        document.getElementById("reviewMovieYear").textContent = movie.release_date.split("-")[0];
-        document.getElementById("reviewMoviePoster").src = movie.poster_path
-            ? `https://image.tmdb.org/t/p/original${movie.poster_path}`
-            : "https://via.placeholder.com/300?text=No+Image";
-    }
-
-    // open pop-up when +Review is clicked
-    reviewBtn.addEventListener("click", () => {
-        reviewModal.style.display = "flex";
-    });
-
-    // close pop-up when X button is clicked
-    closeModal.forEach(button => {
-        button.addEventListener("click", () => {
-            reviewModal.style.display = "none";
-            searchPage.style.display = "block";
-            reviewForm.style.display = "none";
-            reviewSuggestions.style.display = "none"; // Hide search results when closing
-        });
-    });
-
-    // transition to review form when clicking movie name
-    currentMovieSpan.addEventListener("click", () => {
-        searchPage.style.display = "none";
-        reviewForm.style.display = "block";
-    });
-
-    // back button to return to search page
-    backBtn.addEventListener("click", () => {
-        searchPage.style.display = "block";
+closeButtons.forEach(button => {
+    button.addEventListener("click", () => {
+        reviewBox.style.display = "none";
         reviewForm.style.display = "none";
-    });
-
-    reviewSearchInput.addEventListener("input", async () => {
-        const query = reviewSearchInput.value.trim();
-        if (query.length < 2) {
-            reviewSuggestions.style.display = "none";
-            return;
-        }
-
-        try {
-            const movies = await fetchMovies(query);
-            displayReviewSuggestions(movies);
-        } catch (error) {
-            console.error("Error fetching search results:", error);
-        }
-    });
-
-    // sends request to tmdb api to search for movies that match what user is typing
-    async function fetchMovies(query) {
-        // await used bc its async
-        // encodeURIComponent used to handle special characters
-        const response = await fetch(
-            `https://api.themoviedb.org/3/search/movie?api_key=${API_KEY}&query=${encodeURIComponent(query)}`
-        );
-        // converts api response to json
-        const data = await response.json();
-        // returns results array from api response
-        return data.results;
-    }
-
-    // displays movie suggestions from the search bar in pop up
-    function displayReviewSuggestions(movies) {
-        reviewSuggestions.innerHTML = ""; // clears previous suggestions
-
-        // checks if no movies were found
-        if (movies.length === 0) {
-            // if non were found we hide the suggestions container
-            reviewSuggestions.style.display = "none";
-            // exit functions
-            return;
-        }
-
-        // loops through each movie in the array
-        movies.forEach(movie => {
-            // create new <div>
-            const suggestion = document.createElement("div");
-            // set text to movie title and year
-            suggestion.textContent = `${movie.title} (${movie.release_date ? movie.release_date.split("-")[0] : "Unknown"})`;
-            // click event listener that calls selectReviewMovie function
-            suggestion.addEventListener("click", () => selectReviewMovie(movie));
-            // adds suggestions to the suggestion container
-            reviewSuggestions.appendChild(suggestion);
-        });
-        // makes suggestion container visible
-        reviewSuggestions.style.display = "block";
-    }
-
-    function selectReviewMovie(movie) {
-        localStorage.setItem("selectedMovie", JSON.stringify(movie));
-
-        // Update UI in both the search page and the review form
-        // currentMovieSpan.textContent = `${movie.title} (${movie.release_date ? movie.release_date.split("-")[0] : "Unknown"})`;
-        document.getElementById("reviewMovieTitle").textContent = movie.title;
-        document.getElementById("reviewMovieYear").textContent = movie.release_date ? movie.release_date.split("-")[0] : "Unknown";
-        document.getElementById("reviewMoviePoster").src = movie.poster_path
-            ? `https://image.tmdb.org/t/p/original${movie.poster_path}`
-            : "https://via.placeholder.com/300?text=No+Image";
-
-        // hide suggestions after selection
+        reviewSearchPage.style.display = "block";
         reviewSuggestions.style.display = "none";
-
-        // transition to the review form after selecting movie
-        searchPage.style.display = "none";
-        reviewForm.style.display = "block";
-    }
-
-});
-
-// stars stores elements with class .rating-star
-const stars = document.querySelectorAll(".rating-star");
-// keeps track of users selected ratings (set to 0)
-let selectedRating = 0;
-
-// loops through all stars
-stars.forEach(star => {
-    // listens to mouse event (hover)
-    star.addEventListener("mousemove", (e) => {
-        // starValue gets numerical value
-        const starValue = parseInt(star.getAttribute("data-value"));
-        // rect stores position and size of star
-        const rect = star.getBoundingClientRect();
-        // position calculates if cursor is on left or right of star
-        const position = (e.clientX - rect.left) / rect.width;
-
-        // clears previous highlights, resets all stars to empty
-        stars.forEach(s => {
-            s.querySelector('i').classList.remove('highlighted');
-            s.querySelector('i').className = 'bx bx-star';
-        });
-
-        // fills all stars before hovered star
-        stars.forEach(s => {
-            const sValue = parseInt(s.getAttribute("data-value"));
-            if (sValue < starValue) {
-                s.querySelector('i').classList.add('highlighted');
-                s.querySelector('i').className = 'bx bxs-star highlighted'; // Full star
-            }
-        });
-
-        // if you hover over left half of star, fills as half a star
-        if (position <= 0.5) {
-            star.querySelector('i').classList.add('highlighted');
-            star.querySelector('i').className = 'bx bxs-star-half highlighted'; // half star
-            // if you hover over right half of star, fills as full star
-        } else {
-            star.querySelector('i').classList.add('highlighted');
-            star.querySelector('i').className = 'bx bxs-star highlighted'; // full star
-        }
     });
-
-    // event listener that listens for when user clicks on the star
-    star.addEventListener("click", (e) => {
-        // starValue gets numerical value
-        const starValue = parseInt(star.getAttribute("data-value"));
-        // rect stores position and size of star
-        const rect = star.getBoundingClientRect();
-        // position calculates if cursor is on left or right of star
-        const position = (e.clientX - rect.left) / rect.width;
-
-        // if the user clicks the same rating already selected, reset to 0
-        if (selectedRating === starValue || selectedRating === starValue - 0.5) {
-            selectedRating = 0;
-        } else {
-            // if you click left half, set rating to half the value
-            if (position <= 0.5) {
-                selectedRating = starValue - 0.5;
-                // if you click right half, set rating to full value
-            } else {
-                selectedRating = starValue;
-            }
-        }
-        // call updateStarsDisplay() to visually update stars based on new rating
-        updateStarsDisplay();
-    });
-});
-
-// when mouse leaves rating container, reset stars to reflect selected rating
-document.querySelector('.rating-container').addEventListener('mouseleave', () => {
-    updateStarsDisplay();
-});
-
-// function updates the stars displayed
-function updateStarsDisplay() {
-    // fullStars extracts whole number portion (aka 3 from 3.5)
-    const fullStars = Math.floor(selectedRating);
-    // hasHalfStar checks if rating includes half a star
-    const hasHalfStar = selectedRating % 1 !== 0;
-
-    // loops through each .rating-star element
-    stars.forEach(s => {
-        // retrieves numeric rating from stars data-value
-        // converts it into an integer
-        const starValue = parseInt(s.getAttribute("data-value"));
-        // finds the <i> element inside the star
-        const icon = s.querySelector('i');
-
-        // remove existing highlight and selection
-        icon.classList.remove('highlighted', 'selected');
-
-        // if stars data-value is less than or equal to the selected rating
-        if (starValue <= fullStars) {
-            // change icon to fully filled yellow star
-            // add selected class to indicate its chosen
-            icon.className = 'bx bxs-star selected';
-            // handles half a star
-        } else if (hasHalfStar && starValue === fullStars + 1) {
-            icon.className = 'bx bxs-star-half selected';
-            // handles empty stars
-        } else {
-            icon.className = 'bx bx-star';
-        }
-    });
-}
-
-// selects heart icon for liking the movie
-const likeButton = document.getElementById("likeButton");
-
-// adds or removes .liked when clicked
-likeButton.addEventListener("click", () => {
-    likeButton.classList.toggle("liked");
-
-    // if liked, show filled heart
-    if (likeButton.classList.contains("liked")) {
-        likeButton.innerHTML = "<i class='bx bxs-heart'></i>";
-        // otherwise show empty heart
-    } else {
-        likeButton.innerHTML = "<i class='bx bx-heart'></i>";
-    }
 });
