@@ -1,3 +1,20 @@
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getFirestore, doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+// firebase configuration
+const firebaseConfig = {
+    apiKey: "AIzaSyD1LpIBMmZAiQFwberKbx2G29t6fNph3Xg",
+    authDomain: "sample-dc6d0.firebaseapp.com",
+    projectId: "sample-dc6d0",
+    storageBucket: "sample-dc6d0.appspot.com",
+    messagingSenderId: "650782048731",
+    appId: "1:650782048731:web:d2828c5b87f0a4e62367fe",
+    measurementId: "G-WJMEY6J7BR"
+};
+
+// initialize Firebase
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
 document.addEventListener("DOMContentLoaded", () => {
     const reviewBtn = document.getElementById("reviewBtn");
     const reviewModal = document.getElementById("reviewBox");
@@ -358,11 +375,6 @@ document.getElementById("saveReview").addEventListener("click", async () => {
         alert("you must be logged in to save a review.");
         return;
     }
-    // if no movie is selected, give an alert
-    if (!movie) {
-        alert("no movie selected.");
-        return;
-    }
 
     // get review details
     const movieTitle = document.getElementById("reviewMovieTitle").textContent;
@@ -410,7 +422,7 @@ document.getElementById("saveReview").addEventListener("click", async () => {
 
     } catch (error) {
         // console.error("error saving review:", error);
-        alert("failed to save review. please try again.");
+        // alert("failed to save review. please try again.");
     }
 });
 
