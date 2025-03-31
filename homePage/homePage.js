@@ -113,6 +113,8 @@ async function loadFriendsReviews() {
     const followingRef = collection(db, "users", currentUser, "following");
     const followingSnapshot = await getDocs(followingRef);
 
+    const allRecentReviews = [];
+
     for (const docSnap of followingSnapshot.docs) {
         const friendUsername = docSnap.id;
 
@@ -128,35 +130,45 @@ async function loadFriendsReviews() {
 
         reviewSnapshot.forEach(reviewDoc => {
             const reviewData = reviewDoc.data();
+            reviewData.username = friendUsername;
+            reviewData.firstName = friendFirstName;
+            reviewData.timestamp = reviewData.timestamp?.toDate?.() || new Date(0); // fallback if timestamp missing
 
-            const movieItem = document.createElement("div");
-            movieItem.classList.add("friend-movie-item");
-
-            let starsHtml = "";
-            const fullStars = Math.floor(reviewData.rating || 0);
-            const hasHalfStar = reviewData.rating % 1 !== 0;
-
-            for (let i = 0; i < fullStars; i++) {
-                starsHtml += "<i class='bx bxs-star'></i>";
-            }
-            if (hasHalfStar) {
-                starsHtml += "<i class='bx bxs-star-half'></i>";
-            }
-
-            movieItem.innerHTML = `
-                <img src="${reviewData.selectedPoster || 'https://via.placeholder.com/180x270?text=No+Image'}" alt="${reviewData.title}" onclick="goToMoviePageFromReview('${reviewData.title}')">
-                <div class="review-author" role="button" onclick="visitUserProfile('${friendUsername}')">${friendData.firstName || friendUsername}</div>
-                <div class="review-icons">
-                    <div class="rating">${starsHtml}</div>
-                    ${reviewData.liked ? "<i class='bx bxs-heart'></i>" : ""}
-                    ${reviewData.watchedBefore ? "<i class='bx bxs-show'></i>" : ""}
-                    ${reviewData.reviewText ? "<i class='bx bxs-comment-detail'></i>" : ""}
-                </div>
-            `;
-            friendsMoviesContainer.appendChild(movieItem);
+            allRecentReviews.push(reviewData);
         });
     }
+
+    allRecentReviews.sort((a, b) => b.timestamp - a.timestamp);
+
+    allRecentReviews.forEach(reviewData => {
+        const movieItem = document.createElement("div");
+        movieItem.classList.add("friend-movie-item");
+
+        let starsHtml = "";
+        const fullStars = Math.floor(reviewData.rating || 0);
+        const hasHalfStar = reviewData.rating % 1 !== 0;
+
+        for (let i = 0; i < fullStars; i++) {
+            starsHtml += "<i class='bx bxs-star'></i>";
+        }
+        if (hasHalfStar) {
+            starsHtml += "<i class='bx bxs-star-half'></i>";
+        }
+
+        movieItem.innerHTML = `
+            <img src="${reviewData.selectedPoster || 'https://via.placeholder.com/180x270?text=No+Image'}" alt="${reviewData.title}" onclick="goToMoviePageFromReview('${reviewData.title}')">
+            <div class="review-author" role="button" onclick="visitUserProfile('${reviewData.username}')">${reviewData.firstName}</div>
+            <div class="review-icons">
+                <div class="rating">${starsHtml}</div>
+                ${reviewData.liked ? "<i class='bx bxs-heart'></i>" : ""}
+                ${reviewData.watchedBefore ? "<i class='bx bxs-show'></i>" : ""}
+                ${reviewData.reviewText ? "<i class='bx bxs-comment-detail'></i>" : ""}
+            </div>
+        `;
+        friendsMoviesContainer.appendChild(movieItem);
+    });
 }
+
 
 window.visitUserProfile = function(userID) {
     // console.log("Navigating to:", userID);

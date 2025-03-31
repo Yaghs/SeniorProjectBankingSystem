@@ -105,21 +105,22 @@
                         </div>
                         <div class="like-section">
                             <span class="like-label">Like</span>
-                            <span id="likeButton" class="like-btn"><i class='bx bx-heart' ></i></span>
+                            <span id="likeButton" class="like-btn"><i class='bx bx-heart'></i></span>
                         </div>
                     </div>
                     <button id="saveReview" class="save-button">Save</button>
                 </div>
             </div>
         </div>
-        <div id="posterModal" class="poster-modal">
+        <div id="posterReviewModal" class="poster-modal">
             <div class="poster-modal-content">
                 <button class="poster-close">&times;</button>
                 <h2>Choose New Poster</h2>
-                <div class="poster-grid" id="posterGrid"></div>
-                <button id="savePosterBtn" class="save-button">Save</button>
+                <div class="poster-grid" id="posterReviewGrid"></div>
+                <button id="saveReviewPosterBtn" class="save-button">Save</button>
             </div>
         </div>
+    </div>
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             const user = localStorage.getItem("loggedInUser");
