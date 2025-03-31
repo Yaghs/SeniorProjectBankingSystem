@@ -303,10 +303,15 @@ async function loadRecentReviews() {
 
         querySnapshot.forEach(docSnap => {
             const reviewData = docSnap.data();
-            // console.log("Review found:", reviewData);
 
             const reviewCard = document.createElement("div");
             reviewCard.classList.add("review-card");
+
+            // takes you to your review when you click on the poster in recent reviews
+            reviewCard.addEventListener("click", () => {
+                localStorage.setItem("selectedMovie", JSON.stringify(reviewData));
+                window.location.href = "viewReviewPage.html";
+            });
 
             // generate star rating with half-star support
             let starsHtml = "";
@@ -328,10 +333,11 @@ async function loadRecentReviews() {
                     ${reviewData.watchedBefore ? "<i class='bx bxs-show'></i>" : ""}
                     ${reviewData.reviewText ? "<i class='bx bxs-comment-detail'></i>" : ""}
                 </div>
-            `;
+                `;
 
             recentReviewsContainer.appendChild(reviewCard);
         });
+
 
         // console.log("Recent reviews loaded successfully!");
     } catch (error) {
