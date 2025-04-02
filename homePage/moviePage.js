@@ -544,7 +544,7 @@ async function loadReviewActionBox(movieTitle) {
                         document.getElementById("reviewMoviePoster").src = reviewData.selectedPoster || "https://via.placeholder.com/300?text=No+Image";
                         document.getElementById("likeButton").classList.toggle("liked", reviewData.liked);
 
-                        const userRating = reviewData.rating || 0;
+                        const userRating = reviewData.rating;
                         // Math.floor determines numver of full stars
                         const fullStars = Math.floor(userRating);
                         // userRating % 1 !=0 checks if rating includes half a star

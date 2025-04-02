@@ -63,6 +63,12 @@ function updateViewForAuth(user) {
             <a href="#">Activity</a>
             <a href="#" id="reviewBtn">+Review</a>
             <a href="../homePage/createCommunity.html">Communities</a>
+            <select id="searchCategory">
+                <option value="">Search For...</option>
+                <option value="movies">Movies</option>
+                <option value="actors">Actors</option>
+                <option value="users">Users</option>
+            </select>
             <input type="text" id="searchInput" placeholder="Search..." autocomplete="off">
         `;
     } else {

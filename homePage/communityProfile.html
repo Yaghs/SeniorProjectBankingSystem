@@ -5,6 +5,7 @@
     <title>Community Group Profile</title>
     <link rel="stylesheet" href="communityProfile.css">
     <script type="module" src="search.js"></script>
+    <script type="module" src="+review.js"></script>
     <link rel='stylesheet' href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css'>
 </head>
 <body>
@@ -26,6 +27,12 @@
         <a href="#">Activity</a>
         <a href="#">+Review</a>
         <a href="../homePage/createCommunity.html">Communities</a>
+        <select id="searchCategory">
+            <option value="">Search For...</option>
+            <option value="movies">Movies</option>
+            <option value="actors">Actors</option>
+            <option value="users">Users</option>
+        </select>
         <input type="text" id="searchInput" placeholder="Search..." autocomplete="off">
     </div>
 </header>

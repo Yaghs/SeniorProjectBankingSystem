@@ -114,6 +114,13 @@ header {
     background: #f0f0f0;
 }
 
+#searchCategory {
+    padding: 5px;
+    font-size: 14px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+}
+
 #section-1-gradient {
     background: linear-gradient(135deg, #4c4c4c, #727272);
     padding: 60px 240px;

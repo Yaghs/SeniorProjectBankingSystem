@@ -119,6 +119,13 @@ header {
     background: #f0f0f0;
 }
 
+#searchCategory {
+    padding: 5px;
+    font-size: 14px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+}
+
 .crew-container {
     display: grid;
     grid-template-columns: 1fr 2fr 1fr;

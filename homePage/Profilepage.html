@@ -1,14 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-<!-- What is needed to do next,
-add funcations:
-   save/edit bio text
-   follow button for when viewing others profile
-   recent = favs
-   going to dms when button is press
-tie it with firebase
-  -->
-
 <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="ProfilePage.css">
@@ -16,36 +7,33 @@ tie it with firebase
     <script type="module" src="functions(profile).js"></script>
     <script type="module" src="search.js"></script>
     <script type="module" src="+review.js"></script>
-
     <title>Plot Twist</title>
 </head>
 <body>
-
 <header>
     <div class="left">
         <h1>Plot Twist</h1>
     </div>
-
     <div class="right">
         <span id="username">Username</span>
-
         <a href="homePage.html">Home</a>
-
       <div class="dropdown">
             <a href="#" id="accountLink">Account</a>
             <div class="dropdown-content">
                 <a href="../Profilepage/Profilepage.html">Profile</a>
-
                 <a href="userSettings.html">Settings</a>
-
                 <a href="#" class="sign-out">Sign out</a>
             </div>
         </div>
         <a href="#">Activity</a>
-
         <a href="#" id="reviewBtn">+Review</a>
-
         <a href="createCommunity.html">Communities</a>
+        <select id="searchCategory">
+            <option value="">Search For...</option>
+            <option value="movies">Movies</option>
+            <option value="actors">Actors</option>
+            <option value="users">Users</option>
+        </select>
         <input type="text" id="searchInput" placeholder="Search..." autocomplete="off">
     </div>
 </header>

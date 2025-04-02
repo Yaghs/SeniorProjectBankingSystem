@@ -1,5 +1,8 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getFirestore, doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+// our special api key
+const API_KEY = "bc7c4e7c62d9e223e196bbd15978fc51";
+
 // firebase configuration
 const firebaseConfig = {
     apiKey: "AIzaSyD1LpIBMmZAiQFwberKbx2G29t6fNph3Xg",
@@ -279,8 +282,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const posterGrid = document.getElementById("posterReviewGrid");
     const savePosterBtn = document.getElementById("saveReviewPosterBtn");
     let selectedPosterUrl = "";
-
-    const API_KEY = "bc7c4e7c62d9e223e196bbd15978fc51";
 
     // function to fetch posters when a movie is selected
     async function fetchPosters(movieId) {

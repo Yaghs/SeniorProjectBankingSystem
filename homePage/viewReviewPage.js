@@ -1,8 +1,6 @@
 // Import Firebase dependencies
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-// our special api key
-const API_KEY = "bc7c4e7c62d9e223e196bbd15978fc51";
 
 // Firebase configuration
 const firebaseConfig = {
@@ -74,7 +72,6 @@ document.addEventListener("DOMContentLoaded", loadReview);
 
 // function to load the review action box
 async function loadReviewActionBox(movieTitle) {
-    console.log("Loading Review Action Box for:", movieTitle); // Debugging
     // gets logged in user from localStorage
     const user = localStorage.getItem("loggedInUser");
     // exit if no user is found
@@ -90,7 +87,6 @@ async function loadReviewActionBox(movieTitle) {
 
         // checks if review exists for the movie
         if (reviewSnap.exists()) {
-            console.log("Review action box data:", reviewSnap.data()); // Debugging
             // retrieve actual review data
             const reviewData = reviewSnap.data();
             // console.log("Review Data Found:", reviewData);
@@ -102,14 +98,14 @@ async function loadReviewActionBox(movieTitle) {
             // change label from rate to rated (indicates movie has been rated)
             document.getElementById("ratingLabel").textContent = "Rated";
 
-            // gets the users rating, default is 0
-            const userRating = reviewData.rating || 0;
+            // gets the users rating
+            const userRating = reviewData.rating;
             // gets ratingDisplay element
             const ratingDisplay = document.getElementById("ratingDisplay");
             // clears existing stars before displaying new ones
             ratingDisplay.innerHTML = "";
 
-            // Math.floor determines number of full stars
+            // Math.floor determines numver of full stars
             const fullStars = Math.floor(userRating);
             // userRating % 1 !=0 checks if rating includes half a star
             const hasHalfStar = userRating % 1 !== 0;
@@ -159,7 +155,7 @@ async function loadReviewActionBox(movieTitle) {
                         document.getElementById("likeButton").classList.toggle("liked", reviewData.liked);
 
                         const userRating = reviewData.rating || 0;
-                        // Math.floor determines number of full stars
+                        // Math.floor determines numver of full stars
                         const fullStars = Math.floor(userRating);
                         // userRating % 1 !=0 checks if rating includes half a star
                         const hasHalfStar = userRating % 1 !== 0;

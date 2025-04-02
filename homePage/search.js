@@ -1,6 +1,7 @@
 const API_KEY = "bc7c4e7c62d9e223e196bbd15978fc51";
 const searchInput = document.getElementById("searchInput");
 const suggestionsDiv = document.getElementById("suggestions");
+const categorySelect = document.getElementById("searchCategory");
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import {getFirestore, collection, query, getDocs, where} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
@@ -20,19 +21,26 @@ const db = getFirestore(app);
 
 searchInput.addEventListener("input", async () => {
     const queryText = searchInput.value.trim();
-    if (queryText.length < 2) {
+    const selectedCategory = categorySelect.value;
+
+    if (queryText.length < 2 || !selectedCategory) {
         suggestionsDiv.style.display = "none";
         return;
     }
 
-    const [movies, actors, users] = await Promise.all([
-        fetchMovies(queryText),
-        fetchActors(queryText),
-        fetchUsers(queryText)
-    ]);
+    let movies = [], actors = [], users = [];
+
+    if (selectedCategory === "movies") {
+        movies = await fetchMovies(queryText);
+    } else if (selectedCategory === "actors") {
+        actors = await fetchActors(queryText);
+    } else if (selectedCategory === "users") {
+        users = await fetchUsers(queryText);
+    }
 
     displaySuggestions(movies, actors, users);
 });
+
 
 async function fetchMovies(query) {
     const response = await fetch(
@@ -51,14 +59,34 @@ async function fetchActors(query) {
 }
 
 async function fetchUsers(queryText) {
+    if (!queryText) return [];
+
     const usersRef = collection(db, "users");
-    const q = query(usersRef,
-        where("username", ">=", queryText),
-        where("username", "<=", queryText + "\uf8ff")
-    );
-    const snapshot = await getDocs(q);
-    return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    const snapshot = await getDocs(usersRef);
+
+    const lowerQuery = queryText.toLowerCase();
+    const currentUser = localStorage.getItem("loggedInUser");
+
+    const filteredUsers = snapshot.docs
+        .map(doc => ({ id: doc.id, ...doc.data() }))
+        .filter(user => {
+            const firstName = (user.firstName || "").toLowerCase();
+            const lastName = (user.lastName || "").toLowerCase();
+            const username = (user.username || "").toLowerCase();
+
+            return (
+                user.id !== currentUser && ( // 👈 exclude yourself
+                    firstName.includes(lowerQuery) ||
+                    lastName.includes(lowerQuery) ||
+                    username.includes(lowerQuery)
+                )
+            );
+        });
+
+    return filteredUsers;
 }
+
+
 
 function displaySuggestions(movies, actors, users) {
     suggestionsDiv.innerHTML = "";
@@ -87,10 +115,14 @@ function displaySuggestions(movies, actors, users) {
     users.forEach(user => {
         const suggestion = document.createElement("div");
         suggestion.classList.add("suggestion");
-        suggestion.innerHTML = `<i class='bx bxs-user'></i> ${user.username}`;
+        suggestion.innerHTML = `
+        <strong>${user.firstName || "Unknown"}</strong> &nbsp;
+        <span style="color: gray">@${user.username}</span>
+    `;
         suggestion.addEventListener("click", () => selectUser(user));
         suggestionsDiv.appendChild(suggestion);
     });
+
 
     suggestionsDiv.style.display = "block";
 }
@@ -114,5 +146,11 @@ function selectUser(user) {
 
 function clearSearch() {
     searchInput.value = "";
+    categorySelect.value = "";
     suggestionsDiv.style.display = "none";
 }
+categorySelect.addEventListener("change", () => {
+    searchInput.value = "";
+});
+
+
