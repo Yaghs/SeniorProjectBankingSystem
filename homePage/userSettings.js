@@ -65,3 +65,18 @@ document.addEventListener("DOMContentLoaded", function() {
     passwordInput.value = "";
   });
 });
+
+document.getElementById('logOut').addEventListener('click', function(e) {
+  e.preventDefault();
+  document.getElementById('signOutModal').style.display = 'block';
+});
+
+// Hide the modal when Cancel is clicked
+document.getElementById('cancelSignOut').addEventListener('click', function() {
+  document.getElementById('signOutModal').style.display = 'none';
+});
+
+// Redirect to login&create.html when Sign Out is confirmed
+document.getElementById('confirmSignOut').addEventListener('click', function() {
+  window.location.href = "../login%26create/login%26create.html";
+});
