@@ -17,6 +17,8 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
+// ------------------- GREETING & LOGIN CHECK -------------------
+
 async function updateGreeting() {
     const username = localStorage.getItem("loggedInUser");
     if (username) {
@@ -36,7 +38,82 @@ async function updateGreeting() {
     }
 }
 
-document.addEventListener("DOMContentLoaded", updateGreeting);
+// ------------------- HEADER & VIEW SWITCHING -------------------
+
+function updateViewForAuth(user) {
+    const authContainer = document.getElementById("authLinks");
+    const welcomeMessage = document.getElementById("welcomeMessage");
+    const friendsSection = document.querySelector(".new-from-friends");
+    const reviewBox = document.getElementById("reviewBox");
+    const didYouKnow = document.querySelector(".did-you-know-section");
+    const popularMovies = document.querySelector(".popular-movies-section");
+
+    if (user) {
+        authContainer.innerHTML = `
+            <span id="username">${user}</span>
+            <a href="#">Home</a>
+            <div class="dropdown">
+                <a href="#" id="accountLink">Account</a>
+                <div class="dropdown-content">
+                    <a href="Profilepage.html">Profile</a>
+                    <a href="userSettings.html">Settings</a>
+                    <a href="#" class="sign-out">Sign out</a>
+                </div>
+            </div>
+            <a href="#">Activity</a>
+            <a href="#" id="reviewBtn">+Review</a>
+            <a href="../homePage/createCommunity.html">Communities</a>
+            <input type="text" id="searchInput" placeholder="Search..." autocomplete="off">
+        `;
+    } else {
+        authContainer.innerHTML = `
+            <a href="../login&create/login&create.html">Log In / Sign Up</a>
+
+        `;
+
+        if (welcomeMessage) welcomeMessage.style.display = "none";
+        if (friendsSection) friendsSection.style.display = "none";
+        if (reviewBox) reviewBox.style.display = "none";
+
+        const msg = document.createElement("p");
+        msg.className = "logged-out-message";
+        msg.textContent = "Log in to access reviews, friends' activity, and more!";
+        popularMovies.appendChild(msg);
+    }
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+    const user = localStorage.getItem("loggedInUser");
+
+    updateGreeting();
+    updateViewForAuth(user);
+    loadPopularMovies();
+    loadFriendsReviews();
+    getRandomActorFact();
+
+    document.addEventListener("click", function (e) {
+        if (e.target.classList.contains("sign-out")) {
+            e.preventDefault();
+            localStorage.removeItem("loggedInUser");
+            location.reload();
+        }
+    });
+
+    // Restrict review button if not logged in
+    const reviewBtn = document.getElementById("reviewBtn");
+    if (reviewBtn) {
+        reviewBtn.addEventListener("click", () => {
+            const user = localStorage.getItem("loggedInUser");
+            if (!user) {
+                alert("Please log in to leave a review.");
+                return;
+            }
+            document.getElementById("reviewBox").style.display = "flex";
+        });
+    }
+});
+
+// ------------------- MOVIES -------------------
 
 let currentSlide = 0;
 let totalSlides = 0;
@@ -51,7 +128,7 @@ async function loadPopularMovies() {
         container.innerHTML = "";
 
         data.results
-            .filter(movie => movie.original_language === "en") // only include english movies
+            .filter(movie => movie.original_language === "en")
             .forEach(movie => {
                 const movieItem = document.createElement("div");
                 movieItem.classList.add("movie-item");
@@ -66,8 +143,7 @@ async function loadPopularMovies() {
     }
 }
 
-// make goToMoviePage globally accessible
-window.goToMoviePage = function(movieId) {
+window.goToMoviePage = function (movieId) {
     fetch(`${TMDB_BASE_URL}/movie/${movieId}?api_key=${TMDB_API_KEY}&language=en-US&append_to_response=credits,videos`)
         .then(response => response.json())
         .then(movie => {
@@ -77,7 +153,7 @@ window.goToMoviePage = function(movieId) {
         .catch(error => console.error("Error fetching movie details:", error));
 };
 
-window.prevPopularMovie = function() {
+window.prevPopularMovie = function () {
     const container = document.getElementById("popularMoviesContainer");
     if (currentSlide > 0) {
         currentSlide--;
@@ -90,7 +166,7 @@ window.prevPopularMovie = function() {
     });
 };
 
-window.nextPopularMovie = function() {
+window.nextPopularMovie = function () {
     const container = document.getElementById("popularMoviesContainer");
     if (currentSlide < totalSlides - 1) {
         currentSlide++;
@@ -102,6 +178,8 @@ window.nextPopularMovie = function() {
         behavior: "smooth"
     });
 };
+
+// ------------------- FRIENDS REVIEWS -------------------
 
 async function loadFriendsReviews() {
     const currentUser = localStorage.getItem("loggedInUser");
@@ -132,7 +210,7 @@ async function loadFriendsReviews() {
             const reviewData = reviewDoc.data();
             reviewData.username = friendUsername;
             reviewData.firstName = friendFirstName;
-            reviewData.timestamp = reviewData.timestamp?.toDate?.() || new Date(0); // fallback if timestamp missing
+            reviewData.timestamp = reviewData.timestamp?.toDate?.() || new Date(0);
 
             allRecentReviews.push(reviewData);
         });
@@ -169,9 +247,7 @@ async function loadFriendsReviews() {
     });
 }
 
-
-window.visitUserProfile = function(userID) {
-    // console.log("Navigating to:", userID);
+window.visitUserProfile = function (userID) {
     window.location.href = `OtherProfilePage.html?user=${encodeURIComponent(userID)}`;
 };
 
@@ -190,8 +266,7 @@ window.nextFriendMovie = function () {
     container.scrollBy({ left: 220, behavior: "smooth" });
 };
 
-document.addEventListener("DOMContentLoaded", loadFriendsReviews);
-
+// ------------------- ACTOR FACT --------------------
 
 async function getRandomActorFact() {
     try {
@@ -201,14 +276,13 @@ async function getRandomActorFact() {
         if (data.results.length === 0) {
             throw new Error("No actors found.");
         }
+        //tries up to 10 times to find an actor that has an image and bio
+        for (let i = 0; i <= 10; i++){
 
-
+        }
         const randomActor = data.results[Math.floor(Math.random() * data.results.length)];
-
-
         const actorDetailsResponse = await fetch(`https://api.themoviedb.org/3/person/${randomActor.id}?api_key=${TMDB_API_KEY}&language=en-US`);
         const actorDetails = await actorDetailsResponse.json();
-
 
         const actorMoviesResponse = await fetch(`https://api.themoviedb.org/3/person/${randomActor.id}/movie_credits?api_key=${TMDB_API_KEY}&language=en-US`);
         const actorMoviesData = await actorMoviesResponse.json();
@@ -217,48 +291,15 @@ async function getRandomActorFact() {
         if (!bio || bio.length < 50) {
             bio = "This actor's biography is not available.";
         } else {
-
             let sentences = bio.split(". ");
             bio = sentences.slice(0, 2).join(". ") + ".";
         }
 
-        let movies = "No notable movies found.";
-        if (actorMoviesData.cast.length > 0) {
-            movies = actorMoviesData.cast
-                .slice(0, 3)
-                .map(movie => movie.title)
-                .join(", ");
-        }
-
         document.getElementById("actorName").textContent = actorDetails.name;
         document.getElementById("actorImage").src = `https://image.tmdb.org/t/p/w200${actorDetails.profile_path}`;
-        document.getElementById("actorFact").innerHTML = `
-             ${bio}<br>
-        `;
+        document.getElementById("actorFact").innerHTML = `${bio}<br>`;
     } catch (error) {
         console.error("Error fetching actor fact:", error);
         document.getElementById("actorFact").textContent = "Could not load an actor fact.";
     }
 }
-
-// Call the function when the page loads
-document.addEventListener("DOMContentLoaded", getRandomActorFact);
-
-
-document.addEventListener("DOMContentLoaded", loadPopularMovies);
-
-// Show the modal when sign out is clicked
-document.querySelector('.sign-out').addEventListener('click', function(e) {
-  e.preventDefault();
-  document.getElementById('signOutModal').style.display = 'block';
-});
-
-// Hide the modal when cancel is clicked
-document.getElementById('cancelSignOut').addEventListener('click', function() {
-  document.getElementById('signOutModal').style.display = 'none';
-});
-
-// Redirect to login&create.html when sign out is confirmed
-document.getElementById('confirmSignOut').addEventListener('click', function() {
-  window.location.href = "../login%26create/login%26create.html";
-});
