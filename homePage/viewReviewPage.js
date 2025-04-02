@@ -48,7 +48,7 @@ async function loadReview() {
         // console.log("Review Data Retrieved:", reviewData);
 
         document.getElementById("reviewUsername").textContent = userData.firstName || username;
-        document.getElementById("MovieTitle").textContent = `${reviewData.title} (${new Date(reviewData.watchedDate).getFullYear()})`;
+        document.getElementById("MovieTitle").textContent = `${reviewData.title} (${reviewData.year || "Unknown"})`;
         document.getElementById("Text").textContent = reviewData.reviewText || "No review written.";
         document.getElementById("watchDate").textContent = reviewData.watchedDate
             ? new Date(reviewData.watchedDate).toLocaleDateString('en-US', { day: '2-digit', month: 'short', year: 'numeric' })
