@@ -15,23 +15,11 @@
         <h1>Plot Twist</h1>
     </div>
 
-    <div class="right">
-        <span id="username">Username</span>
-        <a href="#">Home</a>
-        <div class="dropdown">
-            <a href="#" id="accountLink">Account</a>
-            <div class="dropdown-content">
-                <a href="Profilepage.html">Profile</a>
-                <a href="userSettings.html">Settings</a>
-                <a href="#" class="sign-out">Sign out</a>
-            </div>
-        </div>
-        <a href="#">Activity</a>
-        <a href="#" id="reviewBtn">+Review</a>
-        <a href="../homePage/createCommunity.html">Communities</a>
-        <input type="text" id="searchInput" placeholder="Search..." autocomplete="off">
+    <div id="authLinks" class="right">
+        <!-- This will be filled by JS based on login state -->
     </div>
 </header>
+
 <div id="suggestions"></div>
 
 <div class="welcome-message" id="welcomeMessage">
@@ -51,7 +39,7 @@
     </div>
 </div>
 
-<!-- new from friends -->
+<!-- New from Friends Section -->
 <div class="new-from-friends">
     <h2>New From Friends</h2>
     <div class="movie-carousel">
@@ -63,6 +51,7 @@
     </div>
 </div>
 
+<!-- Did You Know Section -->
 <section class="did-you-know-section">
     <h2>Did You Know?</h2>
     <div id="didYouKnow" class="did-you-know-container">
@@ -74,7 +63,7 @@
     </div>
 </section>
 
-
+<!-- Review Box Modal -->
 <div id="reviewBox" class="reviewBox">
     <div class="reviewBoxContainer" id="reviewSearchPage">
         <span class="close">&times;</span>
@@ -141,6 +130,8 @@
             </div>
         </div>
     </div>
+
+    <!-- Poster Selection Modal -->
     <div id="posterReviewModal" class="poster-modal">
         <div class="poster-modal-content">
             <button class="poster-close">&times;</button>
@@ -150,21 +141,13 @@
         </div>
     </div>
 </div>
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-        const user = localStorage.getItem("loggedInUser");
-        if (user) {
-            document.getElementById("username").textContent = user;
-        }
-    });
-</script>
+
 <footer class="footer">
     <p>&copy; 2025 Movies Project. All rights reserved.</p>
     <nav class="footer-links">
         <a href="/help-center">Help Center</a> |
-        <a href="./userSettings/aboutUs.html">About Us</a>
+        <a href="aboutUs.html">About Us</a>
     </nav>
 </footer>
-
 </body>
 </html>
