@@ -850,7 +850,7 @@ footer {
 .save-button:hover {
     background: limegreen;
 }
-
+/*FEATURE FOR LOGGING OUT */
 .logged-out-message {
     color: #ccc;
     font-size: 1.2rem;

@@ -266,7 +266,7 @@ window.nextFriendMovie = function () {
     container.scrollBy({ left: 220, behavior: "smooth" });
 };
 
-// ------------------- ACTOR FACT -------------------
+// ------------------- ACTOR FACT --------------------
 
 async function getRandomActorFact() {
     try {
