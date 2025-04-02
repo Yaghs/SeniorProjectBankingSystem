@@ -15,6 +15,8 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
+const movie = JSON.parse(localStorage.getItem("selectedMovie"));
+
 document.addEventListener("DOMContentLoaded", () => {
     const reviewBtn = document.getElementById("reviewBtn");
     const reviewModal = document.getElementById("reviewBox");
@@ -391,6 +393,7 @@ document.getElementById("saveReview").addEventListener("click", async () => {
     // data to save
     const reviewData = {
         title: movieTitle,
+        year: movie.release_date ? movie.release_date.split("-")[0] : "Unknown",
         watchedDate: watchedDate || "Not Provided", // default if no date applied
         watchedBefore: watchedBefore,
         reviewText: reviewText || "", // if review text is empty, store empty string
