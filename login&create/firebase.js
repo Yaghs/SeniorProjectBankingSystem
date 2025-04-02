@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-app.js";
-import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-firestore.js";
+import { getFirestore, doc, setDoc, getDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-firestore.js";
 
 // firebase configuration
 const firebaseConfig = {
@@ -44,6 +44,18 @@ document.getElementById("loginSubmit").addEventListener('click', async function 
 
     const userData = userSnap.data();
 
+    // Convert and format the dateJoined timestamp if it exists
+    if (userData.dateJoined) {
+        const joinDate = userData.dateJoined.toDate();  // Convert Firestore timestamp to JS Date
+        const formattedDate = joinDate.toLocaleDateString("en-US", {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+        console.log("Date Joined:", formattedDate);  // e.g., "Date Joined: April 1, 2024"
+        // Optionally, display formattedDate in the UI
+    }
+
     if (userData.password !== password) {
         console.warn("incorrect password for:", username);
         alert("incorrect password please try again.");
@@ -54,7 +66,6 @@ document.getElementById("loginSubmit").addEventListener('click', async function 
     console.log("login successful for:", username, "going to homepage");
     localStorage.removeItem("loggedInUser");
     localStorage.setItem("loggedInUser", username);
-    // alert("login successful going to homepage");
 
     window.location.href = "../homePage/homePage.html";
 });
@@ -92,24 +103,25 @@ document.getElementById("createSubmit").addEventListener('click', async function
     } else {
         console.log("username is available creating account");
 
-        // 🔥 Store user data in Firestore
-        await setDoc(userRef, {
-            firstName: firstName,
-            lastName: lastName,
-            email: email,
-            username: username,
-            password: password
-        }).then(() => {
-            // alert("account created");
+        try {
+            // Store user data in Firestore including server-generated timestamp
+            await setDoc(userRef, {
+                firstName: firstName,
+                lastName: lastName,
+                email: email,
+                username: username,
+                password: password,
+                dateJoined: serverTimestamp()  // Adds the server timestamp
+            });
             console.log("data saved in firestore for user:", username);
             localStorage.removeItem("loggedInUser");
             localStorage.setItem("loggedInUser", username);
-            window.location.href = "../homePage/homePage.html";
             clearAll();
-        }).catch((error) => {
+            window.location.href = "../homePage/homePage.html";
+        } catch (error) {
             console.error("firestore error:", error);
             alert("error saving data");
-        });
+        }
     }
 });
 
