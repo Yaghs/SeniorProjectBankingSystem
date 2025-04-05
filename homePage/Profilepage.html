@@ -69,7 +69,16 @@
                         Flims.textContent = `Flims: ${current}`;
                     });
                 </script>
-                <p>This year: 0</p>
+                <p id="year">This year: 0</p>
+                <script>
+                    document.addEventListener('DOMContentLoaded', () =>{
+                        const year = document.getElementById('year');
+                        let current = parseInt(localStorage.getItem('yearCount')||0);
+
+                        year.textContent = `This year: ${current}`;
+                    })
+                </script>
+
                 <p id="Listing">Listing: 0</p>
 
               <script>
