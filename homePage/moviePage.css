@@ -368,15 +368,23 @@ header {
 
 .review-icons {
     display: flex;
-    justify-content: space-around;
+    justify-content: center;
     padding-bottom: 10px;
     margin-bottom: 10px;
+    gap: 20px;
     border-bottom: 2px solid #555;
 }
 
 .icon {
     font-size: 40px;
     cursor: pointer;
+    min-width: 60px;
+}
+
+.icon-label {
+    font-size: 14px;
+    margin-top: 4px;
+    color: #bbb;
 }
 
 #reviewedIcon i {
