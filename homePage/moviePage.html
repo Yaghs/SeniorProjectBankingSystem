@@ -71,66 +71,68 @@
             </div>
             <div class="review-action-box">
                 <div class="review-icons">
-                    <span id="reviewedIcon" class="icon"><i class='bx bx-show'></i></span>
-                    <script>
-                        document.addEventListener('DOMContentLoaded', () => {
-                            const film = document.getElementById('reviewedIcon');
+                    <span id="reviewedIcon" class="icon">
+                        <i class='bx bx-show'></i>
+                        <div class="icon-label" id="watchedLabel">watch</div>
+                    </span>
+                    <span id="likedIcon" class="icon">
+                        <i class='bx bx-heart'></i>
+                        <div class="icon-label" id="likedLabel">like</div>
+                    </span>
+                    <span id="watchlistIcon" class="icon">
+                        <i class='bx bx-plus'></i>
+                        <div class="icon-label">watchlist</div>
+                    </span>
+                </div>
+                <script>
+                    document.addEventListener('DOMContentLoaded', () => {
+                        const film = document.getElementById('reviewedIcon');
 
-                            film.addEventListener("click", () => {
-                                let current = parseInt(localStorage.getItem('filmCount') || 0);
-                                current++;
-                                localStorage.setItem('filmCount', current);
-                                console.log("Film Count Updated:", current);
+                        film.addEventListener("click", () => {
+                            let current = parseInt(localStorage.getItem('filmCount') || 0);
+                            current++;
+                            localStorage.setItem('filmCount', current);
+                            console.log("Film Count Updated:", current);
 
-                                alert("Added to Filmlist! Current Count: " + current);
+                            alert("Added to Filmlist! Current Count: " + current);
 
-                                // Disable further clicks
-
-                                film.style.pointerEvents = 'none';
-                                film.style.opacity = '0.5';
-                            });
+                            // Disable further clicks
+                            film.style.pointerEvents = 'none';
+                            film.style.opacity = '0.5';
                         });
-                    </script>
-                    <span id="likedIcon" class="icon"><i class='bx bx-heart'></i></span>
-                    <span id="watchlistIcon" class="icon"><i class='bx bx-plus'></i></span>
-                    <script>
-                        document.addEventListener('DOMContentLoaded', () => {
-                            const watch = document.getElementById('watchlistIcon');
+                    });
+                </script>
+                <script>
+                    document.addEventListener('DOMContentLoaded', () => {
+                        const watch = document.getElementById('watchlistIcon');
 
-                            let addtocurrent = localStorage.getItem("isAdded")==='true';
+                        let addtocurrent = localStorage.getItem("isAdded") === 'true';
+
+                        if (addtocurrent) {
+                            watch.querySelector("i").className = 'bx bx-minus';
+                        }
+
+                        watch.addEventListener("click", () => {
+                            let current = parseInt(localStorage.getItem('listCount') || 0);
 
                             if (addtocurrent) {
-                                watch.innerHTML =" <i class='bx bx-minus'></i>";
+                                current--;
+                                localStorage.setItem("isAdded", 'false');
+                                watch.querySelector("i").className = 'bx bx-plus';
+                                alert("Removed from Watchlist! Current Count: " + current);
                             } else {
-                                watch.innerHTML = "<i class='bx bx-plus'></i>";
+                                current++;
+                                localStorage.setItem('isAdded', 'true');
+                                watch.querySelector("i").className = 'bx bx-minus';
+                                alert("Added to Watchlist! Current Count: " + current);
                             }
 
-
-                            watch.addEventListener("click", () => {
-                                let current = parseInt(localStorage.getItem('listCount') || 0);
-
-                                if(addtocurrent) {
-                                    current--
-                                    localStorage.setItem("isAdded", 'false');
-                                    watch.innerHTML = "<i class='bx bx-plus'></i>"
-                                    alert("Remove to Watchlist! Current Count: " + current);
-                                } else {
-                                    current++;
-                                    localStorage.setItem('isAdded', 'true');
-                                    watch.innerHTML = "<i class='bx bx-minus'></i>";
-                                    alert("Added to Watchlist! Current Count: " + current);
-                                }
-                                localStorage.setItem('listCount', current);
-                                console.log("Listing Count Updated:", current);
-                                addtocurrent=!addtocurrent;
-
-                            });
+                            localStorage.setItem('listCount', current);
+                            console.log("Listing Count Updated:", current);
+                            addtocurrent = !addtocurrent;
                         });
-                    </script>
-
-
-                </div>
-
+                    });
+                </script>
                 <p id="ratingLabel" class="rating-label">Rate</p>
                 <p id="ratingDisplay" class="rating-stars">
                     <span class="rating-star" data-value="1"><i class='bx bx-star'></i></span>
