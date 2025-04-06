@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Community | Plot Twist</title>
+    <link rel="stylesheet" href="communitySettings.css">
+    <script type="module" src="search.js"></script>
+    <script type="module" src="+review.js"></script>
+</head>
+<body>
+
+<header>
+    <div class="left">
+        <h1>Plot Twist</h1>
+    </div>
+    <div class="right">
+        <a href="homePage.html">Home</a>
+        <div class="dropdown">
+            <a href="#" id="accountLink">Account</a>
+            <div class="dropdown-content">
+                <a href="Profilepage.html">Profile</a>
+                <a href="userSettings.html">Settings</a>
+                <a href="#" class="sign-out">Sign out</a>
+            </div>
+        </div>
+        <a href="#">Activity</a>
+        <a href="#">+Review</a>
+        <a href="../homePage/communities.html">Communities</a>
+        <select id="searchCategory">
+            <option value="">Search For...</option>
+            <option value="movies">Movies</option>
+            <option value="actors">Actors</option>
+            <option value="users">Users</option>
+        </select>
+        <input type="text" id="searchInput" placeholder="Search..." autocomplete="off">
+    </div>
+</header>
+<div id="suggestions"></div>
+
+<div class="container" id="section-1-gradient">
+    <div class="row">
+        <div class="col-6">
+            <div class="leftSide-col">
+                <h1 class="large">Edit Community</h1>
+                <p>Update your community settings and information</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="form-container">
+    <form id="editCommunityForm">
+        <div class="form-group">
+            <label for="communityName">Community Name</label>
+            <input type="text" id="communityName" placeholder="Enter a unique name for your community" required>
+        </div>
+
+        <div class="form-group">
+            <label for="communityBio">Community Bio</label>
+            <textarea id="communityBio" placeholder="Describe what your community is about..." required></textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="profilePicture">Community Profile Picture</label>
+            <input type="file" id="profilePicture" accept="image/*">
+            <div id="imagePreview" class="preview-container"></div>
+        </div>
+
+        <div class="form-group">
+            <label for="bannerImage">Community Banner Image</label>
+            <input type="file" id="bannerImage" accept="image/*">
+            <div id="bannerPreview" class="preview-container"></div>
+        </div>
+
+        <div class="form-group">
+            <label>Movie Genres</label>
+            <div class="genres-container">
+                <div class="genre-item">
+                    <input type="checkbox" id="action" name="genres" value="Action">
+                    <label for="action">Action</label>
+                </div>
+                <div class="genre-item">
+                    <input type="checkbox" id="comedy" name="genres" value="Comedy">
+                    <label for="comedy">Comedy</label>
+                </div>
+                <div class="genre-item">
+                    <input type="checkbox" id="drama" name="genres" value="Drama">
+                    <label for="drama">Drama</label>
+                </div>
+                <div class="genre-item">
+                    <input type="checkbox" id="horror" name="genres" value="Horror">
+                    <label for="horror">Horror</label>
+                </div>
+                <div class="genre-item">
+                    <input type="checkbox" id="scifi" name="genres" value="Sci-Fi">
+                    <label for="scifi">Sci-Fi</label>
+                </div>
+                <div class="genre-item">
+                    <input type="checkbox" id="fantasy" name="genres" value="Fantasy">
+                    <label for="fantasy">Fantasy</label>
+                </div>
+                <div class="genre-item">
+                    <input type="checkbox" id="thriller" name="genres" value="Thriller">
+                    <label for="thriller">Thriller</label>
+                </div>
+                <div class="genre-item">
+                    <input type="checkbox" id="romance" name="genres" value="Romance">
+                    <label for="romance">Romance</label>
+                </div>
+                <div class="genre-item">
+                    <input type="checkbox" id="animation" name="genres" value="Animation">
+                    <label for="animation">Animation</label>
+                </div>
+                <div class="genre-item">
+                    <input type="checkbox" id="documentary" name="genres" value="Documentary">
+                    <label for="documentary">Documentary</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group privacy-setting">
+            <label>Privacy Setting</label>
+            <div class="toggle-container">
+                <label class="toggle">
+                    <input type="checkbox" id="privacyToggle">
+                    <span class="slider round"></span>
+                </label>
+                <span id="privacyStatus">Public</span>
+            </div>
+            <p class="privacy-description">
+                <span class="public-description">Public communities are visible to everyone in the community list.</span>
+                <span class="private-description" style="display: none;">Private communities are only visible to members. Users can only join through direct invitation.</span>
+            </p>
+        </div>
+
+        <div class="form-group">
+            <div class="button-group">
+                <button type="submit" id="saveChangesBtn">Save Changes</button>
+                <a href="#" id="cancelBtn" class="cancel-btn">Cancel</a>
+                <button type="button" id="deleteCommunityBtn" class="delete-btn">Delete Community</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<div id="deleteConfirmModal" class="modal">
+    <div class="modal-content">
+        <h2>Delete Community</h2>
+        <p>Are you sure you want to delete this community? This action cannot be undone.</p>
+        <p>All discussions, posts, and content within the community will be permanently removed.</p>
+        <div class="modal-buttons">
+            <button id="confirmDeleteBtn" class="delete-confirm-btn">Yes, Delete Community</button>
+            <button id="cancelDeleteBtn" class="cancel-delete-btn">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<footer class="footer">
+    <p>&copy; 2025 Plot Twist. All rights reserved.</p>
+</footer>
+
+<script type="module" src="communitySettings.js"></script>
+</body>
+</html>

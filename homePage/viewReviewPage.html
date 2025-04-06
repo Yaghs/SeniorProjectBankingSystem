@@ -27,7 +27,7 @@
             </div>
             <a href="#">Activity</a>
             <a href="#" id="reviewBtn">+Review</a>
-            <a href="../homePage/createCommunity.html">Communities</a>
+            <a href="../homePage/communities.html">Communities</a>
             <select id="searchCategory">
                 <option value="">Search For...</option>
                 <option value="movies">Movies</option>
@@ -49,6 +49,31 @@
             <h3>Reviewed by <span id="reviewUsername"></span></h3>
             <h2 id="MovieTitle"> <span id="MovieYear"></span></h2>
             <p>Watched on: <span id="watchDate"></span></p>
+            <script>
+                document.addEventListener('DOMContentLoaded', () => {
+                    const watchDate = document.getElementById('watchDate');
+                    const dateinput = document.getElementById('watchedDate')
+                    const currentYear = new Date().getFullYear();
+
+                    dateinput.addEventListener('change',()=>{
+                        const selectedDate = new Date(dateinput.value);
+                        const selectedYear = selectedDate.getFullYear()
+                        if(selectedYear===currentYear){
+                            let current = parseInt(localStorage.getItem('yearCount') || 0);
+                            current++;
+                            localStorage.setItem('yearCount', current);
+                            console.log("This Year Count Updated:", current);
+
+                            alert("Added to This year! Current Count: " + current);
+                        }else{
+                            watchDate.textContent = selectedDate.toDateString()
+                        }
+
+                    });
+
+                });
+            </script>
+            
             <p id="Text"></p>
         </div>
         <div class="review-action-box">

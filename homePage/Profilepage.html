@@ -27,7 +27,7 @@
         </div>
         <a href="#">Activity</a>
         <a href="#" id="reviewBtn">+Review</a>
-        <a href="createCommunity.html">Communities</a>
+        <a href="communities.html">Communities</a>
         <select id="searchCategory">
             <option value="">Search For...</option>
             <option value="movies">Movies</option>
@@ -71,7 +71,16 @@
                         Flims.textContent = `Flims: ${current}`;
                     });
                 </script>
-                <p>This year: 0</p>
+                <p id="year">This year: 0</p>
+                <script>
+                    document.addEventListener('DOMContentLoaded', () =>{
+                        const year = document.getElementById('year');
+                        let current = parseInt(localStorage.getItem('yearCount')||0);
+
+                        year.textContent = `This year: ${current}`;
+                    })
+                </script>
+
                 <p id="Listing">Listing: 0</p>
 
               <script>
