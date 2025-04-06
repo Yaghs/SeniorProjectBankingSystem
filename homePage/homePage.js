@@ -68,8 +68,11 @@ function updateViewForAuth(user) {
                 <option value="movies">Movies</option>
                 <option value="actors">Actors</option>
                 <option value="users">Users</option>
+                <option value="genres">Genres</option>
+                <option value="crew">Crew</option>
             </select>
             <input type="text" id="searchInput" placeholder="Search..." autocomplete="off">
+            <div id="suggestions"></div>
         `;
     } else {
         authContainer.innerHTML = `

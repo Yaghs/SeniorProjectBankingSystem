@@ -105,7 +105,8 @@ header {
     position: absolute;
     top: 60px;
     right: 30px;
-    overflow-y: auto;
+    overflow: hidden;
+    z-index: 1000;
 }
 
 .suggestion {
