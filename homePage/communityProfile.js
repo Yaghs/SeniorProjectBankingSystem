@@ -26,6 +26,8 @@ const communityId = urlParams.get('id');
 // Get logged-in user
 const loggedInUser = localStorage.getItem("loggedInUser");
 
+let discussionIsLoading = false;
+
 // Check if community ID is provided
 if (!communityId) {
     alert("Community not found");
@@ -40,17 +42,39 @@ async function loadCommunityData() {
 
         if (!communitySnap.exists()) {
             alert("Community not found");
-            window.location.href = "../homePage/homePage.html";
+            window.location.href = "../homePage/communities.html";
             return;
         }
 
         const communityData = communitySnap.data();
 
-        // Update UI with community data
+        // Check if the community is private and the user is not a member
+        if (communityData.isPrivate && (!loggedInUser || !communityData.members.includes(loggedInUser))) {
+            alert("This is a private community. Only members can view this page.");
+            window.location.href = "../homePage/communities.html";
+            return;
+        }
+
+        // Continue loading community data if authorized
         document.getElementById("communityName").textContent = communityData.name;
         document.getElementById("memberCount").textContent = `${communityData.memberCount || 0} Members`;
         document.getElementById("communityGenres").textContent = communityData.genres.join(", ");
         document.getElementById("communityBio").textContent = communityData.bio;
+
+        // Add private badge if community is private
+        if (communityData.isPrivate) {
+            const nameBadge = document.createElement("span");
+            nameBadge.className = "private-badge";
+            nameBadge.textContent = "Private";
+            nameBadge.style.display = "inline-block";
+            nameBadge.style.fontSize = "14px";
+            nameBadge.style.backgroundColor = "#555";
+            nameBadge.style.color = "#fff";
+            nameBadge.style.padding = "2px 8px";
+            nameBadge.style.borderRadius = "4px";
+            nameBadge.style.marginLeft = "10px";
+            document.getElementById("communityName").appendChild(nameBadge);
+        }
 
         if (communityData.profilePicture) {
             document.getElementById("communityProfilePic").src = communityData.profilePicture;
@@ -92,6 +116,9 @@ async function loadMembers(membersList) {
         const membersContainer = document.getElementById("membersList");
         membersContainer.innerHTML = "";
 
+        // Check if current user is the community creator
+        const isCreator = await isUserAdmin();
+
         for (const username of membersList) {
             const userRef = doc(db, "users", username);
             const userSnap = await getDoc(userRef);
@@ -101,22 +128,134 @@ async function loadMembers(membersList) {
 
                 const memberCard = document.createElement("div");
                 memberCard.className = "member-card";
+                memberCard.setAttribute("data-username", username);
 
                 // Check if this member is the creator of the community
                 const communityRef = doc(db, "communities", communityId);
                 const communitySnap = await getDoc(communityRef);
                 const isAdmin = communitySnap.data().createdBy === username;
 
-                memberCard.innerHTML = `
-                    <img src="https://placehold.co/80x80/444/aaa?text=Member" alt="${userData.username}'s avatar" class="member-avatar">
-                    <h3 class="member-name">${userData.username}</h3>
-                    <span class="member-role${isAdmin ? ' admin' : ''}">${isAdmin ? 'Admin' : 'Member'}</span>
-                `;
+                // Create the member card with different functionality based on user role
+                if (isCreator && username !== loggedInUser && !isAdmin) {
+                    // Admin view with options to view profile or remove member
+                    memberCard.innerHTML = `
+                        <img src="https://placehold.co/80x80/444/aaa?text=Member" alt="${userData.username}'s avatar" class="member-avatar">
+                        <h3 class="member-name">${userData.username}</h3>
+                        <span class="member-role${isAdmin ? ' admin' : ''}">${isAdmin ? 'Admin' : 'Member'}</span>
+                        <div class="member-actions">
+                            <button class="view-profile-btn" data-username="${username}">View Profile</button>
+                            <button class="remove-member-btn" data-username="${username}">Remove</button>
+                        </div>
+                    `;
+
+                    // Apply styles to the member actions
+                    const style = document.createElement('style');
+                    style.textContent = `
+                        .member-actions {
+                            margin-top: 10px;
+                            display: flex;
+                            flex-direction: column;
+                            gap: 5px;
+                        }
+                        .view-profile-btn, .remove-member-btn {
+                            padding: 5px 10px;
+                            border: none;
+                            border-radius: 4px;
+                            cursor: pointer;
+                            font-size: 12px;
+                            transition: background-color 0.3s;
+                        }
+                        .view-profile-btn {
+                            background-color: #444;
+                            color: white;
+                        }
+                        .view-profile-btn:hover {
+                            background-color: #555;
+                        }
+                        .remove-member-btn {
+                            background-color: #6e1a1a;
+                            color: white;
+                        }
+                        .remove-member-btn:hover {
+                            background-color: #8f2222;
+                        }
+                    `;
+                    document.head.appendChild(style);
+                } else {
+                    // Regular view - entire card is clickable
+                    memberCard.innerHTML = `
+                        <img src="https://placehold.co/80x80/444/aaa?text=Member" alt="${userData.username}'s avatar" class="member-avatar">
+                        <h3 class="member-name">${userData.username}</h3>
+                        <span class="member-role${isAdmin ? ' admin' : ''}">${isAdmin ? 'Admin' : 'Member'}</span>
+                    `;
+                    memberCard.style.cursor = "pointer";
+
+                    // Add click event to the entire card for regular users or non-removable members
+                    memberCard.addEventListener("click", () => {
+                        window.location.href = `OtherProfilePage.html?user=${encodeURIComponent(username)}`;
+                    });
+                }
+
                 membersContainer.appendChild(memberCard);
+
+                // If this is an admin view, add click handlers to the buttons
+                if (isCreator && username !== loggedInUser && !isAdmin) {
+                    memberCard.querySelector(".view-profile-btn").addEventListener("click", (e) => {
+                        e.stopPropagation(); // Prevent bubbling to the card
+                        window.location.href = `OtherProfilePage.html?user=${encodeURIComponent(username)}`;
+                    });
+
+                    memberCard.querySelector(".remove-member-btn").addEventListener("click", (e) => {
+                        e.stopPropagation(); // Prevent bubbling to the card
+                        handleRemoveMember(username);
+                    });
+                }
             }
         }
     } catch (error) {
         console.error("Error loading members:", error);
+    }
+}
+
+// Function to handle removing a member from the community
+async function handleRemoveMember(username) {
+    if (!confirm(`Are you sure you want to remove ${username} from this community?`)) {
+        return;
+    }
+
+    try {
+        const communityRef = doc(db, "communities", communityId);
+        const communitySnap = await getDoc(communityRef);
+
+        if (!communitySnap.exists()) {
+            alert("Community not found");
+            return;
+        }
+
+        const communityData = communitySnap.data();
+
+        // Check if the logged-in user is the creator
+        if (communityData.createdBy !== loggedInUser) {
+            alert("You don't have permission to remove members");
+            return;
+        }
+
+        // Remove the member from the community
+        await updateDoc(communityRef, {
+            members: arrayRemove(username),
+            memberCount: communityData.memberCount - 1
+        });
+
+        // Update the UI by reloading members
+        await loadMembers(communityData.members.filter(member => member !== username));
+
+        // Update member count in UI
+        document.getElementById("memberCount").textContent = `${communityData.memberCount - 1} Members`;
+
+        alert(`${username} has been removed from the community`);
+    } catch (error) {
+        console.error("Error removing member:", error);
+        alert("Error removing member");
     }
 }
 
@@ -348,9 +487,12 @@ function loadMoreReviews(allReviews, currentCount) {
 
 // Load discussion posts
 async function loadDiscussionPosts() {
+    if (discussionIsLoading) return; // Prevent concurrent loads
+    discussionIsLoading = true;
+
     try {
         const postsContainer = document.getElementById("discussionPosts");
-        postsContainer.innerHTML = "";
+        postsContainer.innerHTML = ""; // Clear existing posts
 
         // Get discussion posts for this community
         const postsQuery = query(
@@ -401,9 +543,9 @@ async function loadDiscussionPosts() {
 
             postElement.innerHTML = `
                 <div class="post-header">
-                    <img src="https://placehold.co/40x40/444/aaa?text=User" alt="${userData.username}'s avatar" class="user-avatar">
+                    <img src="https://placehold.co/40x40/444/aaa?text=User" alt="${userData.username}'s avatar" class="user-avatar user-profile-link" data-username="${userData.username}">
                     <div class="post-meta">
-                        <h3 class="username">${userData.username}</h3>
+                        <h3 class="username user-profile-link" data-username="${userData.username}">${userData.username}</h3>
                         <span class="post-time">${timeAgo}</span>
                     </div>
                     ${deleteButton}
@@ -465,10 +607,10 @@ async function loadDiscussionPosts() {
                     }
 
                     commentElement.innerHTML = `
-                        <img src="https://placehold.co/30x30/444/aaa?text=User" alt="${commentUserData.username}'s avatar" class="user-avatar-small">
+                        <img src="https://placehold.co/30x30/444/aaa?text=User" alt="${commentUserData.username}'s avatar" class="user-avatar-small user-profile-link" data-username="${commentUserData.username}">
                         <div class="comment-content">
                             <div class="comment-header">
-                                <h4 class="username">${commentUserData.username}</h4>
+                                <h4 class="username user-profile-link" data-username="${commentUserData.username}">${commentUserData.username}</h4>
                                 <span class="comment-time">${commentTimeAgo}</span>
                                 ${deleteCommentButton}
                             </div>
@@ -514,7 +656,7 @@ async function loadDiscussionPosts() {
             postsContainer.appendChild(postElement);
         }
 
-        // Add event listeners to buttons
+        // Add event listeners to buttons and user profile links
         document.querySelectorAll(".like-btn").forEach(button => {
             button.addEventListener("click", handleLikePost);
         });
@@ -539,8 +681,18 @@ async function loadDiscussionPosts() {
             button.addEventListener("click", handleViewMoreComments);
         });
 
+        // Add click handlers for user profile links
+        document.querySelectorAll(".user-profile-link").forEach(element => {
+            element.addEventListener("click", function() {
+                const username = this.getAttribute("data-username");
+                window.location.href = `OtherProfilePage.html?user=${encodeURIComponent(username)}`;
+            });
+        });
+
     } catch (error) {
         console.error("Error loading discussion posts:", error);
+    } finally {
+        discussionIsLoading = false;
     }
 }
 
@@ -565,10 +717,17 @@ async function handleJoinCommunity() {
 
         const joinButton = document.getElementById("joinButton");
 
+        // Disable button during operation
+        joinButton.disabled = true;
+        joinButton.textContent = isMember ? "Leaving..." : "Joining...";
+
         if (isMember) {
             // Leave community
             if (communityData.createdBy === loggedInUser) {
                 alert("As the creator, you cannot leave this community");
+                // Reset button state
+                joinButton.disabled = false;
+                joinButton.textContent = "Leave";
                 return;
             }
 
@@ -579,7 +738,18 @@ async function handleJoinCommunity() {
 
             joinButton.textContent = "Join";
             joinButton.classList.remove("leave");
-            alert("You have left the community");
+
+            // Update member count in UI
+            document.getElementById("memberCount").textContent = `${communityData.memberCount - 1} Members`;
+
+            // If we're on the Members tab, refresh the members list
+            if (document.querySelector('[data-tab="members"]').classList.contains('active')) {
+                // Get updated members list
+                const updatedCommunitySnap = await getDoc(communityRef);
+                const updatedMembers = updatedCommunitySnap.data().members;
+                await loadMembers(updatedMembers);
+            }
+
         } else {
             // Join community
             await updateDoc(communityRef, {
@@ -589,15 +759,30 @@ async function handleJoinCommunity() {
 
             joinButton.textContent = "Leave";
             joinButton.classList.add("leave");
-            alert("You have joined the community");
+
+            // Update member count in UI
+            document.getElementById("memberCount").textContent = `${communityData.memberCount + 1} Members`;
+
+            // If we're on the Members tab, refresh the members list
+            if (document.querySelector('[data-tab="members"]').classList.contains('active')) {
+                // Get updated members list
+                const updatedCommunitySnap = await getDoc(communityRef);
+                const updatedMembers = updatedCommunitySnap.data().members;
+                await loadMembers(updatedMembers);
+            }
         }
 
-        // Reload members
-        await loadMembers(communityData.members);
+        // Re-enable button
+        joinButton.disabled = false;
 
     } catch (error) {
         console.error("Error joining/leaving community:", error);
         alert("Error processing your request");
+
+        // Reset button state
+        const joinButton = document.getElementById("joinButton");
+        joinButton.disabled = false;
+        joinButton.textContent = communityData.members.includes(loggedInUser) ? "Leave" : "Join";
     }
 }
 
@@ -921,10 +1106,10 @@ async function handleViewMoreComments(event) {
             }
 
             commentElement.innerHTML = `
-                <img src="https://placehold.co/30x30/444/aaa?text=User" alt="${commentUserData.username}'s avatar" class="user-avatar-small">
+                <img src="https://placehold.co/30x30/444/aaa?text=User" alt="${commentUserData.username}'s avatar" class="user-avatar-small user-profile-link" data-username="${commentUserData.username}">
                 <div class="comment-content">
                     <div class="comment-header">
-                        <h4 class="username">${commentUserData.username}</h4>
+                        <h4 class="username user-profile-link" data-username="${commentUserData.username}">${commentUserData.username}</h4>
                         <span class="comment-time">${commentTimeAgo}</span>
                         ${deleteCommentButton}
                     </div>
@@ -938,6 +1123,14 @@ async function handleViewMoreComments(event) {
         // Add event listeners to delete comment buttons
         commentsSection.querySelectorAll(".delete-comment-btn").forEach(button => {
             button.addEventListener("click", handleDeleteComment);
+        });
+
+        // Add click handlers for user profile links
+        commentsSection.querySelectorAll(".user-profile-link").forEach(element => {
+            element.addEventListener("click", function() {
+                const username = this.getAttribute("data-username");
+                window.location.href = `OtherProfilePage.html?user=${encodeURIComponent(username)}`;
+            });
         });
 
         // Hide "View more" button
@@ -955,7 +1148,7 @@ function setupTabs() {
     const tabPanels = document.querySelectorAll(".tab-panel");
 
     tabButtons.forEach(button => {
-        button.addEventListener("click", () => {
+        button.addEventListener("click", async () => {
             const targetTab = button.getAttribute("data-tab");
 
             // Update active tab button
@@ -969,6 +1162,22 @@ function setupTabs() {
                     panel.classList.add("active");
                 }
             });
+
+            // Refresh content based on the active tab
+            if (targetTab === "members") {
+                // Get fresh community data for up-to-date members list
+                const communityRef = doc(db, "communities", communityId);
+                const communitySnap = await getDoc(communityRef);
+
+                if (communitySnap.exists()) {
+                    const communityData = communitySnap.data();
+                    await loadMembers(communityData.members);
+                }
+            } else if (targetTab === "reviews") {
+                await loadReviews();
+            } else if (targetTab === "discussion") {
+                await loadDiscussionPosts();
+            }
         });
     });
 }
@@ -1041,9 +1250,10 @@ function setupRealTimeUpdates() {
         loadDiscussionPosts();
     });
 
-    // Refresh posts every minute when the Discussion tab is active
+    // Refresh posts only if not actively commenting
     setInterval(() => {
-        if (document.querySelector('#discussion').classList.contains('active')) {
+        if (document.querySelector('#discussion').classList.contains('active') &&
+            !document.querySelector('.comment-input:focus')) {
             loadDiscussionPosts();
         }
     }, 60000); // 60 seconds
