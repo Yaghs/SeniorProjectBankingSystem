@@ -28,7 +28,7 @@ searchInput.addEventListener("input", async () => {
         return;
     }
 
-    let movies = [], actors = [], users = [];
+    let movies = [], actors = [], users = [], genres = [];
 
     if (selectedCategory === "movies") {
         movies = await fetchMovies(queryText);
@@ -36,9 +36,11 @@ searchInput.addEventListener("input", async () => {
         actors = await fetchActors(queryText);
     } else if (selectedCategory === "users") {
         users = await fetchUsers(queryText);
+    } else if (selectedCategory === "genres") {
+        genres = await fetchGenres(queryText);
     }
 
-    displaySuggestions(movies, actors, users);
+    displaySuggestions(movies, actors, users, genres);
 });
 
 
@@ -86,12 +88,25 @@ async function fetchUsers(queryText) {
     return filteredUsers;
 }
 
+const genreNames = [
+    "Action", "Adventure", "Animation", "Comedy", "Crime", "Documentary",
+    "Drama", "Family", "Fantasy", "History", "Horror", "Music", "Mystery",
+    "Romance", "Science Fiction", "TV Movie", "Thriller", "War", "Western"
+];
+
+async function fetchGenres(queryText) {
+    const filteredGenres = genreNames.filter(genre =>
+        genre.toLowerCase().startsWith(queryText.toLowerCase())
+    );
+    return filteredGenres;
+}
 
 
-function displaySuggestions(movies, actors, users) {
+
+function displaySuggestions(movies, actors, users, genres) {
     suggestionsDiv.innerHTML = "";
 
-    if (movies.length === 0 && actors.length === 0 && users.length === 0) {
+    if (movies.length === 0 && actors.length === 0 && users.length === 0 && genres.length === 0) {
         suggestionsDiv.style.display = "none";
         return;
     }
@@ -123,6 +138,13 @@ function displaySuggestions(movies, actors, users) {
         suggestionsDiv.appendChild(suggestion);
     });
 
+    genres.forEach(genre => {
+        const suggestion = document.createElement("div");
+        suggestion.classList.add("suggestion");
+        suggestion.innerHTML = `${genre}`;
+        suggestion.addEventListener("click", () => selectGenre(genre));
+        suggestionsDiv.appendChild(suggestion);
+    });
 
     suggestionsDiv.style.display = "block";
 }
@@ -143,6 +165,51 @@ function selectUser(user) {
     clearSearch();
     window.location.href = `OtherProfilePage.html?user=${encodeURIComponent(user.id)}`;
 }
+
+function selectGenre(genreName) {
+    const genreId = getGenreIdByName(genreName);
+
+    if (!genreId) {
+        console.error("Genre ID not found for:", genreName);
+        return;
+    }
+
+    localStorage.setItem("selectedGenre", JSON.stringify({
+        id: genreId,
+        name: genreName
+    }));
+
+    clearSearch();
+    window.location.href = "genrePage.html";
+}
+
+
+function getGenreIdByName(name) {
+    const genreMap = {
+        "Action": 28,
+        "Adventure": 12,
+        "Animation": 16,
+        "Comedy": 35,
+        "Crime": 80,
+        "Documentary": 99,
+        "Drama": 18,
+        "Family": 10751,
+        "Fantasy": 14,
+        "History": 36,
+        "Horror": 27,
+        "Music": 10402,
+        "Mystery": 9648,
+        "Romance": 10749,
+        "Science Fiction": 878,
+        "TV Movie": 10770,
+        "Thriller": 53,
+        "War": 10752,
+        "Western": 37
+    };
+
+    return genreMap[name] || null;
+}
+
 
 function clearSearch() {
     searchInput.value = "";

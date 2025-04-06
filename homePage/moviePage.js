@@ -516,71 +516,23 @@ async function loadReviewActionBox(movieTitle) {
                 ratingDisplay.innerHTML += `<span class="rating-star"><i class='bx ${starClass}'></i></span>`;
             }
 
-            // event listener for when edit review is clicked
-            document.getElementById("editReviewBtn").addEventListener("click", async () => {
-                // fetch info from db
-                try {
-                    // gets selected movie from localStorage
-                    const movie = JSON.parse(localStorage.getItem("selectedMovie"));
-                    // get logged in user from localStorage
-                    const user = localStorage.getItem("loggedInUser");
+            const viewReviewBtn = document.getElementById("viewReviewBtn");
 
-                    // if none exist, exit
-                    if (!user || !movie) return;
-
-                    // firebase reference for movie review
-                    const reviewRef = doc(db, "users", user, "reviews", movie.title);
-                    // fetches review document
-                    const reviewSnap = await getDoc(reviewRef);
-
-                    // if review doc exists
-                    if (reviewSnap.exists()) {
-                        // populate with data
-                        const reviewData = reviewSnap.data();
-
-                        // loads saved review text, watched date, watched before, selected poster and liked status
-                        document.getElementById("reviewText").value = reviewData.reviewText || "";
-                        document.getElementById("watchedDate").value = reviewData.watchedDate || "";
-                        document.getElementById("watchedBeforeCheckbox").checked = reviewData.watchedBefore || false;
-                        document.getElementById("reviewMoviePoster").src = reviewData.selectedPoster || "https://via.placeholder.com/300?text=No+Image";
-                        document.getElementById("likeButton").classList.toggle("liked", reviewData.liked);
-
-                        const userRating = reviewData.rating;
-                        // Math.floor determines numver of full stars
-                        const fullStars = Math.floor(userRating);
-                        // userRating % 1 !=0 checks if rating includes half a star
-                        const hasHalfStar = userRating % 1 !== 0;
-
-                        // ensure stars in review match saved rating
-                        document.querySelectorAll("#reviewForm .rating-container .rating-star i").forEach((star, index) => {
-                            if (index < fullStars) {
-                                star.className = "bx bxs-star"; // full star
-                            } else if (hasHalfStar && index === fullStars) {
-                                star.className = "bx bxs-star-half"; // half star
-                            } else {
-                                star.className = "bx bx-star"; // empty star
-                            }
-                        });
-                        // displays review form for editing
-                        document.getElementById("reviewBox").style.display = "flex";
-                        document.getElementById("reviewSearchPage").style.display = "none";
-                        document.getElementById("reviewForm").style.display = "block";
-
-                    } else {
-                        console.log("No review found. Edit button disabled.");
-                    }
-
-                } catch (error) {
-                    console.error("error loading review for editing:", error);
-                }
-            });
-
-            document.getElementById("viewReviewBtn").addEventListener("click", () => {
+            // If review exists
+            viewReviewBtn.textContent = "View Review";
+            viewReviewBtn.onclick = () => {
                 window.location.href = "viewReviewPage.html";
-            });
+            };
+
 
         } else {
             console.log("no review found for this movie.");
+            const viewReviewBtn = document.getElementById("viewReviewBtn");
+            viewReviewBtn.textContent = "Add Review";
+            viewReviewBtn.onclick = () => {
+                document.getElementById("reviewBox").style.display = "flex";
+            };
+
             // since no review exists for the movie, reset the review action box
             resetReviewActionBox();
         }

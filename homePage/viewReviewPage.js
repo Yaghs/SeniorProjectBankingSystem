@@ -92,14 +92,15 @@ async function loadReviewActionBox(movieTitle) {
             // console.log("Review Data Found:", reviewData);
 
             // change the reviewed icon to show movie has been reviewed
-            document.getElementById("reviewedIcon").innerHTML = "<i class='bx bxs-show'></i>";
+            document.getElementById("reviewedIcon").innerHTML = `<i class='bx bxs-show'></i><div class="icon-label" id="watchLabel">${reviewData.watchedBefore ? "Watched" : "Watch"}</div>`;
             // change the liked icon to show the movie has been liked
-            document.getElementById("likedIcon").innerHTML = reviewData.liked ? "<i class='bx bxs-heart'></i>" : "<i class='bx bx-heart'></i>";
+            document.getElementById("likedIcon").innerHTML = `<i class='bx ${reviewData.liked ? "bxs-heart" : "bx-heart"}'></i><div class="icon-label" id="likeLabel">${reviewData.liked ? "Liked" : "Like"}</div>`;
+            document.getElementById("watchlistIcon").innerHTML = `<i class='bx bx-plus'></i><div class="icon-label" id="watchlistLabel">Watchlist</div>`;
             // change label from rate to rated (indicates movie has been rated)
-            document.getElementById("ratingLabel").textContent = "Rated";
+            document.getElementById("ratingLabel").textContent = reviewData.rating && reviewData.rating > 0 ? "Rated" : "Rate";
 
-            // gets the users rating
-            const userRating = reviewData.rating;
+            // gets the users rating, default is 0
+            const userRating = reviewData.rating || 0;
             // gets ratingDisplay element
             const ratingDisplay = document.getElementById("ratingDisplay");
             // clears existing stars before displaying new ones
@@ -154,7 +155,7 @@ async function loadReviewActionBox(movieTitle) {
                         document.getElementById("reviewMoviePoster").src = reviewData.selectedPoster || "https://via.placeholder.com/300?text=No+Image";
                         document.getElementById("likeButton").classList.toggle("liked", reviewData.liked);
 
-                        const userRating = reviewData.rating || 0;
+                        const userRating = reviewData.rating;
                         // Math.floor determines numver of full stars
                         const fullStars = Math.floor(userRating);
                         // userRating % 1 !=0 checks if rating includes half a star
@@ -184,10 +185,6 @@ async function loadReviewActionBox(movieTitle) {
                 }
             });
 
-            document.getElementById("viewReviewBtn").addEventListener("click", () => {
-                window.location.href = "viewReviewPage.html";
-            });
-
         } else {
             console.log("no review found for this movie.");
             // since no review exists for the movie, reset the review action box
@@ -200,8 +197,23 @@ async function loadReviewActionBox(movieTitle) {
 
 // resets ui for the review action box
 function resetReviewActionBox() {
-    document.getElementById("reviewedIcon").innerHTML = "<i class='bx bx-show'></i>";
-    document.getElementById("likedIcon").innerHTML = "<i class='bx bx-heart'></i>";
+    // Reset icons with labels
+    document.getElementById("reviewedIcon").innerHTML = `
+        <i class='bx bx-show'></i>
+        <div class="icon-label" id="watchLabel">Watch</div>
+    `;
+
+    document.getElementById("likedIcon").innerHTML = `
+        <i class='bx bx-heart'></i>
+        <div class="icon-label" id="likeLabel">Like</div>
+    `;
+
+    document.getElementById("watchlistIcon").innerHTML = `
+        <i class='bx bx-plus'></i>
+        <div class="icon-label" id="watchlistLabel">Watchlist</div>
+    `;
+
+    // Reset rating label and stars
     document.getElementById("ratingLabel").textContent = "Rate";
 
     document.getElementById("ratingDisplay").innerHTML = `

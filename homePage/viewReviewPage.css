@@ -192,9 +192,23 @@ header {
 
 .review-icons {
     display: flex;
-    justify-content: space-around;
+    justify-content: center;
     padding-bottom: 10px;
+    margin-bottom: 10px;
+    gap: 20px;
     border-bottom: 2px solid #555;
+}
+
+.icon {
+    font-size: 40px;
+    cursor: pointer;
+    min-width: 60px;
+}
+
+.icon-label {
+    font-size: 14px;
+    margin-top: 4px;
+    color: #bbb;
 }
 
 .rating-label {
@@ -267,7 +281,6 @@ header {
     color: yellow;
 }
 
-.view-review-btn,
 .edit-review-btn {
     display: block;
     background: transparent;
@@ -275,19 +288,10 @@ header {
     cursor: pointer;
     width: 100%;
     padding: 12px 0;
-    margin: 5px 0;
+    margin-top: -10px;
     border-bottom: 2px solid #555;
     font-size: 14px;
     transition: color 0.3s ease;
-}
-
-.edit-review-btn {
-    border-bottom: none;
-    margin-bottom: -15px;
-}
-
-.view-review-btn {
-    margin-top: -10px;
 }
 
 .reviewBox {
