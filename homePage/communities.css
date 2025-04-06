@@ -210,6 +210,8 @@ header {
     color: white;
     cursor: pointer;
     transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
 }
 
 .genre-pill:hover {
@@ -221,6 +223,64 @@ header {
     color: #333;
     border-color: #ffcc00;
     font-weight: bold;
+    box-shadow: 0 0 5px rgba(255, 204, 0, 0.5);
+}
+
+/* Adding a small badge to show how many genres are selected */
+.selected-genres-count {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background-color: #ff4500;
+    color: white;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: bold;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Add a helper text to indicate multi-select is possible */
+.filter-group .helper-text {
+    font-size: 12px;
+    color: #aaa;
+    margin-top: 5px;
+    display: block;
+}
+
+/* Add a clear selection button */
+.clear-filters {
+    background-color: transparent;
+    border: 1px solid #444;
+    color: #aaa;
+    padding: 5px 10px;
+    font-size: 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s;
+    margin-top: 10px;
+}
+
+.clear-filters:hover {
+    background-color: #444;
+    color: white;
+}
+
+/* Mobile optimization for genre filters */
+@media (max-width: 768px) {
+    .genre-filters {
+        justify-content: center;
+    }
+
+    .genre-pill {
+        margin-bottom: 5px;
+        flex-grow: 1;
+        text-align: center;
+    }
 }
 
 /* Communities Grid */
