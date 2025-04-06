@@ -35,7 +35,7 @@ const loggedInUser = localStorage.getItem("loggedInUser");
 
 // Global variables for pagination
 let lastVisible = null;
-let currentFilter = "all";
+let selectedGenres = [];
 let currentSort = "popular";
 let currentSearch = "";
 let isLoading = false;
@@ -93,14 +93,42 @@ function handleSortChange(event) {
 
 // Handle genre filter
 function handleGenreFilter(event) {
-    // Update active state
-    document.querySelectorAll(".genre-pill").forEach(pill => {
-        pill.classList.remove("active");
-    });
-    event.target.classList.add("active");
+    const pill = event.target;
+    const genre = pill.getAttribute("data-genre");
 
-    // Get selected genre
-    currentFilter = event.target.getAttribute("data-genre");
+    // Special case for "All" button
+    if (genre === "all") {
+        // Clear all selections when "All" is clicked
+        document.querySelectorAll(".genre-pill").forEach(p => {
+            p.classList.remove("active");
+        });
+        pill.classList.add("active");
+        selectedGenres = []; // Empty array means no specific genre filter (all genres)
+        lastVisible = null;
+        loadCommunities(true);
+        return;
+    }
+
+    // Remove "All" selection if any other genre is selected
+    const allPill = document.querySelector('.genre-pill[data-genre="all"]');
+    allPill.classList.remove("active");
+
+    // Toggle this genre selection
+    if (pill.classList.contains("active")) {
+        // If already active, remove from selection
+        pill.classList.remove("active");
+        selectedGenres = selectedGenres.filter(g => g !== genre);
+
+        // If no genres are selected, activate "All" again
+        if (selectedGenres.length === 0) {
+            allPill.classList.add("active");
+        }
+    } else {
+        // Add to selection
+        pill.classList.add("active");
+        selectedGenres.push(genre);
+    }
+
     lastVisible = null;
     loadCommunities(true);
 }
@@ -145,12 +173,11 @@ async function loadCommunities(isNewQuery = false) {
                 break;
         }
 
-        // For search functionality, we'll fetch all communities matching the genre filter
-        // and then filter by search term client-side for better search experience
-        if (currentFilter !== "all") {
+        if (selectedGenres.length > 0) {
+            // Using array-contains-any for multiple genre filtering
             communitiesQuery = query(
                 communitiesRef,
-                where("genres", "array-contains", currentFilter),
+                where("genres", "array-contains-any", selectedGenres),
                 orderBy(sortField, sortDirection),
                 limit(currentSearch ? 100 : communitiesPerPage) // Fetch more if searching
             );
@@ -164,10 +191,10 @@ async function loadCommunities(isNewQuery = false) {
 
         // Apply pagination for "load more" if not searching
         if (lastVisible && !isNewQuery && !currentSearch) {
-            if (currentFilter !== "all") {
+            if (selectedGenres.length > 0) {
                 communitiesQuery = query(
                     communitiesRef,
-                    where("genres", "array-contains", currentFilter),
+                    where("genres", "array-contains-any", selectedGenres),
                     orderBy(sortField, sortDirection),
                     startAfter(lastVisible),
                     limit(communitiesPerPage)
@@ -193,46 +220,47 @@ async function loadCommunities(isNewQuery = false) {
         // Process and filter results
         const communitiesGrid = document.getElementById("communitiesGrid");
         let communitiesHTML = "";
-        let displayedCount = 0;
         let filteredDocs = [];
 
-        // Filter by search term if present (client-side filtering)
-        if (currentSearch) {
-            const searchLower = currentSearch.toLowerCase();
-
+        // Handle results and filtering
+        if (selectedGenres.length > 1) {
+            // The Firebase query with array-contains-any returns communities that match ANY of the selected genres
             communitiesSnapshot.docs.forEach(doc => {
                 const communityData = doc.data();
-                const communityName = communityData.name.toLowerCase();
 
                 // Skip private communities if user is not a member
                 if (communityData.isPrivate && (!loggedInUser || !communityData.members.includes(loggedInUser))) {
                     return;
                 }
 
-                // Check if the community name contains the search term
-                if (communityName.includes(searchLower)) {
+                // Check if the community has ALL the selected genres
+                const hasAllSelectedGenres = selectedGenres.every(genre =>
+                    communityData.genres.includes(genre)
+                );
+
+                if (hasAllSelectedGenres) {
                     filteredDocs.push(doc);
                 }
             });
-
-            // If no results after filtering
-            if (filteredDocs.length === 0) {
-                if (isNewQuery) {
-                    document.getElementById("noResults").style.display = "block";
-                    document.getElementById("loadMoreButton").style.display = "none";
-                }
-                isLoading = false;
-                return;
-            }
-
-            // Only take the first 'communitiesPerPage' results
-            filteredDocs = filteredDocs.slice(0, communitiesPerPage);
         } else {
             // Filter out private communities if user is not a member
             filteredDocs = communitiesSnapshot.docs.filter(doc => {
                 const communityData = doc.data();
                 return !communityData.isPrivate || (loggedInUser && communityData.members.includes(loggedInUser));
             });
+        }
+
+        // Additional search term filtering if needed
+        if (currentSearch) {
+            const searchLower = currentSearch.toLowerCase();
+            filteredDocs = filteredDocs.filter(doc => {
+                const communityData = doc.data();
+                const communityName = communityData.name.toLowerCase();
+                return communityName.includes(searchLower);
+            });
+
+            // Only take the first 'communitiesPerPage' results for search
+            filteredDocs = filteredDocs.slice(0, communitiesPerPage);
         }
 
         // If no results
@@ -293,9 +321,9 @@ async function loadCommunities(isNewQuery = false) {
                     <span class="members-count">${communityData.memberCount || 0} members</span>
                     <div class="actions">
                         ${isMember || !communityData.isPrivate ?
-                        `<a href="../homePage/communityProfile.html?id=${communityId}" class="view-btn">View</a>` :
-                        `<span class="locked-view-btn" title="Only members can view private communities"><i class="bx bxs-lock"></i> Members Only</span>`
-                    }
+                `<a href="../homePage/communityProfile.html?id=${communityId}" class="view-btn">View</a>` :
+                `<span class="locked-view-btn" title="Only members can view private communities"><i class="bx bxs-lock"></i> Members Only</span>`
+            }
                         <button class="join-btn ${isMember ? 'joined' : ''}" data-id="${communityId}">
                             ${isMember ? 'Leave' : 'Join'}
                         </button>
@@ -303,8 +331,6 @@ async function loadCommunities(isNewQuery = false) {
                 </div>
             </div>
         `;
-
-            displayedCount++;
         });
 
         // Append new communities to grid

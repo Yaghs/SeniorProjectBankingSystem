@@ -95,6 +95,21 @@ async function loadCommunityData() {
             joinButton.classList.remove("leave");
         }
 
+        // Add Edit button for community creator
+        if (loggedInUser && communityData.createdBy === loggedInUser) {
+            const editButton = document.createElement("button");
+            editButton.className = "edit-btn";
+            editButton.textContent = "Edit Community";
+            editButton.style.marginTop = "10px";
+            editButton.style.backgroundColor = "#333";
+            editButton.style.color = "#fff";
+            editButton.style.border = "1px solid #555";
+            editButton.addEventListener("click", () => {
+                window.location.href = `../homePage/communitySettings.html?id=${communityId}`;
+            });
+            document.querySelector(".community-actions").appendChild(editButton);
+        }
+
         // Load members
         await loadMembers(communityData.members);
 
