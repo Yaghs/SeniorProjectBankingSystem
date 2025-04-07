@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Communities | Plot Twist</title>
+    <link rel="stylesheet" href="communities.css">
+    <script type="module" src="search.js"></script>
+</head>
+<body>
+
+<header>
+    <div class="left">
+        <h1>Plot Twist</h1>
+    </div>
+    <div class="right">
+        <a href="../homePage/homePage.html">Home</a>
+        <a href="#">Activity</a>
+        <a href="#">+Review</a>
+        <a href="#" class="active">Communities</a>
+        <label for="searchInput"></label><input type="text" id="searchInput" placeholder="Search..." autocomplete="off">
+    </div>
+</header>
+
+<div id="suggestions"></div>
+
+<!-- Community Search Banner -->
+<div class="community-banner">
+    <div class="banner-content">
+        <h1>Find Your Movie Community</h1>
+        <p>Connect with fellow film enthusiasts and discuss your favorite movies</p>
+        <div class="search-container">
+            <label for="communitySearch"></label><input type="text" id="communitySearch" placeholder="Search communities...">
+            <button id="searchButton">Search</button>
+            <a href="../homePage/createCommunity.html" class="create-btn">+ Create Community</a>
+        </div>
+    </div>
+</div>
+
+<!-- Filter Section -->
+<div class="filter-section">
+    <div class="filter-container">
+        <div class="filter-group">
+            <label for="sortBy">Sort By:</label>
+            <select id="sortBy">
+                <option value="popular">Most Popular</option>
+                <option value="newest">Newest</option>
+                <option value="alphabetical">A-Z</option>
+                <option value="members">Most Members</option>
+            </select>
+        </div>
+
+        <div class="filter-group">
+            <label>Filter by Genre:</label>
+            <div class="genre-filters">
+                <button class="genre-pill active" data-genre="all">All</button>
+                <button class="genre-pill" data-genre="Action">Action</button>
+                <button class="genre-pill" data-genre="Comedy">Comedy</button>
+                <button class="genre-pill" data-genre="Drama">Drama</button>
+                <button class="genre-pill" data-genre="Horror">Horror</button>
+                <button class="genre-pill" data-genre="Sci-Fi">Sci-Fi</button>
+                <button class="genre-pill" data-genre="Fantasy">Fantasy</button>
+                <button class="genre-pill" data-genre="Romance">Romance</button>
+                <button class="genre-pill" data-genre="Documentary">Documentary</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Communities Grid -->
+<div class="communities-container">
+    <div id="communitiesGrid" class="communities-grid">
+        <!-- Communities will be populated here -->
+        <div class="loading">Loading communities...</div>
+    </div>
+
+    <div id="noResults" class="no-results" style="display: none;">
+        <h2>No communities found</h2>
+        <p>Try adjusting your search or filters, or create your own community!</p>
+        <a href="../homePage/createCommunity.html" class="create-btn">Create Community</a>
+    </div>
+
+    <div class="load-more-container">
+        <button id="loadMoreButton" class="load-more-btn">Load More</button>
+    </div>
+</div>
+
+<!-- My Communities Section -->
+<div class="my-communities-section">
+    <h2>My Communities</h2>
+    <div id="myCommunities" class="my-communities-grid">
+        <!-- User's communities will be populated here -->
+        <div class="loading">Loading your communities...</div>
+    </div>
+
+    <div id="noMyCommunities" class="no-results" style="display: none;">
+        <h3>You haven't joined any communities yet</h3>
+        <p>Explore and join communities above or create your own!</p>
+        <a href="../homePage/createCommunity.html" class="create-btn">Create Community</a>
+    </div>
+</div>
+
+<footer class="footer">
+    <p>&copy; 2025 Plot Twist. All rights reserved.</p>
+</footer>
+
+<script type="module" src="communities.js"></script>
+</body>
+</html>

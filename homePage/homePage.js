@@ -62,7 +62,7 @@ function updateViewForAuth(user) {
             </div>
             <a href="#">Activity</a>
             <a href="#" id="reviewBtn">+Review</a>
-            <a href="../homePage/createCommunity.html">Communities</a>
+            <a href="../homePage/communities.html">Communities</a>
             <select id="searchCategory">
                 <option value="">Search For...</option>
                 <option value="movies">Movies</option>
