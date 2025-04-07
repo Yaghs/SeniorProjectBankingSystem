@@ -28,7 +28,7 @@ searchInput.addEventListener("input", async () => {
         return;
     }
 
-    let movies = [], actors = [], users = [], genres = [];
+    let movies = [], actors = [], users = [], genres = [], crew = [];
 
     if (selectedCategory === "movies") {
         movies = await fetchMovies(queryText);
@@ -38,9 +38,11 @@ searchInput.addEventListener("input", async () => {
         users = await fetchUsers(queryText);
     } else if (selectedCategory === "genres") {
         genres = await fetchGenres(queryText);
+    } else if (selectedCategory === "crew") {
+        crew = await fetchCrew(queryText);
     }
 
-    displaySuggestions(movies, actors, users, genres);
+    displaySuggestions(movies, actors, users, genres, crew);
 });
 
 
@@ -77,7 +79,7 @@ async function fetchUsers(queryText) {
             const username = (user.username || "").toLowerCase();
 
             return (
-                user.id !== currentUser && ( // 👈 exclude yourself
+                user.id !== currentUser && ( // exclude yourself
                     firstName.includes(lowerQuery) ||
                     lastName.includes(lowerQuery) ||
                     username.includes(lowerQuery)
@@ -101,12 +103,23 @@ async function fetchGenres(queryText) {
     return filteredGenres;
 }
 
+async function fetchCrew(query) {
+    const response = await fetch(
+        `https://api.themoviedb.org/3/search/person?api_key=${API_KEY}&query=${encodeURIComponent(query)}`
+    );
+    const data = await response.json();
 
+    // return crew members with just name + id
+    return data.results.map(person => ({
+        id: person.id,
+        name: person.name
+    }));
+}
 
-function displaySuggestions(movies, actors, users, genres) {
+function displaySuggestions(movies, actors, users, genres, crew) {
     suggestionsDiv.innerHTML = "";
 
-    if (movies.length === 0 && actors.length === 0 && users.length === 0 && genres.length === 0) {
+    if (movies.length === 0 && actors.length === 0 && users.length === 0 && genres.length === 0 && crew.length === 0) {
         suggestionsDiv.style.display = "none";
         return;
     }
@@ -143,6 +156,17 @@ function displaySuggestions(movies, actors, users, genres) {
         suggestion.classList.add("suggestion");
         suggestion.innerHTML = `${genre}`;
         suggestion.addEventListener("click", () => selectGenre(genre));
+        suggestionsDiv.appendChild(suggestion);
+    });
+
+    crew.forEach(crew => {
+        const suggestion = document.createElement("div");
+        suggestion.classList.add("suggestion");
+        suggestion.textContent = `${crew.name}`;
+        suggestion.addEventListener("click", () => selectCrew({
+            id: crew.id,
+            name: crew.name
+        }));
         suggestionsDiv.appendChild(suggestion);
     });
 
@@ -183,6 +207,61 @@ function selectGenre(genreName) {
     window.location.href = "genrePage.html";
 }
 
+async function selectCrew(crew) {
+    if (!crew.id || !crew.name) {
+        alert("Crew info is incomplete.");
+        return;
+    }
+
+    try {
+        const response = await fetch(`https://api.themoviedb.org/3/person/${crew.id}/movie_credits?api_key=${API_KEY}`);
+        const data = await response.json();
+
+        // define priority scores for roles (lower = higher priority)
+        const rolePriority = {
+            "Director": 1,
+            "Original Music Composer": 2,
+            "Screenplay": 3,
+            "Producer": 4,
+            "Executive Producer": 5,
+            "Novel": 6,
+            "Director of Photography": 7,
+            "Editor": 8,
+            "Casting": 9,
+            "Costume Design": 10,
+            "Sound Designer": 11,
+            "Sound Mixer": 12,
+            "Visual Effects Supervisor": 13,
+            "Visual Effects Producer": 14
+        };
+
+        let bestJob = "involved with";
+        let bestScore = Infinity;
+
+        // go through all crew roles to find the best match based on priority
+        for (const credit of data.crew) {
+            const job = credit.job;
+            if (rolePriority[job] && rolePriority[job] < bestScore) {
+                bestScore = rolePriority[job];
+                bestJob = job;
+            }
+        }
+
+        localStorage.setItem("selectedCrew", JSON.stringify({
+            id: crew.id,
+            name: crew.name,
+            role: bestJob
+        }));
+
+        clearSearch();
+        window.location.href = "crewPage.html";
+
+    } catch (error) {
+        console.error("Error fetching crew credits:", error);
+        alert("Failed to retrieve crew member info.");
+    }
+}
+
 
 function getGenreIdByName(name) {
     const genreMap = {
@@ -210,7 +289,6 @@ function getGenreIdByName(name) {
     return genreMap[name] || null;
 }
 
-
 function clearSearch() {
     searchInput.value = "";
     categorySelect.value = "";
@@ -219,5 +297,3 @@ function clearSearch() {
 categorySelect.addEventListener("change", () => {
     searchInput.value = "";
 });
-
-
