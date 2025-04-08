@@ -2,11 +2,11 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>View Review Page</title>
-    <script defer type="module" src="viewReviewPage.js"></script>
+    <title>View Other Review Page</title>
+    <script defer type="module" src="viewOtherReviewPage.js"></script>
     <script type="module" src="search.js"></script>
     <script type="module" src="+review.js"></script>
-    <link rel="stylesheet" href="viewReviewPage.css">
+    <link rel="stylesheet" href="viewOtherReviewPage.css">
     <link rel='stylesheet' href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css'>
 </head>
 <body>
@@ -49,46 +49,21 @@
             <h3>Reviewed by <span id="reviewUsername"></span></h3>
             <h2 id="MovieTitle"> <span id="MovieYear"></span></h2>
             <p>Watched on: <span id="watchDate"></span></p>
-            <script>
-                document.addEventListener('DOMContentLoaded', () => {
-                    const watchDate = document.getElementById('watchDate');
-                    const dateinput = document.getElementById('watchedDate')
-                    const currentYear = new Date().getFullYear();
-
-                    dateinput.addEventListener('change',()=>{
-                        const selectedDate = new Date(dateinput.value);
-                        const selectedYear = selectedDate.getFullYear()
-                        if(selectedYear===currentYear){
-                            let current = parseInt(localStorage.getItem('yearCount') || 0);
-                            current++;
-                            localStorage.setItem('yearCount', current);
-                            console.log("This Year Count Updated:", current);
-
-                            alert("Added to This year! Current Count: " + current);
-                        }else{
-                            watchDate.textContent = selectedDate.toDateString()
-                        }
-
-                    });
-
-                });
-            </script>
-            
             <p id="Text"></p>
         </div>
         <div class="review-action-box">
             <div class="review-icons">
                 <span id="reviewedIcon" class="icon">
-                        <i class='bx bx-show'></i>
-                        <div class="icon-label" id="watchedLabel">Watch</div>
+                    <i class='bx bx-show'></i>
+                    <div class="icon-label" id="watchedLabel">Watch</div>
                 </span>
                 <span id="likedIcon" class="icon">
-                        <i class='bx bx-heart'></i>
-                        <div class="icon-label" id="likedLabel">Like</div>
+                    <i class='bx bx-heart'></i>
+                    <div class="icon-label" id="likedLabel">Like</div>
                 </span>
                 <span id="watchlistIcon" class="icon">
-                        <i class='bx bx-plus'></i>
-                        <div class="icon-label">Watchlist</div>
+                    <i class='bx bx-plus'></i>
+                    <div class="icon-label">Watchlist</div>
                 </span>
             </div>
             <p id="ratingLabel" class="rating-label">Rate</p>
@@ -99,7 +74,7 @@
                 <span class="rating-star" data-value="4"><i class='bx bx-star'></i></span>
                 <span class="rating-star" data-value="5"><i class='bx bx-star'></i></span>
             </p>
-            <span id="editReviewBtn" class="edit-review-btn">Edit Review</span>
+            <span id="viewReviewBtn" class="view-review-btn">View Review</span>
         </div>
         <div id="reviewBox" class="reviewBox">
             <div class="reviewBoxContainer" id="reviewSearchPage">
@@ -179,13 +154,11 @@
     </div>
     <script>
         document.addEventListener("DOMContentLoaded", function() {
-            const user = localStorage.getItem("loggedInUser");
-            if (user) {
-                document.getElementById("username").textContent = user;
-            }
+          const user = localStorage.getItem("loggedInUser");
+          if (user) {
+            document.getElementById("username").textContent = user;
+          }
         });
     </script>
 </body>
-
-
 </html>
