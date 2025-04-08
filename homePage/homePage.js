@@ -243,7 +243,7 @@ async function loadFriendsReviews() {
         }
 
         movieItem.innerHTML = `
-            <img src="${reviewData.selectedPoster || 'https://via.placeholder.com/180x270?text=No+Image'}" alt="${reviewData.title}" onclick="goToMoviePageFromReview('${reviewData.title}')">
+            <img src="${reviewData.selectedPoster || 'https://via.placeholder.com/180x270?text=No+Image'}" alt="${reviewData.title}" onclick="goToOtherReviewPage('${reviewData.username}', '${reviewData.title}')">
             <div class="review-author" role="button" onclick="visitUserProfile('${reviewData.username}')">${reviewData.firstName}</div>
             <div class="review-icons">
                 <div class="rating">${starsHtml}</div>
@@ -258,6 +258,12 @@ async function loadFriendsReviews() {
 
 window.visitUserProfile = function (userID) {
     window.location.href = `OtherProfilePage.html?user=${encodeURIComponent(userID)}`;
+};
+
+window.goToOtherReviewPage = function (username, movieTitle) {
+    const encodedUser = encodeURIComponent(username);
+    const encodedMovie = encodeURIComponent(movieTitle);
+    window.location.href = `viewOtherReviewPage.html?user=${encodedUser}&movie=${encodedMovie}`;
 };
 
 window.goToMoviePageFromReview = function (movieTitle) {
