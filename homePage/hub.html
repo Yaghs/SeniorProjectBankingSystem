@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Movie Page</title>
+    <script defer type="module" src="moviePage.js"></script>
+    <script type="module" src="search.js"></script>
+    <script type="module" src="+review.js"></script>
+    <link rel="stylesheet" href="hub.css">
+    <link rel='stylesheet' href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css'>
+</head>
+<body>
+<header>
+    <div class="left">
+        <h1>Plot Twist</h1>
+    </div>
+    <div class="right">
+        <span id="username">Username</span>
+        <a href="homePage.html">Home</a>
+        <div class="dropdown">
+            <a href="#" id="accountLink">Account</a>
+            <div class="dropdown-content">
+                <a href="Profilepage.html">Profile</a>
+                <a href="userSettings.html">Settings</a>
+                <a href="#" class="sign-out">Sign out</a>
+            </div>
+        </div>
+        <a href="#">Activity</a>
+        <a href="#" id="reviewBtn">+Review</a>
+        <a href="createCommunity.html">Communities</a>
+        <select id="searchCategory">
+            <option value="">Search For...</option>
+            <option value="movies">Movies</option>
+            <option value="actors">Actors</option>
+            <option value="users">Users</option>
+        </select>
+        <input type="text" id="searchInput" placeholder="Search..." autocomplete="off">
+    </div>
+</header>
+<main class="Hub">
+    <!-- Left side: Stacked sidebars -->
+    <div class="sidebar-stack">
+        <div class="sidebar" id="extra">
+            <input type="text" id="searchfriends" placeholder="Search..." autocomplete="off">
+            <div class="request">
+                <button class="request_mess">message request</button>
+            </div>
+        </div>
+
+        <div class="sidebar_chat" id="userList">
+            <h1>Wow so empty!</h1>
+        </div>
+    </div>
+
+    <!-- Right side: Full chat window -->
+    <div class="chat-window">
+        <div class="chat-header" id="chatHeader">Select or find a user to chat</div>
+        <div class="chat-messages" id="chatMessage"></div>
+        <div class="chat-input">
+            <input type="text" id="messageInput" placeholder="Type your message">
+            <button>Send</button>
+        </div>
+    </div>
+</main>
+</body>
+</html>
