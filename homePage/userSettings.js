@@ -11,6 +11,23 @@ document.addEventListener("DOMContentLoaded", function() {
     });
   }
 });
+document.addEventListener("DOMContentLoaded", function (){
+const CommunitiesIveJoined = document.getElementById("communities");
+if(CommunitiesIveJoined){
+  CommunitiesIveJoined.addEventListener("click", function (){
+    window.location.href = "myCommunities.html";
+  });
+}
+});
+
+document.addEventListener("DOMContentLoaded", function (){
+  const HelpCenterPage = document.getElementById("helpCenter");
+  if(HelpCenterPage){
+    HelpCenterPage.addEventListener("click", function (){
+      window.location.href = "helpCenter.html"
+    });
+  }
+});
 
 document.addEventListener("DOMContentLoaded", function() {
   // Attach event listener to the "Account Center" list item

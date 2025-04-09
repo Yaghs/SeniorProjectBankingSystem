@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>My Communities</title>
+    <link rel="stylesheet" href="myCommunities.css">
+</head>
+<body>
+<a href="../homePage/userSettings.html" class="return-arrow">&#8592;</a>
+
+<div class="settings-container">
+    <header class="settings-header">
+        <h1>My Communities</h1>
+    </header>
+    <main id="myCommunities" class="my-communities-grid">
+        <div class="loading">Loading your communities...</div>
+    </main>
+
+    <div id="noMyCommunities" class="no-results" style="display: none;">
+        <h3>You haven't joined any communities yet</h3>
+        <p>Explore and join from the explore page or create your own!</p>
+        <a href="../homePage/createCommunity.html" class="create-btn">Create Community</a>
+    </div>
+</div>
+
+<script type="module" src="myCommunities.js"></script>
+</body>
+</html>

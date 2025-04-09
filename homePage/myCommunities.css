@@ -1,0 +1,145 @@
+body {
+    background-color: #1c1c1c;
+    color: #ffffff;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+.return-arrow {
+    position: fixed;
+    top: 25px;
+    left: 35px;
+    text-decoration: none;
+    color: #ffffff;
+    font-size: 36px;
+    z-index: 1000;
+}
+
+.settings-container {
+    max-width: 800px;
+    margin: 80px auto;
+    padding: 20px;
+    background-color: #2a2a2a;
+    border-radius: 8px;
+}
+
+.settings-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.settings-header h1 {
+    margin: 0;
+    font-size: 28px;
+}
+
+.my-communities-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.community-card {
+    background-color: #333;
+    border-radius: 8px;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    box-shadow: 0 0 5px #000;
+    transition: transform 0.2s ease;
+}
+
+.community-card:hover {
+    transform: translateY(-2px);
+}
+
+.community-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.community-img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    background-color: #555;
+    flex-shrink: 0;
+}
+
+.community-card h3 {
+    margin: 0;
+    font-size: 20px;
+}
+
+.community-genres {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.genre-tag {
+    background-color: #444;
+    padding: 4px 10px;
+    border-radius: 5px;
+    font-size: 12px;
+}
+
+.members-count {
+    font-size: 14px;
+    color: #aaa;
+}
+
+.button-group {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.view-btn,
+.leave-btn {
+    background-color: #ffffff;
+    color: #000000;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.view-btn:hover,
+.leave-btn:hover {
+    background-color: #e0e0e0;
+    transform: translateY(-1px);
+}
+
+.loading {
+    text-align: center;
+    padding: 20px;
+    font-size: 16px;
+}
+
+.no-results {
+    text-align: center;
+    padding: 30px;
+}
+
+.create-btn {
+    display: inline-block;
+    margin-top: 10px;
+    background-color: #ffcc00;
+    padding: 10px 20px;
+    border-radius: 6px;
+    color: black;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+
+
