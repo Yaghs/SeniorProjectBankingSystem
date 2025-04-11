@@ -941,3 +941,58 @@ p{
     background: limegreen;
 }
 
+body.light-mode {
+    background-color: #ffffff;
+    color: #000000;
+}
+
+body.dark-mode {
+    background-color: #1c1c1c;
+    color: #ffffff;
+}
+
+body.dark-mode .Fav_movies h1 {
+    color: white;
+}
+body.light-mode .Fav_movies h1 {
+    color: black;
+}
+
+body.dark-mode .recentMovies h1 {
+    color: white;
+}
+body.light-mode .recentMovies h1 {
+    color: black;
+}
+
+body.dark-mode .username_display h1 {
+    color: white;
+}
+body.light-mode .username_display h1 {
+    color: black;
+}
+
+body.dark-mode .following_info {
+    color: white;
+}
+body.light-mode .following_info {
+    color: black;
+}
+
+body.dark-mode .dm {
+    color: white;
+    background: #65558F;
+}
+body.light-mode .dm {
+    color: black;
+    background: #65558F;
+}
+
+body.dark-mode .Edit {
+    color: white;
+    background: #65558F;
+}
+body.light-mode .Edit {
+    color: black;
+    background: #65558F;
+}

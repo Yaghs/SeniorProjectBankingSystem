@@ -1,9 +1,18 @@
 body {
-  background-color: #1c1c1c;
-  color: #ffffff;
   font-family: Arial, sans-serif;
   margin: 0;
   padding: 0;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+body.light-mode {
+  background-color: #ffffff;
+  color: #000000;
+}
+
+body.dark-mode {
+  background-color: #1c1c1c;
+  color: #ffffff;
 }
 
 .return-arrow {
@@ -11,7 +20,7 @@ body {
   top: 25px;
   left: 35px;
   text-decoration: none;
-  color: #ffffff;
+  color: inherit;
   font-size: 36px;
   z-index: 1000;
 }
@@ -20,8 +29,8 @@ body {
   max-width: 600px;
   margin: 80px auto;
   padding: 20px;
-  background-color: #2a2a2a;
   border-radius: 8px;
+  background-color: inherit;
 }
 
 .settings-header {
@@ -40,21 +49,20 @@ body {
   cursor: pointer;
 }
 
+.settings-item:hover {
+  background-color: rgba(100, 100, 100, 0.1);
+}
+
 .divider {
   border: 0;
-  border-top: 1px solid #444;
+  border-top: 1px solid #ccc;
   margin: 0;
 }
 
 .sub-label {
-  color: #aaaaaa;
+  color: #888;
   font-style: italic;
   margin-left: 5px;
-}
-
-/* Hover effect for settings items */
-.settings-item:hover {
-  background-color: #333;
 }
 
 .logout {
@@ -63,12 +71,14 @@ body {
   text-align: center;
 }
 
+/* Switch */
 .switch {
   position: relative;
   display: inline-block;
   width: 47px;
   height: 20px;
-  margin-left: 405px;
+  float: right;
+  margin-top: -5px;
 }
 
 .switch input {
@@ -80,10 +90,7 @@ body {
 .slider {
   position: absolute;
   cursor: pointer;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  top: 0; left: 0; right: 0; bottom: 0;
   background-color: #ccc;
   transition: 0.4s;
   border-radius: 34px;
@@ -109,23 +116,13 @@ body {
   transform: translateX(26px);
 }
 
-.slider.round {
-  border-radius: 34px;
-}
-
-.slider.round:before {
-  border-radius: 50%;
-}
-
 .modal {
-  display: none; /* Hidden by default */
+  display: none;
   position: fixed;
   z-index: 1000;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0,0,0,0.5); /* Semi-transparent background */
+  left: 0; top: 0;
+  width: 100%; height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
 }
 
 .modal-content {
@@ -135,33 +132,6 @@ body {
   width: 300px;
   text-align: center;
   border-radius: 5px;
-  color: #333333; /* Text color changed to dark gray */
-  border: 4px solid #ADD8E6; /* Light blue outline border */
-}
-
-.modal-content button + button {
-  margin-left: 100px; /* Adds space to the left of any button that follows another */
-}
-
-#confirmSignOut {
-  background-color: #ffb3b3; /* Slightly darker red */
-  color: #000; /* Black text for contrast */
-  border: none;
-  padding: 10px 20px;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-#cancelSignOut {
-  background-color: #555555; /* Dark gray */
-  color: #fff; /* White text for contrast */
-  border: none;
-  padding: 10px 20px;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-/* Optional: Add some extra space between the buttons */
-#confirmSignOut + #cancelSignOut {
-  margin-left: 10px;
+  border: 4px solid #ADD8E6;
+  color: #333;
 }

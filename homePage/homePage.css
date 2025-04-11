@@ -875,3 +875,13 @@ footer {
     display: none;
 }
 
+body.light-mode {
+    background-color: #ffffff;
+    color: #000000;
+}
+
+body.dark-mode {
+    background-color: #1c1c1c;
+    color: #ffffff;
+}
+

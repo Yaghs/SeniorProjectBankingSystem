@@ -111,8 +111,10 @@ document.getElementById("createSubmit").addEventListener('click', async function
                 email: email,
                 username: username,
                 password: password,
-                dateJoined: serverTimestamp()  // Adds the server timestamp
+                dateJoined: serverTimestamp(),
+                theme: "light"
             });
+
             console.log("data saved in firestore for user:", username);
             localStorage.removeItem("loggedInUser");
             localStorage.setItem("loggedInUser", username);

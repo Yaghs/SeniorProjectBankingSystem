@@ -576,3 +576,99 @@ header {
         width: 100%;
     }
 }
+
+body.light-mode {
+    background-color: #ffffff;
+    color: #000000;
+}
+
+body.dark-mode {
+    background-color: #1c1c1c;
+    color: #ffffff;
+}
+/* Fix text colors for light mode */
+body.light-mode .banner-content h1,
+body.light-mode .banner-content p,
+body.light-mode .filter-group label,
+body.light-mode .genre-pill,
+body.light-mode .create-btn,
+body.light-mode .no-results p,
+body.light-mode .loading,
+body.light-mode .my-communities-section h2,
+body.light-mode .community-name,
+body.light-mode .members-count,
+body.light-mode .view-btn,
+body.light-mode .locked-view-btn,
+body.light-mode .community-description {
+    color: #000000;
+}
+
+body.light-mode .genre-pill {
+    background-color: #555;
+    border-color: #777;
+    color: #ffffff; /* ✅ White text for genre pills */
+}
+
+body.light-mode .genre-pill.active {
+    background-color: #ffcc00;
+    color: #333; /* Keep dark text on yellow pill */
+    border-color: #ffcc00;
+}
+
+
+body.light-mode .filter-group select {
+    background-color: #f2f2f2;
+    color: #000;
+    border: 1px solid #ccc;
+}
+
+body.light-mode .community-card,
+body.light-mode .community-footer,
+body.light-mode .filter-section {
+    background-color: #f9f9f9;
+}
+
+body.light-mode .community-meta {
+    color: #555;
+}
+
+body.light-mode .members-count {
+    color: #333;
+}
+
+body.light-mode .view-btn,
+body.light-mode .locked-view-btn {
+    background-color: #e0e0e0;
+    color: #000;
+}
+
+body.light-mode .view-btn:hover {
+    background-color: #d0d0d0;
+}
+
+body.light-mode .join-btn {
+    background-color: #4CAF50;
+    color: white;
+}
+
+body.light-mode .join-btn.joined {
+    background-color: #888;
+}
+
+body.light-mode .join-btn.joined:hover {
+    background-color: #e74c3c;
+}
+
+body.light-mode .footer {
+    background-color: #f2f2f2;
+    color: #333;
+}
+body.light-mode .genre-tag {
+    background-color: #555; /* or keep it #333 if preferred */
+    color: white;
+}
+
+body.dark-mode .genre-tag {
+    background-color: #333;
+    color: white;
+}
