@@ -359,7 +359,7 @@ document.addEventListener("DOMContentLoaded", function() {  //notification bell 
                 if (notificationSettings) {
                     notificationSettings.addEventListener("click", function(event) {
                         event.stopPropagation();
-                        window.location.href = "userSettings.html";  //change to userNotificationSetting.html when its made
+                        window.location.href = "userNotificationSettings.html";  //change to userNotificationSetting.html when its made
                     });
                 }
             } else {
