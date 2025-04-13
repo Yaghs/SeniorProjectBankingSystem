@@ -63,6 +63,7 @@ function updateViewForAuth(user) {
             <a href="#">Activity</a>
             <a href="#" id="reviewBtn">+Review</a>
             <a href="../homePage/communities.html">Communities</a>
+            <a href="#" id="notificationBell"><i class='bx bx-bell' style="font-size: 24px;"></i></a>
             <select id="searchCategory">
                 <option value="">Search For...</option>
                 <option value="movies">Movies</option>
@@ -318,3 +319,66 @@ async function getRandomActorFact() {
         document.getElementById("actorFact").textContent = "Could not load an actor fact.";
     }
 }
+
+document.addEventListener("DOMContentLoaded", function() {  //notification bell logic
+    const notificationBell = document.getElementById("notificationBell");
+
+    if (notificationBell) {
+        notificationBell.addEventListener("click", function(event) {
+            event.stopPropagation();
+
+            const bellRect = notificationBell.getBoundingClientRect();
+            let notificationBox = document.getElementById("notificationBox");
+
+            if (!notificationBox) {
+                notificationBox = document.createElement("div");
+                notificationBox.id = "notificationBox";
+                notificationBox.className = "notification-box";
+                notificationBox.innerHTML = `
+                    <div class="notification-box-header" style="display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid #444;">
+                        <span style="font-size: 18px; color: white;">Notifications</span>
+                        <i class='bx bx-cog' id="notificationSettings" style="font-size: 18px; cursor: pointer; color: white;"></i>
+                    </div>
+                    <div class="notification-box-content" style="padding: 10px; color: white;">
+                        <!-- Populate notifications here -->
+                        <p>No new notifications.</p>
+                    </div>
+                `;
+                notificationBox.style.position = "absolute";
+                notificationBox.style.top = (bellRect.bottom + window.scrollY) + "px";
+                notificationBox.style.right = (window.innerWidth - bellRect.right) + "px";
+                notificationBox.style.backgroundColor = "#000";
+                notificationBox.style.width = "300px";
+                notificationBox.style.border = "1px solid #444";
+                notificationBox.style.borderRadius = "5px";
+                notificationBox.style.boxShadow = "0 4px 8px rgba(0, 0, 0, 0.2)";
+                notificationBox.style.zIndex = 100;
+                document.body.appendChild(notificationBox);
+
+                const notificationSettings = notificationBox.querySelector("#notificationSettings");
+                if (notificationSettings) {
+                    notificationSettings.addEventListener("click", function(event) {
+                        event.stopPropagation();
+                        window.location.href = "userSettings.html";  //change to userNotificationSetting.html when its made
+                    });
+                }
+            } else {
+                if (notificationBox.style.display === "none" || notificationBox.style.display === "") {
+                    const newBellRect = notificationBell.getBoundingClientRect();
+                    notificationBox.style.top = (newBellRect.bottom + window.scrollY) + "px";
+                    notificationBox.style.right = (window.innerWidth - newBellRect.right) + "px";
+                    notificationBox.style.display = "block";
+                } else {
+                    notificationBox.style.display = "none";
+                }
+            }
+        });
+    }
+
+    document.addEventListener("click", function(event) {
+        const notificationBox = document.getElementById("notificationBox");
+        if (notificationBox && !notificationBox.contains(event.target) && event.target.id !== "notificationBell") {
+            notificationBox.style.display = "none";
+        }
+    });
+});
