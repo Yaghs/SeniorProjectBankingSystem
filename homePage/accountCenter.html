@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <title>Account Center</title>
+    <script type="module" src="accountCenter.js"></script>
+    <script type="module" src="Theme.js"></script>
     <link rel="stylesheet" href="accountCenter.css">
     <!-- Font Awesome CDN for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -18,48 +20,70 @@
         <div class="username-section">
             <label class="username-label">Username:</label>
             <span id="usernameDisplay"></span>
-            <a href="#" id="changeUsernameLink" class="change-link">Change Username</a>
+            <a href="#" id="changeUsernameLink" class="change-link"><i class="fa-solid fa-pen"></i></a>
+            <div class="username-edit" style="display: none;">
+                <button id="confirmUsernameButton" class="confirm-button">Confirm</button>
+                <input type="text" id="usernameInput" class="username-input">
+            </div>
+            <div id="usernameSuccessMessage" class="success-message" style="display: none;">
+                Username successfully changed!
+            </div>
         </div>
-        <div class="username-edit" style="display: none;">
-            <button id="confirmButton" class="confirm-button">Confirm</button>
-            <input type="text" id="usernameInput" class="username-input">
-        </div>
-
         <hr class="divider">
-
-        <div class="password-section">
-            <label class="password-label">Password</label>
-            <a href="#" id="changePasswordLink" class="change-link">Change Password</a>
+        <div class="name-section">
+            <label class="info-label">First Name:</label>
+            <span id="firstNameDisplay"></span>
+            <a href="#" id="changeFirstNameLink" class="change-link"><i class="fa-solid fa-pen"></i></a>
+            <div class="firstName-edit" style="display: none;">
+                <button id="confirmFirstNameButton" class="confirm-button">Confirm</button>
+                <input type="text" id="firstNameInput" class="firstName-input">
+            </div>
+            <div id="firstNameSuccessMessage" class="success-message" style="display: none;">
+                First name successfully changed!
+            </div>
         </div>
-        <div class="password-edit" style="display: none;">
-            <button id="confirmPasswordButton" class="confirm-button">Confirm</button>
-            <input type="password" id="passwordInput" class="password-input" placeholder="New Password">
-            <span id="togglePassword" class="toggle-password">
+        <hr class="divider">
+        <div class="name-section">
+            <label class="info-label">Last Name:</label>
+            <span id="lastNameDisplay"></span>
+            <a href="#" id="changeLastNameLink" class="change-link"><i class="fa-solid fa-pen"></i></a>
+            <div class="firstName-edit" style="display: none;">
+                <button id="confirmLastNameButton" class="confirm-button">Confirm</button>
+                <input type="text" id="lastNameInput" class="firstName-input">
+            </div>
+            <div id="lastNameSuccessMessage" class="success-message" style="display: none;">
+                Last name successfully changed!
+            </div>
+        </div>
+        <hr class="divider">
+        <div class="password-section">
+            <label class="password-label">Password:</label>
+            <a href="#" id="changePasswordLink" class="change-link"><i class="fa-solid fa-pen"></i></a>
+            <div class="password-edit" style="display: none;">
+                <button id="confirmPasswordButton" class="confirm-button">Confirm</button>
+                <input type="password" id="passwordInput" class="password-input" placeholder="New Password">
+                <span id="togglePassword" class="toggle-password">
                   <i class="fas fa-eye"></i>
               </span>
+            </div>
+            <div id="passwordSuccessMessage" class="success-message" style="display: none;">
+                Password successfully changed!
+            </div>
         </div>
-        <div id="passwordSuccessMessage" class="success-message" style="display: none;">
-            Password successfully changed!
-        </div>
-
         <hr class="divider">
         <div class="info-section">
             <label class="info-label">Email:</label>
-            <span id="emailDisplay">student@farmingdale.edu</span>
-        </div>
-        <hr class="divider">
-        <div class="info-section">
-            <label class="info-label">Phone Number:</label>
-            <span id="phoneDisplay">123-456-7890</span>
-        </div>
-        <hr class="divider">
-        <div class="info-section">
-            <label class="info-label">Date Joined:</label>
-            <span id="dateJoinedDisplay">March 31, 2025 (example)</span>
+            <span id="emailDisplay"></span>
+            <a href="#" id="changeEmailLink" class="change-link"><i class="fa-solid fa-pen"></i></a>
+            <div class="email-edit" style="display: none;">
+                <button id="confirmEmailButton" class="confirm-button">Confirm</button>
+                <input type="text" id="emailInput" class="email-input">
+            </div>
+            <div id="emailSuccessMessage" class="success-message" style="display: none;">
+                Email successfully changed!
+            </div>
         </div>
     </main>
 </div>
-<script src="accountCenter.js"></script>
-<script type="module" src="Theme.js"></script>
 </body>
 </html>

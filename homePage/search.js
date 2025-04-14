@@ -4,7 +4,15 @@ const suggestionsDiv = document.getElementById("suggestions");
 const categorySelect = document.getElementById("searchCategory");
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import {getFirestore, collection, query, getDocs, where} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import {
+    getFirestore,
+    collection,
+    query,
+    getDocs,
+    where,
+    getDoc,
+    doc
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 const firebaseConfig = {
     apiKey: "AIzaSyD1LpIBMmZAiQFwberKbx2G29t6fNph3Xg",
@@ -45,7 +53,6 @@ searchInput.addEventListener("input", async () => {
     displaySuggestions(movies, actors, users, genres, crew);
 });
 
-
 async function fetchMovies(query) {
     const response = await fetch(
         `https://api.themoviedb.org/3/search/movie?api_key=${API_KEY}&query=${encodeURIComponent(query)}`
@@ -71,6 +78,10 @@ async function fetchUsers(queryText) {
     const lowerQuery = queryText.toLowerCase();
     const currentUser = localStorage.getItem("loggedInUser");
 
+    // 🔒 Blocked user filtering
+    const currentUserDoc = await getDoc(doc(db, "users", currentUser));
+    const blocked = currentUserDoc.exists() ? currentUserDoc.data().blocked || [] : [];
+
     const filteredUsers = snapshot.docs
         .map(doc => ({ id: doc.id, ...doc.data() }))
         .filter(user => {
@@ -79,7 +90,9 @@ async function fetchUsers(queryText) {
             const username = (user.username || "").toLowerCase();
 
             return (
-                user.id !== currentUser && ( // exclude yourself
+                user.id !== currentUser && // exclude yourself
+                !blocked.includes(user.id) && // exclude blocked users
+                (
                     firstName.includes(lowerQuery) ||
                     lastName.includes(lowerQuery) ||
                     username.includes(lowerQuery)
@@ -97,10 +110,9 @@ const genreNames = [
 ];
 
 async function fetchGenres(queryText) {
-    const filteredGenres = genreNames.filter(genre =>
+    return genreNames.filter(genre =>
         genre.toLowerCase().startsWith(queryText.toLowerCase())
     );
-    return filteredGenres;
 }
 
 async function fetchCrew(query) {
@@ -109,7 +121,6 @@ async function fetchCrew(query) {
     );
     const data = await response.json();
 
-    // return crew members with just name + id
     return data.results.map(person => ({
         id: person.id,
         name: person.name
@@ -144,9 +155,9 @@ function displaySuggestions(movies, actors, users, genres, crew) {
         const suggestion = document.createElement("div");
         suggestion.classList.add("suggestion");
         suggestion.innerHTML = `
-        <strong>${user.firstName || "Unknown"}</strong> &nbsp;
-        <span style="color: gray">@${user.username}</span>
-    `;
+            <strong>${user.firstName || "Unknown"}</strong> &nbsp;
+            <span style="color: gray">@${user.username}</span>
+        `;
         suggestion.addEventListener("click", () => selectUser(user));
         suggestionsDiv.appendChild(suggestion);
     });
@@ -154,19 +165,16 @@ function displaySuggestions(movies, actors, users, genres, crew) {
     genres.forEach(genre => {
         const suggestion = document.createElement("div");
         suggestion.classList.add("suggestion");
-        suggestion.innerHTML = `${genre}`;
+        suggestion.textContent = genre;
         suggestion.addEventListener("click", () => selectGenre(genre));
         suggestionsDiv.appendChild(suggestion);
     });
 
-    crew.forEach(crew => {
+    crew.forEach(crewMember => {
         const suggestion = document.createElement("div");
         suggestion.classList.add("suggestion");
-        suggestion.textContent = `${crew.name}`;
-        suggestion.addEventListener("click", () => selectCrew({
-            id: crew.id,
-            name: crew.name
-        }));
+        suggestion.textContent = crewMember.name;
+        suggestion.addEventListener("click", () => selectCrew(crewMember));
         suggestionsDiv.appendChild(suggestion);
     });
 
@@ -192,7 +200,6 @@ function selectUser(user) {
 
 function selectGenre(genreName) {
     const genreId = getGenreIdByName(genreName);
-
     if (!genreId) {
         console.error("Genre ID not found for:", genreName);
         return;
@@ -217,7 +224,6 @@ async function selectCrew(crew) {
         const response = await fetch(`https://api.themoviedb.org/3/person/${crew.id}/movie_credits?api_key=${API_KEY}`);
         const data = await response.json();
 
-        // define priority scores for roles (lower = higher priority)
         const rolePriority = {
             "Director": 1,
             "Original Music Composer": 2,
@@ -238,7 +244,6 @@ async function selectCrew(crew) {
         let bestJob = "involved with";
         let bestScore = Infinity;
 
-        // go through all crew roles to find the best match based on priority
         for (const credit of data.crew) {
             const job = credit.job;
             if (rolePriority[job] && rolePriority[job] < bestScore) {
@@ -262,30 +267,13 @@ async function selectCrew(crew) {
     }
 }
 
-
 function getGenreIdByName(name) {
     const genreMap = {
-        "Action": 28,
-        "Adventure": 12,
-        "Animation": 16,
-        "Comedy": 35,
-        "Crime": 80,
-        "Documentary": 99,
-        "Drama": 18,
-        "Family": 10751,
-        "Fantasy": 14,
-        "History": 36,
-        "Horror": 27,
-        "Music": 10402,
-        "Mystery": 9648,
-        "Romance": 10749,
-        "Science Fiction": 878,
-        "TV Movie": 10770,
-        "Thriller": 53,
-        "War": 10752,
-        "Western": 37
+        "Action": 28, "Adventure": 12, "Animation": 16, "Comedy": 35, "Crime": 80,
+        "Documentary": 99, "Drama": 18, "Family": 10751, "Fantasy": 14, "History": 36,
+        "Horror": 27, "Music": 10402, "Mystery": 9648, "Romance": 10749,
+        "Science Fiction": 878, "TV Movie": 10770, "Thriller": 53, "War": 10752, "Western": 37
     };
-
     return genreMap[name] || null;
 }
 
@@ -294,6 +282,8 @@ function clearSearch() {
     categorySelect.value = "";
     suggestionsDiv.style.display = "none";
 }
+
 categorySelect.addEventListener("change", () => {
     searchInput.value = "";
 });
+
