@@ -119,7 +119,7 @@ document.getElementById("createSubmit")?.addEventListener('click', async functio
 
             localStorage.setItem("loggedInUser", username);
             clearAll();
-            window.location.href = "../homePage/homePage.html";
+            window.location.href = "./genreSelection.html";
         } catch (error) {
             console.error("firestore error:", error);
             alert("error saving data");

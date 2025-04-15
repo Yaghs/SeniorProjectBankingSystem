@@ -23,6 +23,7 @@ document.addEventListener("DOMContentLoaded", function () {
   document.getElementById("accountCenter")?.addEventListener("click", () => window.location.href = "accountCenter.html");
   document.getElementById("closeFriends")?.addEventListener("click", () => window.location.href = "closeFriendsPage.html");
   document.getElementById("blockedUsers")?.addEventListener("click", () => window.location.href = "blockedUsersPage.html");
+  document.getElementById("notifications")?.addEventListener("click", () => window.location.href = "userNotificationSettings.html");
 });
 
 // ✅ Save Settings Form
