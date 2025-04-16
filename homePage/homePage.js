@@ -75,6 +75,11 @@ function updateViewForAuth(user) {
             <input type="text" id="searchInput" placeholder="Search..." autocomplete="off">
             <div id="suggestions"></div>
         `;
+        // Dynamically re-attach search.js after injecting DOM
+        const script = document.createElement("script");
+        script.type = "module";
+        script.src = "./search.js";
+        document.body.appendChild(script);
     } else {
         authContainer.innerHTML = `
             <a href="../login&create/login&create.html">Log In / Sign Up</a>
