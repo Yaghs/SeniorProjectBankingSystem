@@ -201,6 +201,7 @@ header {
 .movie-info {
     display: flex;
     gap: 60px;
+    justify-content: center;
     align-items: flex-start;
     margin-left: 0px;
     z-index: 4;
