@@ -41,6 +41,22 @@ async function loadReview() {
 
         document.getElementById("reviewUsername").textContent = userData.firstName || username;
         document.getElementById("MovieTitle").textContent = `${reviewData.title} (${reviewData.year || "Unknown"})`;
+        const rating = reviewData.rating || 0;
+        let starsHtml = "";
+
+        // full and half stars logic
+        const fullStars = Math.floor(rating);
+        const hasHalfStar = rating % 1 !== 0;
+
+        for (let i = 0; i < fullStars; i++) {
+            starsHtml += "<i class='bx bxs-star'></i>";
+        }
+        if (hasHalfStar) {
+            starsHtml += "<i class='bx bxs-star-half'></i>";
+        }
+
+        // add to the container
+        document.getElementById("MovieRatingStars").innerHTML = starsHtml;
         document.getElementById("Text").textContent = reviewData.reviewText || "No review written.";
         document.getElementById("watchDate").textContent = reviewData.watchedDate
             ? new Date(reviewData.watchedDate).toLocaleDateString('en-US', { day: '2-digit', month: 'short', year: 'numeric' })
@@ -100,7 +116,7 @@ async function loadReviewActionBox(movieTitle) {
             // clears existing stars before displaying new ones
             ratingDisplay.innerHTML = "";
 
-            // Math.floor determines numver of full stars
+            // Math.floor determines number of full stars
             const fullStars = Math.floor(userRating);
             // userRating % 1 !=0 checks if rating includes half a star
             const hasHalfStar = userRating % 1 !== 0;

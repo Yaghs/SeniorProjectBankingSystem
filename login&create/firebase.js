@@ -1,11 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-app.js";
-import {
-    getFirestore,
-    doc,
-    setDoc,
-    getDoc,
-    serverTimestamp
-} from "https://www.gstatic.com/firebasejs/11.3.1/firebase-firestore.js";
+import { getFirestore, doc, setDoc, getDoc, deleteDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-firestore.js";
 
 // firebase configuration
 const firebaseConfig = {
@@ -22,9 +16,9 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-console.log("🔥 Firebase Initialized Successfully");
+console.log("firebase initialized");
 
-// 🔐 Login handler
+// login handler
 document.getElementById("loginSubmit")?.addEventListener('click', async function (e) {
     e.preventDefault();
 
@@ -81,7 +75,7 @@ function clearPassword() {
     document.getElementById("loginPassword").value = "";
 }
 
-// 📝 Create account handler
+// create account handler
 document.getElementById("createSubmit")?.addEventListener('click', async function (e) {
     e.preventDefault();
 
@@ -135,8 +129,6 @@ function clearAll() {
     document.getElementById("password").value = "";
 }
 
-
-
 // Utility function to retrieve the list of followed users
 export async function getFollowingList(username) {
     const userRef = doc(db, "users", username);
@@ -158,6 +150,7 @@ export async function addToCloseFriends(currentUser, friendUsername) {
 export async function blockUser(currentUser, blockedUsername) {
     const userRef = doc(db, "users", currentUser);
     const blockedUserRef = doc(db, "users", blockedUsername);
+    const blockSubRef = doc(db, "users", currentUser, "blocked", blockedUsername);
 
     const [userSnap, blockedSnap] = await Promise.all([
         getDoc(userRef),
@@ -166,27 +159,18 @@ export async function blockUser(currentUser, blockedUsername) {
 
     if (!userSnap.exists() || !blockedSnap.exists()) return;
 
-    const userData = userSnap.data();
-    const blockedData = blockedSnap.data();
+    // Delete them from currentUser's following
+    const followingDoc = doc(db, "users", currentUser, "following", blockedUsername);
+    await deleteDoc(followingDoc);
 
-    const updatedBlocked = new Set(userData.blocked || []);
-    const updatedFollowing = new Set(userData.following || []);
-    const updatedFollowers = new Set(blockedData.followers || []);
+    // Delete currentUser from their followers
+    const followerDoc = doc(db, "users", blockedUsername, "followers", currentUser);
+    await deleteDoc(followerDoc);
 
-    updatedBlocked.add(blockedUsername);
-    updatedFollowing.delete(blockedUsername);
-    updatedFollowers.delete(currentUser);
-
-    await Promise.all([
-        setDoc(userRef, {
-            blocked: Array.from(updatedBlocked),
-            following: Array.from(updatedFollowing)
-        }, { merge: true }),
-
-        setDoc(blockedUserRef, {
-            followers: Array.from(updatedFollowers)
-        }, { merge: true })
-    ]);
+    // create blocked user subcollection entry
+    await setDoc(blockSubRef, {
+        blockedAt: Date.now()
+    });
 }
 
 
