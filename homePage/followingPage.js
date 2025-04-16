@@ -1,5 +1,5 @@
-import { db, addToCloseFriends, blockUser, getFollowingList } from "../login&create/firebase.js";
-import { getDoc, doc } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-firestore.js";
+import { db, addToCloseFriends, blockUser } from "../login&create/firebase.js";
+import { getDoc, doc, collection, getDocs, setDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-firestore.js";
 
 document.addEventListener("DOMContentLoaded", async () => {
     const currentUser = localStorage.getItem("loggedInUser");
@@ -11,9 +11,11 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     listEl.innerHTML = "<li>Loading...</li>";
+    const followingRef = collection(db, "users", currentUser, "following");
+    const followingSnap = await getDocs(followingRef);
+    const following = followingSnap.docs.map(doc => doc.id);
 
     try {
-        const following = await getFollowingList(currentUser);
         const userRef = doc(db, "users", currentUser);
         const userSnap = await getDoc(userRef);
         const closeFriends = userSnap.exists() ? userSnap.data().closeFriends || [] : [];
@@ -68,20 +70,38 @@ document.addEventListener("DOMContentLoaded", async () => {
                 }
 
                 if (action === "block") {
-                    await blockUser(currentUser, targetUser);
+                    try {
+                        // add to blocked subcollection
+                        const blockedRef = doc(db, "users", currentUser, "blocked", targetUser);
+                        await setDoc(blockedRef, {
+                            blockedAt: Date.now()
+                        });
 
-                    //  Decrement Following count
-                    const countEl = document.getElementById("followingCountNum");
-                    if (countEl) {
-                        let count = parseInt(countEl.textContent) || 0;
-                        countEl.textContent = Math.max(0, count - 1);
+                        // remove from currentUser's following
+                        const followingRef = doc(db, "users", currentUser, "following", targetUser);
+                        await deleteDoc(followingRef);
+
+                        // remove currentUser from their followers (if exists)
+                        const followersRef = doc(db, "users", targetUser, "followers", currentUser);
+                        await deleteDoc(followersRef);
+
+                        // decrement Following count on page
+                        const followingCount = document.getElementById("FollowingCount");
+                        if (followingCount) {
+                            let count = parseInt(followingCount.textContent) || 0;
+                            followingCount.textContent = Math.max(0, count - 1);
+                        }
+
+                        // remove from visual list
+                        e.target.closest("li").remove();
+
+                        alert(`${targetUser} has been blocked and unfollowed.`);
+                    } catch (error) {
+                        console.error(`Error blocking ${targetUser}:`, error);
+                        alert(`Failed to block ${targetUser}.`);
                     }
-
-                    // Remove user from list
-                    e.target.closest("li").remove();
-
-                    alert(`${targetUser} has been blocked and unfollowed.`);
                 }
+
 
             } catch (err) {
                 console.error(`Error performing ${action} on ${targetUser}:`, err);
@@ -94,11 +114,3 @@ document.addEventListener("DOMContentLoaded", async () => {
         listEl.innerHTML = "<li>Failed to load following list.</li>";
     }
 });
-
-
-
-
-
-
-
-

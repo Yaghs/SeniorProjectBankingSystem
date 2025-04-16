@@ -156,7 +156,7 @@ async function loadReviewActionBox(movieTitle) {
                         document.getElementById("likeButton").classList.toggle("liked", reviewData.liked);
 
                         const userRating = reviewData.rating;
-                        // Math.floor determines numver of full stars
+                        // Math.floor determines number of full stars
                         const fullStars = Math.floor(userRating);
                         // userRating % 1 !=0 checks if rating includes half a star
                         const hasHalfStar = userRating % 1 !== 0;

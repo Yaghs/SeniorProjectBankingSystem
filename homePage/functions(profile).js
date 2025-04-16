@@ -369,6 +369,18 @@ async function updateFollowersCount(username) {
     }
 }
 
-
-// Load recent reviews when profile page loads
+// load recent reviews when profile page loads
 document.addEventListener("DOMContentLoaded", loadRecentReviews);
+
+document.addEventListener("DOMContentLoaded", () => {
+    const followCount = document.getElementById("FollowingCount");
+
+    if (followCount) {
+        followCount.style.cursor = "pointer"; // make it look clickable
+        followCount.title = "View who you're following";
+
+        followCount.addEventListener("click", () => {
+            window.location.href = "followingPage.html"; // adjust the path if needed
+        });
+    }
+});

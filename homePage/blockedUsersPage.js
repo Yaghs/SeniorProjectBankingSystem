@@ -1,5 +1,5 @@
 import { db } from "../login&create/firebase.js";
-import { getDoc, doc, setDoc } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-firestore.js";
+import { collection, getDocs, deleteDoc, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-firestore.js";
 
 document.addEventListener("DOMContentLoaded", async () => {
     const currentUser = localStorage.getItem("loggedInUser");
@@ -11,22 +11,18 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     try {
-        const userDoc = await getDoc(doc(db, "users", currentUser));
-        if (!userDoc.exists()) {
-            listEl.innerHTML = "<li>User not found.</li>";
-            return;
-        }
+        const blockedRef = collection(db, "users", currentUser, "blocked");
+        const blockedSnap = await getDocs(blockedRef);
 
-        const blocked = userDoc.data().blocked || [];
-
-        if (blocked.length === 0) {
+        if (blockedSnap.empty) {
             listEl.innerHTML = "<li>You haven't blocked anyone.</li>";
             return;
         }
 
         listEl.innerHTML = "";
 
-        for (const username of blocked) {
+        for (const docSnap of blockedSnap.docs) {
+            const username = docSnap.id;
             const friendDoc = await getDoc(doc(db, "users", username));
             const friendData = friendDoc.exists() ? friendDoc.data() : null;
             const displayName = friendData ? `${friendData.firstName} ${friendData.lastName}`.trim() || username : username;
@@ -45,25 +41,18 @@ document.addEventListener("DOMContentLoaded", async () => {
             listEl.appendChild(li);
         }
 
-        // 💥 Attach listener AFTER the list is created
         listEl.addEventListener("click", async (e) => {
             if (e.target.classList.contains("unblock")) {
                 const targetUser = e.target.dataset.user;
-                console.log("Unblocking:", targetUser);
-
-                const userRef = doc(db, "users", currentUser);
-                const userSnap = await getDoc(userRef);
-                const data = userSnap.data();
-                const updated = (data.blocked || []).filter(u => u !== targetUser);
-
-                await setDoc(userRef, { blocked: updated }, { merge: true });
-
+                await deleteDoc(doc(db, "users", currentUser, "blocked", targetUser));
                 alert(`${targetUser} has been unblocked.`);
                 location.reload();
             }
         });
+
     } catch (err) {
         console.error("Error loading blocked users:", err);
         listEl.innerHTML = "<li>Error loading list.</li>";
     }
 });
+

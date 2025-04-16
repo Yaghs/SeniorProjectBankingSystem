@@ -145,13 +145,22 @@ header {
 .review-content {
     flex: 1;
     max-width: 600px;
-    text-align: center;
-
+    justify-content: flex-start;
     #reviewText {
         background-color: transparent;
         color: #ddd;
         border: none;
         padding: 15px 0;
+    }
+    .star-display {
+        display: flex;
+        justify-content: flex-start;
+        text-align: left;
+    }
+    .star-display i {
+        font-size: 22px;
+        color: gold;
+        margin-right: 3px;
     }
 }
 
