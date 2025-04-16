@@ -94,12 +94,13 @@ header {
 /* SUGGESTIONS BOX */
 #suggestions {
     width: 20%;
-    height: 35%;
+    height: 375%;
     margin: 0 auto;
     text-align: left;
     border: 1px solid #414040;
     border-radius: 5px;
     background: white;
+    color: black;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     display: none;
     position: absolute;

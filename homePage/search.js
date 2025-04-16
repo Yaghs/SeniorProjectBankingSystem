@@ -58,6 +58,7 @@ async function fetchMovies(query) {
         `https://api.themoviedb.org/3/search/movie?api_key=${API_KEY}&query=${encodeURIComponent(query)}`
     );
     const data = await response.json();
+    console.log("TMDb movie data:", data.results); // 👈
     return data.results;
 }
 
@@ -78,7 +79,7 @@ async function fetchUsers(queryText) {
     const lowerQuery = queryText.toLowerCase();
     const currentUser = localStorage.getItem("loggedInUser");
 
-    // 🔒 Blocked user filtering
+    // blocked user filtering
     const currentUserDoc = await getDoc(doc(db, "users", currentUser));
     const blocked = currentUserDoc.exists() ? currentUserDoc.data().blocked || [] : [];
 
@@ -286,4 +287,3 @@ function clearSearch() {
 categorySelect.addEventListener("change", () => {
     searchInput.value = "";
 });
-
