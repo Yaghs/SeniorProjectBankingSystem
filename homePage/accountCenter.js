@@ -145,18 +145,30 @@ document.addEventListener("DOMContentLoaded", async function () {
     }
   });
 
-  confirmPasswordButton.addEventListener("click", function () {
-    passwordEdit.style.display = "none";
-    passwordInput.value = "";
-    passwordInput.type = "password";
-    togglePassword.innerHTML = '<i class="fas fa-eye"></i>';
-    passwordSuccessMessage.style.display = "block";
-    // After 5 seconds, hide the success message and revert to clickable option
-    setTimeout(function () {
-      passwordSuccessMessage.style.display = "none";
-      changePasswordLink.style.display = "inline";
-    }, 5000);
+  confirmPasswordButton.addEventListener("click", async function () {
+    const newPassword = passwordInput.value.trim();
+    if (!newPassword) {
+      alert("please enter a new password.");
+      return;
+    }
+
+    try {
+      const userRef = doc(db, "users", currentUsername);
+      await setDoc(userRef, { password: newPassword }, { merge: true });
+
+      passwordEdit.style.display = "none";
+      passwordInput.value = "";
+      passwordInput.type = "password";
+      togglePassword.innerHTML = '<i class="fas fa-eye"></i>';
+      passwordSuccessMessage.style.display = "block";
+
+      alert("password updated successfully!");
+    } catch (error) {
+      console.error("error updating password:", error);
+      alert("failed to update password: " + error.message);
+    }
   });
+
 
   // === First Name ===
   const changeFirstNameLink = document.getElementById("changeFirstNameLink");
