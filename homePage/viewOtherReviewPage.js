@@ -1,6 +1,6 @@
 // Import Firebase dependencies
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getFirestore, doc, getDoc, collection, addDoc, getDocs, query, orderBy, serverTimestamp} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 // Firebase configuration
 const firebaseConfig = {
@@ -70,6 +70,7 @@ async function loadReview() {
 
         // Call function to load the action box
         loadReviewActionBox(movieTitle);
+        await loadComments();
 
     } else {
         alert("No review found for this movie.");
@@ -202,4 +203,68 @@ closeButtons.forEach(button => {
         reviewSearchPage.style.display = "block";
         reviewSuggestions.style.display = "none";
     });
+});
+
+async function loadComments() {
+    const container = document.getElementById("commentsContainer");
+    container.innerHTML = ""; // Clear existing
+
+    const commentRef = collection(db, "users", username, "reviews", movieTitle, "comments");
+    const q = query(commentRef, orderBy("timestamp", "asc"));
+    const snap = await getDocs(q);
+
+    snap.forEach(docSnap => {
+        const data = docSnap.data();
+        const commentDiv = document.createElement("div");
+        commentDiv.className = "comment";
+        const currentUser = localStorage.getItem("loggedInUser");
+        const isCurrentUser = data.authorId === currentUser;
+
+        commentDiv.innerHTML = `
+          <span class="comment-author" role="button" onclick="visitUserProfile('${data.authorId}', ${isCurrentUser})">
+            ${data.authorFirstName}
+          </span>
+          <span class="comment-text">${data.comment}</span>
+        `;
+
+        container.appendChild(commentDiv);
+    });
+}
+
+window.visitUserProfile = function (userID, isCurrentUser = false) {
+    if (isCurrentUser) {
+        window.location.href = "ProfilePage.html";
+    } else {
+        window.location.href = `OtherProfilePage.html?user=${encodeURIComponent(userID)}`;
+    }
+};
+
+
+document.getElementById("postCommentBtn").addEventListener("click", async () => {
+    const commentText = document.getElementById("commentInput").value.trim();
+    if (!commentText) return;
+
+    const currentUser = localStorage.getItem("loggedInUser");
+    if (!currentUser) return alert("You must be logged in to comment.");
+
+    try {
+        const currentUserSnap = await getDoc(doc(db, "users", currentUser));
+        const commenterFirstName = currentUserSnap.exists() ? currentUserSnap.data().firstName : currentUser;
+
+        const commentRef = collection(db, "users", username, "reviews", movieTitle, "comments");
+
+        await addDoc(commentRef, {
+            authorId: currentUser,
+            authorFirstName: commenterFirstName,
+            comment: commentText,
+            timestamp: serverTimestamp()
+        });
+
+        document.getElementById("commentInput").value = "";
+        await loadComments();
+
+    } catch (err) {
+        console.error("Error posting comment:", err);
+        alert("Could not post comment.");
+    }
 });
