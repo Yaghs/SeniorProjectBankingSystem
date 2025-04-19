@@ -6,7 +6,18 @@ const TMDB_API_KEY = "bc7c4e7c62d9e223e196bbd15978fc51";
 let profilepic = document.getElementById('profile-pic');
 let inputFile = document.getElementById('fileinput');
 const editButton = document.getElementById('Edit');
-const Bio=document.getElementById("Bio")
+const Bio = document.getElementById("Bio");
+
+// Maximum image size in bytes (slightly less than 1MB Firestore limit)
+const MAX_IMAGE_SIZE = 1000000;
+
+// Helper function to check image size from base64 string
+function getBase64Size(base64String) {
+    // Remove the data URL prefix (e.g., "data:image/jpeg;base64,")
+    const base64WithoutPrefix = base64String.split(',')[1];
+    // Calculate approximate size in bytes
+    return Math.ceil((base64WithoutPrefix.length * 3) / 4);
+}
 
 const firebaseConfig = {
     apiKey: "AIzaSyD1LpIBMmZAiQFwberKbx2G29t6fNph3Xg",
@@ -34,6 +45,17 @@ async function updateProfilePage() {
                 const userData = userSnap.data();
 
                 document.getElementById("username_Id").textContent = userData.firstName;
+
+                // Load profile picture if it exists
+                if (userData.profilePicture) {
+                    profilepic.src = userData.profilePicture;
+                }
+
+                // Load bio if it exists
+                if (userData.bio) {
+                    Bio.value = userData.bio;
+                }
+
                 await updateFollowCounts(username);
                 await updateFollowersCount(username);
             } else {
@@ -44,30 +66,87 @@ async function updateProfilePage() {
         }
     } else {
         console.error("No logged-in user found.");
-
     }
 }
 
-profilepic.addEventListener("click",function (){
-    inputFile.click()
-})
+profilepic.addEventListener("click", function() {
+    inputFile.click();
+});
 
-inputFile.onchange = function (){
+inputFile.onchange = async function() {
+    const file = inputFile.files[0];
+    if (file) {
+        // Check if file is an image
+        if (!file.type.startsWith('image/')) {
+            alert("Please select an image file.");
+            return;
+        }
 
-        profilepic.src = URL.createObjectURL(inputFile.files[0]);
+        // Check file size before processing
+        if (file.size > MAX_IMAGE_SIZE * 1.33) { // Base64 is ~33% larger than binary
+            alert("Image is too large! Maximum size is 1MB.");
+            return;
+        }
 
-}
+        const reader = new FileReader();
+        reader.onload = async function(e) {
+            const imageBase64 = e.target.result;
 
-editButton.addEventListener("click",()=>{
-  if(Bio.disabled){
-      Bio.removeAttribute("disabled"); //enable text
-      editButton.textContent="Save";
-  }else{
-      Bio.setAttribute("disabled",true);
-      editButton.textContent="Edit";
-  }
+            // Verify base64 size
+            const base64Size = getBase64Size(imageBase64);
+            if (base64Size > MAX_IMAGE_SIZE) {
+                alert("Image is too large! Maximum size is 1MB.");
+                return;
+            }
 
-})
+            // Update UI
+            profilepic.src = imageBase64;
+
+            // Save to Firebase
+            const username = localStorage.getItem("loggedInUser");
+            if (username) {
+                try {
+                    const userRef = doc(db, "users", username);
+                    await setDoc(userRef, {
+                        profilePicture: imageBase64
+                    }, { merge: true });
+                    console.log("Profile picture saved successfully");
+                } catch (error) {
+                    console.error("Error saving profile picture:", error);
+                    alert("Failed to save profile picture. Please try again.");
+                }
+            }
+        };
+        reader.readAsDataURL(file);
+    }
+};
+
+editButton.addEventListener("click", async () => {
+    if (Bio.disabled) {
+        Bio.removeAttribute("disabled"); // enable text
+        editButton.textContent = "Save";
+    } else {
+        Bio.setAttribute("disabled", true);
+        editButton.textContent = "Edit";
+
+        // Save bio to Firebase
+        const username = localStorage.getItem("loggedInUser");
+        const bioText = Bio.value.trim();
+
+        if (username) {
+            try {
+                const userRef = doc(db, "users", username);
+                await setDoc(userRef, {
+                    bio: bioText
+                }, { merge: true });
+                console.log("Bio saved successfully");
+            } catch (error) {
+                console.error("Error saving bio:", error);
+                alert("Failed to save bio. Please try again.");
+            }
+        }
+    }
+});
 
 document.addEventListener("DOMContentLoaded", async () => {
     const placeholders = document.querySelectorAll(".fav-placeholder");

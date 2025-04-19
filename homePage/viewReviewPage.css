@@ -107,6 +107,7 @@ header {
     top: 60px;
     right: 30px;
     overflow: hidden;
+    color: black;
 }
 
 .suggestion {
