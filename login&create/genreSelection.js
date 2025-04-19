@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getFirestore, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getFirestore, doc, updateDoc, setDoc, getDocs, collection, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyD1LpIBMmZAiQFwberKbx2G29t6fNph3Xg",
@@ -13,6 +13,11 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+const urlParams = new URLSearchParams(window.location.search);
+const isEditMode = urlParams.get("edit") === "true";
+
+console.log("URL:", window.location.href);
+console.log("Edit mode?", isEditMode);
 
 const genreNames = [
   "Action", "Adventure", "Animation", "Comedy", "Crime", "Documentary",
@@ -70,8 +75,12 @@ function getGenreIdByName(name) {
 
 const genreListDiv = document.getElementById("genre-list");
 const submitButton = document.getElementById("submitGenres");
-
 const selectedGenres = new Set();
+
+// if editing, change button text
+if (isEditMode) {
+  submitButton.textContent = "Update";
+}
 
 genreNames.forEach(genre => {
   const genreElement = document.createElement("div");
@@ -91,6 +100,22 @@ genreNames.forEach(genre => {
   genreListDiv.appendChild(genreElement);
 });
 
+(async () => {
+  const userId = localStorage.getItem("loggedInUser");
+  if (isEditMode && userId) {
+    const userGenresSnap = await getDocs(collection(db, "users", userId, "genres"));
+    const existingGenres = userGenresSnap.docs.map(doc => doc.id);
+
+    // loop through and mark genres as selected
+    genreListDiv.querySelectorAll("div").forEach(div => {
+      if (existingGenres.includes(div.textContent)) {
+        selectedGenres.add(div.textContent);
+        div.classList.add("selected");
+      }
+    });
+  }
+})();
+
 submitButton.addEventListener("click", async () => {
   const userId = localStorage.getItem("loggedInUser");
   if (!userId) {
@@ -109,11 +134,14 @@ submitButton.addEventListener("click", async () => {
   }));
 
   try {
-    await updateDoc(doc(db, "users", userId), {
-      genres: selectedGenreObjects
-    });
+    const userRef = doc(db, "users", userId);
+    // For each selected genre, create a doc in the subcollection
+    for (const genre of selectedGenreObjects) {
+      const genreRef = doc(db, "users", userId, "genres", genre.name);
+      await setDoc(genreRef, genre);
+    }
 
-    window.location.href = "../homePage/homePage.html";
+    window.location.href = isEditMode ? "../homePage/accountCenter.html" : "../homePage/homePage.html";
   } catch (error) {
     console.error("Error updating user genres:", error);
     alert("There was an error saving your choices. Please try again.");
