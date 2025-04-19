@@ -3,7 +3,7 @@ body {
     margin: 0;
     padding: 0;
     background: #181818;
-    color: #333;
+    color: #f1f1f1;
     overflow-x: hidden;
 }
 
@@ -129,7 +129,7 @@ header {
 }
 
 /**
-new css
+ * Direct Messaging Interface
  */
 
 .Hub {
@@ -137,41 +137,71 @@ new css
     height: calc(100vh - 60px); /* Adjust based on your header height */
 }
 
-h1{
+h1 {
     color: white;
     font-size: 30px;
 }
 
-.request{
+.request {
     padding-top: 15px;
-
     padding-left: 55px;
-
 }
-.request_mess{
+
+.request_mess {
     background: #65558F;
     color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
 
+.request_mess:hover {
+    background: #7a69b3;
 }
 
 .sidebar-stack {
     display: flex;
     flex-direction: column;
-    width: 250px;
-    background-color: #f1f1f1;
-    border-right: 1px solid black;
+    width: 280px;
+    background-color: #222;
+    border-right: 1px solid #444;
 }
 
-
 .sidebar, .sidebar_chat {
-    background-color: #333;
-    padding: 20px 10px;
-    border-bottom: 1px solid black;
+    background-color: #252525;
+    padding: 20px 15px;
+    border-bottom: 1px solid #444;
+}
+
+.sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
 }
 
 .sidebar_chat {
     flex: 1;
     overflow-y: auto;
+    padding: 0;
+}
+
+/* Search input in sidebar */
+#searchfriends {
+    padding: 10px;
+    border: 1px solid #444;
+    border-radius: 5px;
+    background-color: #333;
+    color: white;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+#searchfriends:focus {
+    outline: none;
+    border-color: #65558F;
+    box-shadow: 0 0 5px rgba(101, 85, 143, 0.5);
 }
 
 /* Right chat area */
@@ -180,59 +210,239 @@ h1{
     display: flex;
     flex-direction: column;
     height: 100%;
-    background-color: #333;
+    background-color: #2a2a2a;
 }
 
 /* Chat header */
 .chat-header {
-    padding: 15px;
+    padding: 15px 20px;
     background-color: #65558F;
     color: white;
     font-weight: bold;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
 /* Chat messages */
 .chat-messages {
     flex: 1;
-    padding: 15px;
+    padding: 20px;
     overflow-y: auto;
     display: flex;
     flex-direction: column;
     gap: 10px;
-
+    background-color: #2a2a2a;
 }
 
 /* Chat input */
 .chat-input {
     display: flex;
-    border-top: 1px solid black;
-    background:#333 ;
+    border-top: 1px solid #444;
+    background: #252525;
+    padding: 10px;
 }
 
-#messageInput{
+#messageInput {
     background: #333;
+    flex: 1;
+    padding: 12px 15px;
+    border: 1px solid #444;
+    border-radius: 5px 0 0 5px;
+    color: white;
+    font-size: 15px;
 }
 
-.chat-input input {
-    flex: 1;
-    padding: 12px;
-    border: none;
+#messageInput:focus {
     outline: none;
-    color: white;
+    border-color: #65558F;
 }
 
 .chat-input button {
-    padding: 12px;
+    padding: 12px 20px;
     background: #65558F;
     color: white;
     border: none;
+    border-radius: 0 5px 5px 0;
     cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s;
 }
 
+.chat-input button:hover {
+    background: #7a69b3;
+}
+
+/* User row in sidebar */
 .user-row {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 6px 12px;
-    border-bottom: 1px solid #eee;
+    padding: 12px 15px;
+    border-bottom: 1px solid #333;
+    transition: background-color 0.3s;
+    cursor: pointer;
+}
+
+.user-row:hover {
+    background-color: #333;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: white;
+}
+
+.user-actions {
+    display: flex;
+    align-items: center;
+}
+
+.chat-btn {
+    background-color: #65558F;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.chat-btn:hover {
+    background-color: #7a69b3;
+}
+
+/* Message styles */
+.message {
+    max-width: 70%;
+    margin-bottom: 10px;
+    padding: 12px 15px;
+    border-radius: 15px;
+    position: relative;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.sent {
+    align-self: flex-end;
+    background-color: #65558F;
+    color: white;
+    margin-left: auto;
+    border-bottom-right-radius: 5px;
+}
+
+.received {
+    align-self: flex-start;
+    background-color: #444;
+    color: white;
+    border-bottom-left-radius: 5px;
+}
+
+.message-content {
+    word-wrap: break-word;
+    font-size: 15px;
+    line-height: 1.4;
+}
+
+.message-time {
+    font-size: 0.7em;
+    color: rgba(255,255,255,0.7);
+    text-align: right;
+    margin-top: 5px;
+}
+
+.unread-badge {
+    background-color: #f87204;
+    color: white;
+    border-radius: 50%;
+    padding: 3px 6px;
+    font-size: 0.7em;
+    margin-left: 5px;
+    min-width: 15px;
+    text-align: center;
+}
+
+/* Light/dark mode compatibility */
+body.light-mode {
+    background-color: #f5f5f5;
+    color: #333;
+}
+
+body.light-mode .sidebar-stack {
+    background-color: #e5e5e5;
+    border-right: 1px solid #ccc;
+}
+
+body.light-mode .sidebar,
+body.light-mode .sidebar_chat {
+    background-color: #f0f0f0;
+    border-bottom: 1px solid #ddd;
+}
+
+body.light-mode #searchfriends {
+    background-color: white;
+    border: 1px solid #ccc;
+    color: #333;
+}
+
+body.light-mode .chat-window {
+    background-color: white;
+}
+
+body.light-mode .chat-messages {
+    background-color: white;
+}
+
+body.light-mode .chat-input {
+    border-top: 1px solid #ddd;
+    background: #f0f0f0;
+}
+
+body.light-mode #messageInput {
+    background: white;
+    border: 1px solid #ccc;
+    color: #333;
+}
+
+body.light-mode .user-row {
+    border-bottom: 1px solid #ddd;
+}
+
+body.light-mode .user-row:hover {
+    background-color: #e8e8e8;
+}
+
+body.light-mode .user-info {
+    color: #333;
+}
+
+body.light-mode .received {
+    background-color: #e5e5e5;
+    color: #333;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .Hub {
+        flex-direction: column;
+        height: calc(100vh - 60px);
+    }
+
+    .sidebar-stack {
+        width: 100%;
+        max-height: 35vh;
+    }
+
+    .chat-window {
+        height: 65vh;
+    }
+
+    .message {
+        max-width: 85%;
+    }
 }

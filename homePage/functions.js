@@ -1,4 +1,3 @@
-
 // OtherProfilePage.js
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import {getFirestore, doc, getDoc, collection, getDocs, query, orderBy, limit, setDoc, deleteDoc} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
@@ -150,13 +149,36 @@ async function loadOtherUserProfile() {
     const userId = getQueryParam("user");
     if (!userId) return;
 
+    // Redirect if viewing own profile
+    const currentUser = localStorage.getItem("loggedInUser");
+    if (currentUser === userId) {
+        window.location.href = "Profilepage.html";
+        return;
+    }
+
     try {
         const userRef = doc(db, "users", userId);
         const userSnap = await getDoc(userRef);
 
         if (userSnap.exists()) {
             const userData = userSnap.data();
+
+            // Set username
             document.getElementById("username_Id").textContent = userData.firstName || userId;
+
+            // Set profile picture if exists
+            const profilePic = document.getElementById("profile-pic");
+            if (userData.profilePicture && profilePic) {
+                profilePic.src = userData.profilePicture;
+            }
+
+            // Set bio if exists
+            const bioElement = document.getElementById("Bio");
+            if (userData.bio && bioElement) {
+                bioElement.value = userData.bio;
+            }
+
+            // Load favorite movies and reviews
             loadFavoriteMovies(userId);
             loadRecentReviews(userId);
         } else {
@@ -227,6 +249,32 @@ async function loadFavoriteMovies(userID) {
         console.error("Error loading favorite movies:", error);
     }
 }
+
+function setupDMButton() {
+    const dmButton = document.querySelector(".dm");
+    if (!dmButton) return;
+
+    dmButton.addEventListener("click", () => {
+        // Get the username from URL parameter
+        const targetUser = getQueryParam("user");
+
+        if (!targetUser) {
+            console.error("No target user found for DM");
+            return;
+        }
+
+        // Redirect to hub.html with username parameter
+        window.location.href = `hub.html?user=${targetUser}`;
+    });
+}
+
+// Call this function when DOM is loaded
+document.addEventListener("DOMContentLoaded", () => {
+    // Your existing code...
+
+    // Setup DM button
+    setupDMButton();
+});
 
 
 async function loadRecentReviews(userID) {
