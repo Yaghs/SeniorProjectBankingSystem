@@ -105,6 +105,7 @@ document.addEventListener("DOMContentLoaded", function () {
     loadPopularMovies();
     loadFriendsReviews();
     getRandomActorFact();
+    loadGenreBasedCarousels();
 
     document.addEventListener("click", function (e) {
         if (e.target.classList.contains("sign-out")) {
@@ -285,6 +286,78 @@ window.prevFriendMovie = function () {
 window.nextFriendMovie = function () {
     const container = document.getElementById("friendsMoviesContainer");
     container.scrollBy({ left: 220, behavior: "smooth" });
+};
+
+// MOVIES WE RECOMMEND
+async function loadGenreBasedCarousels() {
+    const currentUser = localStorage.getItem("loggedInUser");
+    if (!currentUser) return;
+
+    const genreSnap = await getDocs(collection(db, "users", currentUser, "genres"));
+    const genreData = genreSnap.docs.map(doc => doc.data());
+
+    const container = document.getElementById("genreRecommendationsContainer");
+    container.innerHTML = "";
+
+    for (const { id, name } of genreData) {
+        const genreKey = name.replace(/\s+/g, "-");
+
+        const response = await fetch(
+            `${TMDB_BASE_URL}/discover/movie?api_key=${TMDB_API_KEY}
+               &with_genres=${id}
+               &sort_by=popularity.desc
+               &vote_count.gte=100
+               &include_adult=false
+               &language=en-US
+               &with_original_language=en`
+                .replace(/\s+/g, "")
+        );
+
+        const data = await response.json();
+
+        const section = document.createElement("section");
+        section.classList.add("recommended-genre-section");
+        section.innerHTML = `
+            <h2>${name} Movies We Recommend</h2>
+            <div class="movie-carousel">
+                <button class="carousel-arrow left-arrow" onclick="scrollGenreCarousel('${genreKey}', -1)">❮</button>
+                <div class="carousel-container" id="carousel-${genreKey}"></div>
+                <button class="carousel-arrow right-arrow" onclick="scrollGenreCarousel('${genreKey}', 1)">❯</button>
+            </div>
+        `;
+        container.appendChild(section);
+
+        const carousel = document.getElementById(`carousel-${genreKey}`);
+        data.results.slice(0, 20).forEach(movie => {
+            const movieItem = document.createElement("div");
+            movieItem.classList.add("movie-item");
+            movieItem.innerHTML = `
+                <img src="https://image.tmdb.org/t/p/original${movie.poster_path}" alt="${movie.title}" onclick="goToMoviePage(${movie.id})">
+                <p class="movie-title">${movie.title}</p>
+            `;
+            carousel.appendChild(movieItem);
+        });
+    }
+}
+
+window.prevRecommendedMovie = function () {
+    const container = document.getElementById("recommendedMoviesContainer");
+    container.scrollBy({ left: -220, behavior: "smooth" });
+};
+
+window.nextRecommendedMovie = function () {
+    const container = document.getElementById("recommendedMoviesContainer");
+    container.scrollBy({ left: 220, behavior: "smooth" });
+};
+
+window.scrollGenreCarousel = function (genreKey, direction) {
+    const container = document.getElementById(`carousel-${genreKey}`);
+    if (!container) return;
+
+    container.scrollBy({
+        left: direction * 220,
+        behavior: "smooth"
+    });
 };
 
 // ------------------- ACTOR FACT --------------------
