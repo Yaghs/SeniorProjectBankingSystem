@@ -263,4 +263,20 @@ document.addEventListener("DOMContentLoaded", async function () {
     }
   });
 
+  // === Favorite Genres ===
+  const genreDisplay = document.getElementById("genreDisplay");
+
+  try {
+    const genreSnap = await getDocs(collection(db, "users", currentUsername, "genres"));
+    if (!genreSnap.empty) {
+      const genres = genreSnap.docs.map(doc => doc.id);
+      genreDisplay.textContent = genres.join(", ");
+    } else {
+      genreDisplay.textContent = "None selected";
+    }
+  } catch (error) {
+    console.error("error fetching favorite genres:", error);
+    genreDisplay.textContent = "Error loading genres";
+  }
+
 });

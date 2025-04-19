@@ -104,11 +104,7 @@ document.getElementById("createSubmit")?.addEventListener('click', async functio
                 username,
                 password,
                 dateJoined: serverTimestamp(),
-                followers: [],
-                following: [],
-                closeFriends: [],
-                blocked: [],
-                theme: "light"
+                theme: "dark"
             });
 
             localStorage.setItem("loggedInUser", username);
