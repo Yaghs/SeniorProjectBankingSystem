@@ -71,7 +71,7 @@ document.addEventListener("DOMContentLoaded", function () {
         document.getElementById("noMyCommunities").innerHTML = `
             <h3>You need to log in to see your communities</h3>
             <p>Log in to join communities and start discussions with other movie fans!</p>
-            <a href="../login&create/login&create.html" class="create-btn" style="background-color: #ffcc00;">Login</a>
+            <a href="../login&create/index.html" class="create-btn" style="background-color: #ffcc00;">Login</a>
         `;
         document.getElementById("noMyCommunities").style.display = "block";
     }

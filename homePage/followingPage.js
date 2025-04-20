@@ -43,9 +43,6 @@ document.addEventListener("DOMContentLoaded", async () => {
                         <strong>${displayName}</strong> (@${username})
                     </div>
                     <div class="user-actions">
-                        ${!isCloseFriend
-                ? `<button class="action-btn" data-user="${username}" data-action="closeFriend">+ Close Friend</button>`
-                : ""}
                         <button class="action-btn" data-user="${username}" data-action="block">🚫 Block</button>
                     </div>
                 </div>
@@ -63,12 +60,6 @@ document.addEventListener("DOMContentLoaded", async () => {
             if (!action || !targetUser) return;
 
             try {
-                if (action === "closeFriend") {
-                    await addToCloseFriends(currentUser, targetUser);
-                    e.target.remove(); // Remove button after adding
-                    alert(`${targetUser} added to close friends.`);
-                }
-
                 if (action === "block") {
                     try {
                         // add to blocked subcollection
