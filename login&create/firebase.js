@@ -109,7 +109,7 @@ document.getElementById("createSubmit")?.addEventListener('click', async functio
 
             localStorage.setItem("loggedInUser", username);
             clearAll();
-            window.location.href = "../login&create/genreSelection.html";
+            window.location.href = "genreSelection.html";
         } catch (error) {
             console.error("firestore error:", error);
             alert("error saving data");
@@ -123,24 +123,6 @@ function clearAll() {
     document.getElementById("email").value = "";
     document.getElementById("username").value = "";
     document.getElementById("password").value = "";
-}
-
-// Utility function to retrieve the list of followed users
-export async function getFollowingList(username) {
-    const userRef = doc(db, "users", username);
-    const userSnap = await getDoc(userRef);
-    if (!userSnap.exists()) return [];
-    return userSnap.data().following || [];
-}
-
-// Additional utility functions (if needed)
-export async function addToCloseFriends(currentUser, friendUsername) {
-    const userRef = doc(db, "users", currentUser);
-    const userSnap = await getDoc(userRef);
-    const data = userSnap.data();
-    const updated = new Set(data.closeFriends || []);
-    updated.add(friendUsername);
-    await setDoc(userRef, { closeFriends: Array.from(updated) }, { merge: true });
 }
 
 export async function blockUser(currentUser, blockedUsername) {
