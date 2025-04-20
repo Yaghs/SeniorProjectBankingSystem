@@ -1,6 +1,6 @@
 {
   "hosting": {
-    "public": "login&create",
+    "public": ".",
     "ignore": [
       "firebase.json",
       "**/.*",
@@ -10,6 +10,10 @@
       {
         "source": "/",
         "destination": "/login&create/index.html"
+      },
+      {
+        "source": "/genreSelection.html",
+        "destination": "/login&create/genreSelection.html"
       }
     ]
   }
