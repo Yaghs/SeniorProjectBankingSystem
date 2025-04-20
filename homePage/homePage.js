@@ -82,7 +82,7 @@ function updateViewForAuth(user) {
         document.body.appendChild(script);
     } else {
         authContainer.innerHTML = `
-            <a href="../login&create/login&create.html">Log In / Sign Up</a>
+            <a href="../login&create/index.html">Log In / Sign Up</a>
 
         `;
 

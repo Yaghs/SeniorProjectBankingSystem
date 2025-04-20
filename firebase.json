@@ -1,10 +1,16 @@
 {
   "hosting": {
-    "public": "login&create",
+    "public": ".",
     "ignore": [
       "firebase.json",
       "**/.*",
       "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "/",
+        "destination": "/login&create/index.html"
+      }
     ]
   }
 }

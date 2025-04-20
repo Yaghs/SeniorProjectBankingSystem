@@ -61,7 +61,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const loggedInUser = localStorage.getItem("loggedInUser");
     if (!loggedInUser) {
         alert("You need to be logged in to create a community");
-        window.location.href = "../login&create/login&create.html";
+        window.location.href = "../login&create/index.html";
     }
 
     // Add size limit note to the form

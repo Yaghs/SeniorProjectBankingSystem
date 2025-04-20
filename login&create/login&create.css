@@ -6,7 +6,7 @@ body {
     justify-content: flex-start;
     align-items: center;
     height: 100vh;
-    background: url('../imgs/screensaver.jpg') no-repeat center center/cover;
+    background: url('/imgs/screensaver.jpg') no-repeat center center/cover;
     position: relative;
     overflow: hidden;
 }
