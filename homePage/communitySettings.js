@@ -83,7 +83,7 @@ function createErrorMessage(message, containerId) {
 async function checkPermission() {
     if (!loggedInUser) {
         alert("You need to be logged in to edit a community");
-        window.location.href = "../login&create/login&create.html";
+        window.location.href = "../login&create/index.html";
         return false;
     }
 
