@@ -463,3 +463,17 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 });
+
+document.addEventListener("DOMContentLoaded", () => {
+    const followCount = document.getElementById("FollowersCount");
+
+    if (followCount) {
+        followCount.style.cursor = "pointer"; // make it look clickable
+        followCount.title = "View who is following you";
+
+        followCount.addEventListener("click", () => {
+            window.location.href = "followersPage.html"; // adjust the path if needed
+        });
+    }
+});
+
