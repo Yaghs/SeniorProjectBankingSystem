@@ -21,9 +21,17 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     listEl.innerHTML = "";
+    // fetch the list of users you're currently following
+    const followingSnap = await getDocs(collection(db, "users", currentUser, "following"));
+    const following = followingSnap.docs.map(doc => doc.id);
+    // get the list of users you've blocked
+    const blockedSnap = await getDocs(collection(db, "users", currentUser, "blocked"));
+    const blockedUsers = blockedSnap.docs.map(doc => doc.id);
+
 
     for (const username of followers) {
         const userDoc = await getDoc(doc(db, "users", username));
+        if (blockedUsers.includes(username)) continue; // skip blocked users
         const data = userDoc.exists() ? userDoc.data() : null;
         const displayName = data
             ? `${data.firstName} ${data.lastName}`.trim() || username
@@ -36,6 +44,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                     <strong>${displayName}</strong> (@${username})
                 </div>
                 <div class="user-actions">
+                    ${!following.includes(username) ? `<button class="action-btn" data-user="${username}" data-action="follow"><i class='bx bx-user-plus'></i> Follow Back</button>` : ""}
                     <button class="action-btn" data-user="${username}" data-action="block"><i class='bx bx-block'></i> Block</button>
                 </div>
             </div>
@@ -53,6 +62,23 @@ document.addEventListener("DOMContentLoaded", async () => {
         if (!action || !targetUser) return;
 
         try {
+            if (action === "follow") {
+                const followingRef = doc(db, "users", currentUser, "following", targetUser);
+                const followersRef = doc(db, "users", targetUser, "followers", currentUser);
+
+                // Add them to your following
+                await setDoc(followingRef, {
+                    followedAt: Date.now()
+                });
+
+                // Add yourself to their followers
+                await setDoc(followersRef, {
+                    followedAt: Date.now()
+                });
+
+                alert(`You're now following ${targetUser}.`);
+                e.target.remove(); // remove the follow back button
+            }
             if (action === "block") {
                 const blockedRef = doc(db, "users", currentUser, "blocked", targetUser);
                 await setDoc(blockedRef, {
