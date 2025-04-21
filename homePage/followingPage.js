@@ -1,4 +1,4 @@
-import { db, addToCloseFriends, blockUser } from "../login&create/firebase.js";
+import { db, blockUser } from "../login&create/firebase.js";
 import { getDoc, doc, collection, getDocs, setDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-firestore.js";
 
 document.addEventListener("DOMContentLoaded", async () => {
@@ -34,8 +34,6 @@ document.addEventListener("DOMContentLoaded", async () => {
                 ? `${data.firstName} ${data.lastName}`.trim() || username
                 : username;
 
-            const isCloseFriend = closeFriends.includes(username);
-
             const li = document.createElement("li");
             li.innerHTML = `
                 <div class="user-row">
@@ -43,7 +41,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                         <strong>${displayName}</strong> (@${username})
                     </div>
                     <div class="user-actions">
-                        <button class="action-btn" data-user="${username}" data-action="block">🚫 Block</button>
+                        <button class="action-btn" data-user="${username}" data-action="block"><i class='bx bx-block'></i> Block</button>
                     </div>
                 </div>
             `;

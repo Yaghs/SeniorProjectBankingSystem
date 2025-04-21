@@ -54,6 +54,7 @@ ul#blockedUsersList li {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    cursor: pointer;
 }
 
 /* RIGHT SIDE: BUTTONS */
