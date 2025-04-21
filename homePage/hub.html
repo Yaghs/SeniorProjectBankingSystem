@@ -3,8 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <title>DM Page</title>
-    <script type="module" src="search.js"></script>
-    <script type="module" src="+review.js"></script>
     <link rel="stylesheet" href="hub.css">
     <link rel='stylesheet' href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css'>
 </head>
@@ -25,15 +23,7 @@
             </div>
         </div>
         <a href="#">Activity</a>
-        <a href="#" id="reviewBtn">+Review</a>
-        <a href="createCommunity.html">Communities</a>
-        <select id="searchCategory">
-            <option value="">Search For...</option>
-            <option value="movies">Movies</option>
-            <option value="actors">Actors</option>
-            <option value="users">Users</option>
-        </select>
-        <input type="text" id="searchInput" placeholder="Search..." autocomplete="off">
+        <a href="communities.html">Communities</a>
     </div>
 </header>
 <main class="Hub">
@@ -41,13 +31,10 @@
     <div class="sidebar-stack">
         <div class="sidebar" id="extra">
             <input type="text" id="searchfriends" placeholder="Search..." autocomplete="off">
-            <div class="request">
-                <button class="request_mess">message request</button>
-            </div>
         </div>
 
         <div class="sidebar_chat" id="userList">
-
+            <!-- Users will be loaded here by JS -->
         </div>
     </div>
 
@@ -57,9 +44,13 @@
         <div class="chat-messages" id="chatMessage"></div>
         <div class="chat-input">
             <input type="text" id="messageInput" placeholder="Type your message">
-            <button>Send</button>
+            <button id="sendButton">Send</button>
         </div>
     </div>
 </main>
+
+<!-- Add the script tag for hub.js -->
+<script type="module" src="hub.js"></script>
+<script type="module" src="Theme.js"></script>
 </body>
 </html>
