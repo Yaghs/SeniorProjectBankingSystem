@@ -103,6 +103,7 @@ header {
     top: 60px;
     right: 30px;
     overflow: hidden;
+    color: black;
 }
 
 .suggestion {
@@ -152,6 +153,7 @@ header {
     border-radius: 5px;
     resize: none; /* Prevents resizing */
     margin-left: 5px;
+    color: white;
 
 }
 
