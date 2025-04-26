@@ -522,14 +522,47 @@ function displayMessage(message) {
     chatMessage.appendChild(messageDiv);
 }
 
+//check if you can send to user(if your following them)
+
+async function checkUser(currentUser,otherUser){
+    const followDoc = await  getDoc(doc(db,"follows",currentUser));
+    if(followDoc.exists()){
+        const follows = followDoc.data();
+        return follows[otherUser]==true;
+    }
+    return false
+}
+
+async function MessageRequest(currentUser,otherUser){
+    try{
+        const  request = doc(db,"messageRequest",otherUser,"request",currentUser);
+        await  setDoc(request,{
+            timestamp: serverTimestamp(),
+            fromUser: currentUser
+        });
+        console.log(`Message Request sent from ${currentUser} to ${otherUser}`)
+    }catch (error){
+        console.error("Error with sending message request")
+    }
+
+}
+
 // Send a message
 async function sendMessage() {
+    const otherUser = currentChatUser;
     const text = messageInput.value.trim();
 
     console.log("Sending message:", text, "to user:", currentChatUser); // Debug message
 
     if (!text || !currentChatUser) {
         console.log("Cannot send message: empty text or no recipient"); // Debug message
+        return;
+    }
+
+    if(!(await checkUser(currentUser,otherUser))){
+        alert("Send message request frist!")
+        await MessageRequest(currentUser,otherUser);
+        alert("Request sent, wait to see if they accepts")
         return;
     }
 
