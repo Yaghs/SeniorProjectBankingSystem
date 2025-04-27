@@ -36,7 +36,9 @@ body {
 
 .username-section,
 .password-section,
-.name-section {
+.name-section,
+.bio-section,
+.links-section {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -46,7 +48,9 @@ body {
 
 .username-label,
 .password-label,
-.info-label {
+.info-label,
+.bio-label,
+.links-label {
   font-weight: bold;
 }
 
@@ -61,7 +65,12 @@ body {
 }
 
 .username-edit,
-.password-edit {
+.password-edit,
+.firstName-edit,
+.lastName-edit,
+.email-edit,
+.bio-edit,
+.links-edit {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -82,7 +91,12 @@ body {
 }
 
 .username-input,
-.password-input {
+.password-input,
+.firstName-input,
+.lastName-input,
+.email-input,
+.bio-input,
+.links-input {
   padding: 6px;
   font-size: 16px;
   border: 1px solid #ccc;

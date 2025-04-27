@@ -47,12 +47,13 @@ document.addEventListener("DOMContentLoaded", async function () {
   const firstNameDisplay = document.getElementById("firstNameDisplay");
   const lastNameDisplay = document.getElementById("lastNameDisplay");
   const emailDisplay = document.getElementById("emailDisplay");
+  const bioDisplay = document.getElementById("bioDisplay");
 
   let currentUsername = localStorage.getItem("loggedInUser") || "DefaultUser";
   usernameDisplay.textContent = currentUsername;
   usernameInput.value = currentUsername;
 
-  // Fetch first and last name from Firebase
+  // fetch first and last name from Firebase
   try {
     const userRef = doc(db, "users", currentUsername);
     const userSnap = await getDoc(userRef);
@@ -62,6 +63,7 @@ document.addEventListener("DOMContentLoaded", async function () {
       firstNameDisplay.textContent = userData.firstName || "N/A";
       lastNameDisplay.textContent = userData.lastName || "N/A";
       emailDisplay.textContent = userData.email || "N/A";
+      bioDisplay.textContent = userData.bio || "N/A";
     } else {
       console.warn("user document not found for:", currentUsername);
     }
@@ -278,5 +280,38 @@ document.addEventListener("DOMContentLoaded", async function () {
     console.error("error fetching favorite genres:", error);
     genreDisplay.textContent = "Error loading genres";
   }
+
+  // === Bio ===
+  const changeBioLink = document.getElementById("changeBioLink");
+  const bioInput = document.getElementById("bioInput");
+  const confirmBioButton = document.getElementById("confirmBioButton");
+  const bioEdit = document.querySelector(".bio-edit");
+
+  changeBioLink.addEventListener("click", function(e) {
+    e.preventDefault();
+    bioInput.value = bioDisplay.textContent;
+    bioEdit.style.display = "flex";
+    changeBioLink.style.display = "none";
+  });
+
+  confirmBioButton.addEventListener("click", async function () {
+    const newBio = bioInput.value.trim();
+    if (!newBio) {
+      alert("please enter a bio.");
+      return;
+    }
+
+    try {
+      const userRef = doc(db, "users", currentUsername);
+      await setDoc(userRef, { bio: newBio }, { merge: true });
+
+      bioDisplay.textContent = newBio;
+      bioEdit.style.display = "none";
+      changeBioLink.style.display = "inline";
+      alert("bio updated!");
+    } catch (error) {
+      console.error("error updating bio:", error);
+    }
+  });
 
 });
