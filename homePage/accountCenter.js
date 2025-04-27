@@ -314,4 +314,65 @@ document.addEventListener("DOMContentLoaded", async function () {
     }
   });
 
+  // === Profile Picture ===
+  const profilePicDisplay = document.getElementById("profilePicDisplay");
+  const profilePicInput = document.getElementById("profilePicInput");
+  const changeProfilePicLink = document.getElementById("changeProfilePicLink");
+
+  const MAX_IMAGE_SIZE = 1 * 1024 * 1024; // 1MB
+
+  function getBase64Size(base64String) {
+    let stringLength = base64String.length - 'data:image/png;base64,'.length;
+    let sizeInBytes = 4 * Math.ceil(stringLength / 3) * 0.5624896334383812;
+    return sizeInBytes;
+  }
+
+  changeProfilePicLink.addEventListener("click", function(e) {
+    e.preventDefault();
+    profilePicInput.click();
+  });
+
+  profilePicInput.addEventListener("change", async function() {
+    const file = profilePicInput.files[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      alert("Please select a valid image file.");
+      return;
+    }
+
+    if (file.size > MAX_IMAGE_SIZE * 1.33) {
+      alert("Image is too large! Max size is 1MB.");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = async function(e) {
+      const base64Image = e.target.result;
+
+      if (getBase64Size(base64Image) > MAX_IMAGE_SIZE) {
+        alert("Image is too large after conversion!");
+        return;
+      }
+
+      // update image on the page
+      profilePicDisplay.src = base64Image;
+
+      // save to firestore
+      const username = localStorage.getItem("loggedInUser");
+      if (username) {
+        try {
+          const userRef = doc(db, "users", username);
+          await setDoc(userRef, { profilePicture: base64Image }, { merge: true });
+          alert("Profile picture updated!");
+        } catch (error) {
+          console.error("Error updating profile picture:", error);
+          alert("Failed to update profile picture. Try again.");
+        }
+      }
+    };
+    reader.readAsDataURL(file);
+  });
+
+
 });

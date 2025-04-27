@@ -160,12 +160,12 @@ header {
     font-size: 1.1em;
     margin-top: 10px;
     color: #ccc;
-    text-align: center;
+    text-align: start;
 }
 
 .following_info {
     display: flex;
-    justify-content: flex-start;
+    justify-content: flex-end;
     gap: 10px;
     margin-left: 250px;
     font-weight: bold;

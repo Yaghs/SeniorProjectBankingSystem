@@ -72,58 +72,6 @@ async function updateProfilePage() {
     }
 }
 
-profilepic.addEventListener("click", function() {
-    inputFile.click();
-});
-
-inputFile.onchange = async function() {
-    const file = inputFile.files[0];
-    if (file) {
-        // Check if file is an image
-        if (!file.type.startsWith('image/')) {
-            alert("Please select an image file.");
-            return;
-        }
-
-        // Check file size before processing
-        if (file.size > MAX_IMAGE_SIZE * 1.33) { // Base64 is ~33% larger than binary
-            alert("Image is too large! Maximum size is 1MB.");
-            return;
-        }
-
-        const reader = new FileReader();
-        reader.onload = async function(e) {
-            const imageBase64 = e.target.result;
-
-            // Verify base64 size
-            const base64Size = getBase64Size(imageBase64);
-            if (base64Size > MAX_IMAGE_SIZE) {
-                alert("Image is too large! Maximum size is 1MB.");
-                return;
-            }
-
-            // Update UI
-            profilepic.src = imageBase64;
-
-            // Save to Firebase
-            const username = localStorage.getItem("loggedInUser");
-            if (username) {
-                try {
-                    const userRef = doc(db, "users", username);
-                    await setDoc(userRef, {
-                        profilePicture: imageBase64
-                    }, { merge: true });
-                    console.log("Profile picture saved successfully");
-                } catch (error) {
-                    console.error("Error saving profile picture:", error);
-                    alert("Failed to save profile picture. Please try again.");
-                }
-            }
-        };
-        reader.readAsDataURL(file);
-    }
-};
-
 document.addEventListener("DOMContentLoaded", async () => {
     const placeholders = document.querySelectorAll(".fav-placeholder");
     const favBox = document.getElementById("favBox");
