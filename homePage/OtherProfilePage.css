@@ -128,7 +128,6 @@ header {
     align-items: flex-start;
     gap: 20px;
     padding: 20px;
-
 }
 
 .profile-pic img {
@@ -144,17 +143,11 @@ header {
     flex-direction: column;
 }
 
-.bio textarea {
-    width: 100%;
-    height: 80px;
-
-    font-size: 14px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    resize: none; /* Prevents resizing */
-    margin-left: 5px;
-    color: white;
-
+.bio-display {
+    font-size: 1.1em;
+    color: #ccc;
+    justify-content: flex-start;
+    margin-top: -25px;
 }
 
 .user-header {
@@ -163,7 +156,6 @@ header {
     justify-content: space-between;
     gap: 80px;
     width: 100%;
-    margin-bottom: 5px;
 }
 
 .username_display {
@@ -212,8 +204,7 @@ header {
     width: 58%;
 }
 
-
-p{
+.following_info p{
     margin-right: 15px;
     margin-left: 15px;
     font-size: 18px;
@@ -224,8 +215,6 @@ p{
     border-bottom: 2px solid #555;
     margin-right: 40px;
 }
-
-
 
 .favorite-grid {
     display: grid;
