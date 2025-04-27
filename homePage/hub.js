@@ -521,21 +521,19 @@ function displayMessage(message) {
 
     chatMessage.appendChild(messageDiv);
 }
-
-//check if you can send to user(if your following them)
-
+//check if the other user is follow current
 async function checkUser(currentUser,otherUser){
-    const followDoc = await  getDoc(doc(db,"follows",currentUser));
+    const followDoc = await  getDoc(doc(db,"users",otherUser));
     if(followDoc.exists()){
-        const follows = followDoc.data();
-        return follows[otherUser]==true;
+        const follow = followDoc.data();
+        return follow.following && follow.following.includes(currentUser) === true;
     }
     return false
 }
 
 async function MessageRequest(currentUser,otherUser){
     try{
-        const  request = doc(db,"messageRequest",otherUser,"request",currentUser);
+        const request = doc(db,"messageRequest",otherUser,"request",currentUser);
         await  setDoc(request,{
             timestamp: serverTimestamp(),
             fromUser: currentUser
@@ -606,6 +604,7 @@ async function sendMessage() {
         alert("Error sending message: " + error.message);
     }
 }
+
 
 // Add CSS for messages
 const style = document.createElement('style');
