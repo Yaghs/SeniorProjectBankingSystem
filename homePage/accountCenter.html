@@ -82,9 +82,35 @@
         </div>
         <hr class="divider">
         <div class="info-section">
-            <label class="info-label">Favorite Genre(s):</label>
+            <label class="bio-label">Favorite Genre(s):</label>
             <span id="genreDisplay"></span>
             <a href="../login&create/genreSelection.html?edit=true" class="change-link"><i class="fa-solid fa-pen"></i></a>
+        </div>
+        <hr class="divider">
+        <div class="bio-section">
+            <label class="info-label">Bio:</label>
+            <span id="bioDisplay"></span>
+            <a href="#" id="changeBioLink" class="change-link"><i class="fa-solid fa-pen"></i></a>
+            <div class="bio-edit" style="display: none;">
+                <button id="confirmBioButton" class="confirm-button">Confirm</button>
+                <input type="text" id="bioInput" class="bio-input" placeholder="Enter your bio...">
+            </div>
+            <div id="bioSuccessMessage" class="success-message" style="display: none;">
+                Bio successfully updated!
+            </div>
+        </div>
+        <hr class="divider">
+        <div class="links-section">
+            <label class="links-label">Links (Location, Social Media):</label>
+            <span id="linksDisplay"></span>
+            <a href="#" id="changeLinksLink" class="change-link"><i class="fa-solid fa-pen"></i></a>
+            <div class="links-edit" style="display: none;">
+                <button id="confirmLinksButton" class="confirm-button">Confirm</button>
+                <input type="text" id="linksInput" class="links-input" placeholder="Enter links or location...">
+            </div>
+            <div id="linksSuccessMessage" class="success-message" style="display: none;">
+                Links successfully updated!
+            </div>
         </div>
     </main>
 </div>

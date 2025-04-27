@@ -50,58 +50,47 @@
             <img id="profile-pic" src="https://as1.ftcdn.net/v2/jpg/00/64/67/52/1000_F_64675209_7ve2XQANuzuHjMZXP3aIYIpsDKEbF5dD.jpg" alt="Profile Picture">
             <input type="file" id="fileinput" style="display: none;" accept="image/*" />
         </div>
-
         <div class="username_display">
             <h1><span id="username_Id">Username</span></h1>
-
-                <!-- Bio Section -->
-                <form class="bio">
-                    <textarea id="Bio" disabled placeholder="Enter Bio here"></textarea>
-                    <button class="Edit" id="Edit" type="button">Edit</button>
-
-                </form>
+            <div class="bio-display">
+                <p id="bioDisplayText">No bio available yet.</p>
             </div>
-            <!-- Following info-->
-            <div class="following_info">
+            <p id="links" class="bio-text"></p>
+        </div>
+        <!-- Following info-->
+        <div class="following_info">
+            <p id="films">Flims: 0</p>
+            <script>
+                document.addEventListener('DOMContentLoaded', () => {
+                    const Flims = document.getElementById('films');
+                    let current = parseInt(localStorage.getItem('filmCount') || 0);
+                    Flims.textContent = `Flims: ${current}`;
+                });
+            </script>
+            <p id="year">This year: 0</p>
+            <script>
+                document.addEventListener('DOMContentLoaded', () =>{
+                    const year = document.getElementById('year');
+                    let current = parseInt(localStorage.getItem('yearCount')||0);
 
-                <p id="films">Flims: 0</p>
-                <script>
-                    document.addEventListener('DOMContentLoaded', () => {
-                        const Flims = document.getElementById('films');
-                        let current = parseInt(localStorage.getItem('filmCount') || 0);
-                        Flims.textContent = `Flims: ${current}`;
-                    });
-                </script>
-                <p id="year">This year: 0</p>
-                <script>
-                    document.addEventListener('DOMContentLoaded', () =>{
-                        const year = document.getElementById('year');
-                        let current = parseInt(localStorage.getItem('yearCount')||0);
-
-                        year.textContent = `This year: ${current}`;
-                    })
-                </script>
-
-                <p id="Listing">Listing: 0</p>
-
-              <script>
-                  document.addEventListener('DOMContentLoaded', () => {
-                      const Listing = document.getElementById('Listing');
-                      let current = parseInt(localStorage.getItem('listCount') || 0);
-                      Listing.textContent = `Listing: ${current}`;
-                  });
-              </script>
-                <p id="FollowingCount">Following: 0</p>
-                <p id="FollowersCount">Followers: 0</p>
-                <!-- DM button -->
-                <button class="dm" onclick="window.location.href='hub.html';">Direct Message</button>
-
-
-            </div>
-
-            </div>
-
-            </div>
+                    year.textContent = `This year: ${current}`;
+                })
+            </script>
+            <p id="Listing">Listing: 0</p>
+          <script>
+              document.addEventListener('DOMContentLoaded', () => {
+                  const Listing = document.getElementById('Listing');
+                  let current = parseInt(localStorage.getItem('listCount') || 0);
+                  Listing.textContent = `Listing: ${current}`;
+              });
+          </script>
+            <p id="FollowingCount">Following: 0</p>
+            <p id="FollowersCount">Followers: 0</p>
+            <!-- DM button -->
+            <button class="dm" onclick="window.location.href='hub.html';">Direct Message</button>
+        </div>
+    </div>
+</div>
 
 <!-- Favorite Films Section -->
 <div class="Fav_Container">

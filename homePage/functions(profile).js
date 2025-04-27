@@ -51,9 +51,12 @@ async function updateProfilePage() {
                     profilepic.src = userData.profilePicture;
                 }
 
-                // Load bio if it exists
+                const bioDisplay = document.getElementById("bioDisplayText");
+
                 if (userData.bio) {
-                    Bio.value = userData.bio;
+                    bioDisplay.textContent = userData.bio;
+                } else {
+                    bioDisplay.textContent = "No bio available yet.";
                 }
 
                 await updateFollowCounts(username);
@@ -120,33 +123,6 @@ inputFile.onchange = async function() {
         reader.readAsDataURL(file);
     }
 };
-
-editButton.addEventListener("click", async () => {
-    if (Bio.disabled) {
-        Bio.removeAttribute("disabled"); // enable text
-        editButton.textContent = "Save";
-    } else {
-        Bio.setAttribute("disabled", true);
-        editButton.textContent = "Edit";
-
-        // Save bio to Firebase
-        const username = localStorage.getItem("loggedInUser");
-        const bioText = Bio.value.trim();
-
-        if (username) {
-            try {
-                const userRef = doc(db, "users", username);
-                await setDoc(userRef, {
-                    bio: bioText
-                }, { merge: true });
-                console.log("Bio saved successfully");
-            } catch (error) {
-                console.error("Error saving bio:", error);
-                alert("Failed to save bio. Please try again.");
-            }
-        }
-    }
-});
 
 document.addEventListener("DOMContentLoaded", async () => {
     const placeholders = document.querySelectorAll(".fav-placeholder");

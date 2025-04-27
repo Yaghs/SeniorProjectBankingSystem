@@ -156,18 +156,13 @@ header {
     max-width: 100%;
 }
 
-.bio textarea {
-    width: 150%;
-    height: 80px;
-    #padding: 8px;
-    font-size: 14px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    resize: none; /* Prevents resizing */
-    margin-left: 5px;
-    color: white;
-
+.bio-display {
+    font-size: 1.1em;
+    margin-top: 10px;
+    color: #ccc;
+    text-align: center;
 }
+
 .following_info {
     display: flex;
     justify-content: flex-start;
@@ -176,9 +171,11 @@ header {
     font-weight: bold;
     color: white;
 }
-p{
+
+.following_info p{
     margin-right: 15px;
-    margin-left: 15px;
+    margin-left: 25px;
+    margin-top: 25px;
     font-size: 18px;
 }
 

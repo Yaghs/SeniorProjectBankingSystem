@@ -69,9 +69,8 @@ document.getElementById('cancelSignOut')?.addEventListener('click', function () 
 });
 
 document.getElementById('confirmSignOut')?.addEventListener('click', function () {
-  window.location.href = "../login%26create/login%26create.html";
+  window.location.href = "../login&create/login&create.html";
 });
-
 
 (async function () {
   const toggle = document.getElementById("modeToggle");
