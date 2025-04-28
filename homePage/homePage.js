@@ -104,6 +104,7 @@ document.addEventListener("DOMContentLoaded", function () {
     updateViewForAuth(user);
     loadPopularMovies();
     loadFriendsReviews();
+    loadRecommendedMovies();
     getRandomActorFact();
     loadGenreBasedCarousels();
 
@@ -194,6 +195,63 @@ window.nextPopularMovie = function () {
         behavior: "smooth"
     });
 };
+
+async function loadRecommendedMovies() {
+    const username = localStorage.getItem("loggedInUser");
+    if (!username) return;
+
+    const recommendedContainer = document.getElementById("recommendedMoviesContainer");
+    recommendedContainer.innerHTML = "";
+
+    try {
+        // Step 1: Get user's favorite films
+        const favoritesRef = collection(db, "users", username, "favorites");
+        const favoritesSnap = await getDocs(favoritesRef);
+
+        const favoriteMovieIds = new Set();
+        favoritesSnap.forEach(doc => {
+            const data = doc.data();
+            if (data.tmdbId) favoriteMovieIds.add(data.tmdbId);
+        });
+
+        // Step 2: Fetch similar movies from TMDB
+        const recommendedMap = new Map();
+
+        for (const tmdbId of favoriteMovieIds) {
+            const res = await fetch(`${TMDB_BASE_URL}/movie/${tmdbId}/similar?api_key=${TMDB_API_KEY}&language=en-US&page=1`);
+            const data = await res.json();
+
+            data.results.forEach(movie => {
+                const titleKey = movie.title.toLowerCase();
+                if (!recommendedMap.has(titleKey)) {
+                    recommendedMap.set(titleKey, movie);
+                }
+            });
+        }
+
+        if (recommendedMap.size === 0) {
+            recommendedContainer.innerHTML = "<p>No recommendations yet. Add favorite films to get suggestions!</p>";
+            return;
+        }
+
+        // Step 3: Render the recommendations
+        for (const movie of recommendedMap.values()) {
+            const movieItem = document.createElement("div");
+            movieItem.classList.add("movie-item");
+            movieItem.innerHTML = `
+                <img src="https://image.tmdb.org/t/p/original${movie.poster_path}" alt="${movie.title}" onclick="goToMoviePage(${movie.id})">
+                <p class="movie-title">${movie.title}</p>
+            `;
+            recommendedContainer.appendChild(movieItem);
+        }
+
+    } catch (err) {
+        console.error("Error loading recommended movies:", err);
+        recommendedContainer.innerHTML = "<p>Failed to load recommendations.</p>";
+    }
+}
+
+
 
 // ------------------- FRIENDS REVIEWS -------------------
 

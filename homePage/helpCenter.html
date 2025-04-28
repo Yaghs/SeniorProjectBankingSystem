@@ -2,39 +2,25 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Help Center</title>
-    <link rel="stylesheet" href="helpCenter.css">
+    <title>Help Center AI</title>
+    <link rel="stylesheet" href="HelpCenter.css">
+    <script type="module" src="HelpCenter.js"></script>
 </head>
 <body>
 
-<a href="../homePage/userSettings.html" class="return-arrow">&#8592;</a>
+<div class="chat-wrapper">
+    <header class="chat-header">
+        <h1>🤖 HelpCenter AI</h1>
+    </header>
 
-<div class="help-container">
-    <h1>Help Center</h1>
-    <form id="helpForm">
-        <label for="email">Your Email:</label>
-        <input type="email" id="email" required>
+    <div id="chatBox" class="chat-box"></div>
 
-        <label for="subject">Subject:</label>
-        <input type="text" id="subject" required>
-
-        <label for="description">Description:</label>
-        <textarea id="description" rows="5" required></textarea>
-
-        <button type="submit">Send Request</button>
-        <p id="successMessage" style="display: none;"></p>
-    </form>
+    <div class="chat-input-container">
+        <input type="text" id="userInput" placeholder="Type your message..." autocomplete="off">
+        <button id="sendBtn">➤</button>
+    </div>
 </div>
 
-<!-- EmailJS SDK v4 -->
-<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-<script>
-    emailjs.init({
-        publicKey: "_foXwm7dukK33lqvj" // ✅ Your actual EmailJS public key
-    });
-</script>
-<script type="module" src="helpCenter.js"></script>
-<script type="module" src="Theme.js"></script>
 </body>
 </html>
 

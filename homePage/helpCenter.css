@@ -1,79 +1,130 @@
+/* HelpCenter.css */
+
+/* Reset basic body settings */
 body {
-    background-color: #1c1c1c;
-    color: #fff;
-    font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
+    height: 100vh;
+    background-color: #0e0e0e;
+    font-family: 'Poppins', sans-serif;
+    display: flex;
+    flex-direction: column;
 }
 
-.return-arrow {
-    position: fixed;
-    top: 25px;
-    left: 35px;
-    text-decoration: none;
-    color: #ffffff;
-    font-size: 36px;
-    z-index: 1000;
-}
-
-.help-container {
-    max-width: 600px;
-    margin: 100px auto;
-    background-color: #2a2a2a;
-    padding: 30px;
-    border-radius: 10px;
-}
-
-.help-container h1 {
-    text-align: center;
-    margin-bottom: 20px;
-}
-
-form label {
-    display: block;
-    margin: 15px 0 5px;
-}
-
-form input,
-form textarea {
+/* Entire chat page */
+.chat-wrapper {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
     width: 100%;
-    padding: 10px;
-    border: none;
-    border-radius: 5px;
-    font-size: 14px;
-    background-color: #444;
-    color: #fff;
 }
 
-form button {
-    margin-top: 20px;
-    background-color: #ffcc00;
-    color: black;
-    padding: 10px 20px;
-    border-radius: 6px;
+/* Top Header Bar */
+.chat-header {
+    background-color: #1e1e1e;
+    color: #00e676;
+    padding: 20px;
+    text-align: center;
+    font-size: 24px;
     font-weight: bold;
+    flex-shrink: 0;
+}
+
+/* Main chat box area */
+.chat-box {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+    background-color: #121212;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+/* Chat input bar at bottom */
+.chat-input-container {
+    display: flex;
+    background: #1e1e1e;
+    padding: 15px;
+    border-top: 1px solid #333;
+    flex-shrink: 0;
+}
+
+/* Text input field */
+input[type="text"] {
+    flex: 1;
+    padding: 15px;
+    border: none;
+    background: #212121;
+    color: white;
+    font-size: 16px;
+    border-radius: 5px 0 0 5px;
+}
+
+/* Text input field on focus */
+input[type="text"]:focus {
+    outline: none;
+}
+
+/* Send button */
+button#sendBtn {
+    padding: 15px 20px;
+    background: #00e676;
+    border: none;
     cursor: pointer;
-    border: none;
-    width: 100%;
+    font-size: 20px;
+    color: black;
+    border-radius: 0 5px 5px 0;
+    transition: background 0.3s;
 }
 
-form button:hover {
-    background-color: #e6b800;
+/* Send button on hover */
+button#sendBtn:hover {
+    background: #00c853;
 }
 
-#successMessage {
-    margin-top: 15px;
-    color: #66ff66;
+/* General chat message */
+.chat-message {
+    max-width: 75%;
+    padding: 12px 18px;
+    border-radius: 18px;
+    font-size: 15px;
+    line-height: 1.4;
+    word-wrap: break-word;
+}
+
+/* User message bubbles */
+.user-message {
+    background-color: #00e676;
+    color: #000;
+    align-self: flex-end;
+    border-bottom-right-radius: 0;
+}
+
+/* Bot message bubbles */
+.bot-message {
+    background-color: #333;
+    color: #fff;
+    align-self: flex-start;
+    border-bottom-left-radius: 0;
+}
+
+/* Contact Admin button styling */
+.bot-message button {
+    margin-top: 10px;
+    background: #00e676;
+    color: black;
     font-weight: bold;
-    text-align: center;
-}
-body.light-mode {
-    background-color: #ffffff;
-    color: #000000;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
 }
 
-body.dark-mode {
-    background-color: #1c1c1c;
-    color: #ffffff;
+.bot-message button:hover {
+    background: #00c853;
 }
+
+
+
 
