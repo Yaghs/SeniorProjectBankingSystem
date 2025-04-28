@@ -179,7 +179,7 @@ function showContactAdminsOption() {
     contactBtn.textContent = "Contact Admins";
     contactBtn.style.marginTop = "10px";
     contactBtn.style.padding = "8px 15px";
-    contactBtn.style.backgroundColor = "#00e676";
+    contactBtn.style.backgroundColor = "#ffffff";
     contactBtn.style.border = "none";
     contactBtn.style.color = "#000";
     contactBtn.style.fontWeight = "bold";
