@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-app.js";
-import { getFirestore, doc, getDoc, setDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-firestore.js";
+import { getFirestore, doc, getDoc, setDoc, collection, getDocs, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-firestore.js";
 
 // initialize firebase
 const firebaseConfig = {
@@ -87,47 +87,69 @@ async function updateUserStats(userId) {
 
 // setup follow button (initial state + logic)
 function setupFollowButton(currentUser, profileUser) {
-    const followBtn = document.getElementById("Follow_button");
-    if (!currentUser || !profileUser || !followBtn) return;
+  const followBtn = document.getElementById("Follow_button");
+  if (!currentUser || !profileUser || !followBtn) return;
 
-    checkFollowStatus(currentUser, profileUser, followBtn);
+  checkFollowStatus(currentUser, profileUser, followBtn);
 
-    followBtn.addEventListener("click", async () => {
-        try {
-            const currentUserRef = doc(db, "users", currentUser, "following", profileUser);
-            const profileUserRef = doc(db, "users", profileUser, "followers", currentUser);
+  followBtn.addEventListener("click", async () => {
+    try {
+      const currentUserRef = doc(
+        db,
+        "users",
+        currentUser,
+        "following",
+        profileUser
+      );
+      const profileUserRef = doc(
+        db,
+        "users",
+        profileUser,
+        "followers",
+        currentUser
+      );
 
-            const isFollowing = followBtn.classList.contains("following");
+      const isFollowing = followBtn.classList.contains("following");
 
-            if (!isFollowing) {
-                // Follow user
-                await setDoc(currentUserRef, { followedAt: Date.now() });
-                await setDoc(profileUserRef, { followedAt: Date.now() });
+      if (!isFollowing) {
+        // 1️⃣ existing follow logic
+        await setDoc(currentUserRef, { followedAt: Date.now() });
+        await setDoc(profileUserRef, { followedAt: Date.now() });
 
-                followBtn.textContent = "Following";
-                followBtn.classList.add("following");
-            }
+        // 2️⃣ NEW: push a notification into profileUser’s notifications
+        await addDoc(
+          collection(db, "users", profileUser, "notifications"),
+          {
+            type: "new_follower",
+            message: `${currentUser} started following you.`,
+            createdAt: serverTimestamp(),
+            read: false
+          }
+        );
 
-            // Update follower count
-            await updateUserStats(profileUser);
+        followBtn.textContent = "Following";
+        followBtn.classList.add("following");
+      }
 
-        } catch (error) {
-            console.error("Error updating follow status:", error);
-            alert("Failed to update follow status.");
-        }
-    });
+      // Update follower count
+      await updateUserStats(profileUser);
+    } catch (error) {
+      console.error("Error updating follow status:", error);
+      alert("Failed to update follow status.");
+    }
+  });
 
-    // hover effects
-    followBtn.addEventListener("mouseenter", () => {
-        if (followBtn.classList.contains("following")) {
-            followBtn.textContent = "Unfollow";
-        }
-    });
-    followBtn.addEventListener("mouseleave", () => {
-        if (followBtn.classList.contains("following")) {
-            followBtn.textContent = "Following";
-        }
-    });
+  // hover effects
+  followBtn.addEventListener("mouseenter", () => {
+    if (followBtn.classList.contains("following")) {
+      followBtn.textContent = "Unfollow";
+    }
+  });
+  followBtn.addEventListener("mouseleave", () => {
+    if (followBtn.classList.contains("following")) {
+      followBtn.textContent = "Following";
+    }
+  });
 }
 
 // check if user is already following

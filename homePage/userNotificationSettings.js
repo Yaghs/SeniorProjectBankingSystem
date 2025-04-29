@@ -10,9 +10,9 @@ document.addEventListener("DOMContentLoaded", function() {
     console.log("Followers toggled:", followersToggle.checked);
   });
 
-  const reviewsToggle = document.getElementById("reviewsToggle");
-  reviewsToggle && reviewsToggle.addEventListener("change", function() {
-    console.log("Reviews toggled:", reviewsToggle.checked);
+  const commentsToggle = document.getElementById("commentsToggle");
+  commentsToggle && commentsToggle.addEventListener("change", function() {
+    console.log("Comments toggled:", commentsToggle.checked);
   });
 
   const likesToggle = document.getElementById("likesToggle");

@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-app.js";
-import { getFirestore, doc, getDoc, collection, getDocs, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-firestore.js";
+import { getFirestore, doc, getDoc, collection, getDocs, query, orderBy, limit, onSnapshot } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-firestore.js";
 
 const TMDB_API_KEY = "bc7c4e7c62d9e223e196bbd15978fc51";
 const TMDB_BASE_URL = "https://api.themoviedb.org/3";
@@ -458,63 +458,158 @@ async function getRandomActorFact() {
 
 document.addEventListener("DOMContentLoaded", function() {  //notification bell logic
     const notificationBell = document.getElementById("notificationBell");
+        const currentUser = localStorage.getItem("loggedInUser");
+        if (!currentUser) return;  // bail out if not logged in
 
-    if (notificationBell) {
-        notificationBell.addEventListener("click", function(event) {
-            event.stopPropagation();
+        // 1) Real-time listener
+        let latestNotifications = [];
+        const notifQ = query(
+          collection(db, "users", currentUser, "notifications"),
+          orderBy("createdAt", "desc")
+        );
+        onSnapshot(notifQ, snapshot => {
+          latestNotifications = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+          updateBellBadge(latestNotifications.filter(n => !n.read).length);
+          // if dropdown is open, refresh its contents
+          if (document.getElementById("notificationBox")?.style.display !== "none") {
+            renderNotifications();
+          }
+        });
 
-            const bellRect = notificationBell.getBoundingClientRect();
-            let notificationBox = document.getElementById("notificationBox");
+        // 2) Your existing click handler, with renderNotifications() calls added
+        if (notificationBell) {
+            notificationBell.addEventListener("click", function(event) {
+                event.stopPropagation();
 
-            if (!notificationBox) {
-                notificationBox = document.createElement("div");
-                notificationBox.id = "notificationBox";
-                notificationBox.className = "notification-box";
-                notificationBox.innerHTML = `
-                    <div class="notification-box-header" style="display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid #444;">
-                        <span style="font-size: 18px; color: white;">Notifications</span>
-                        <i class='bx bx-cog' id="notificationSettings" style="font-size: 18px; cursor: pointer; color: white;"></i>
-                    </div>
-                    <div class="notification-box-content" style="padding: 10px; color: white;">
-                        <!-- Populate notifications here -->
-                        <p>No new notifications.</p>
-                    </div>
-                `;
-                notificationBox.style.position = "absolute";
-                notificationBox.style.top = (bellRect.bottom + window.scrollY) + "px";
-                notificationBox.style.right = (window.innerWidth - bellRect.right) + "px";
-                notificationBox.style.backgroundColor = "#000";
-                notificationBox.style.width = "300px";
-                notificationBox.style.border = "1px solid #444";
-                notificationBox.style.borderRadius = "5px";
-                notificationBox.style.boxShadow = "0 4px 8px rgba(0, 0, 0, 0.2)";
-                notificationBox.style.zIndex = 100;
-                document.body.appendChild(notificationBox);
+                const bellRect = notificationBell.getBoundingClientRect();
+                let notificationBox = document.getElementById("notificationBox");
 
-                const notificationSettings = notificationBox.querySelector("#notificationSettings");
-                if (notificationSettings) {
-                    notificationSettings.addEventListener("click", function(event) {
-                        event.stopPropagation();
-                        window.location.href = "userNotificationSettings.html";  //change to userNotificationSetting.html when its made
-                    });
-                }
-            } else {
-                if (notificationBox.style.display === "none" || notificationBox.style.display === "") {
-                    const newBellRect = notificationBell.getBoundingClientRect();
-                    notificationBox.style.top = (newBellRect.bottom + window.scrollY) + "px";
-                    notificationBox.style.right = (window.innerWidth - newBellRect.right) + "px";
-                    notificationBox.style.display = "block";
+                if (!notificationBox) {
+                    // create the box
+                    notificationBox = document.createElement("div");
+                    notificationBox.id = "notificationBox";
+                    notificationBox.className = "notification-box";
+                    notificationBox.innerHTML = `
+                        <div class="notification-box-header" style="display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid #444;">
+                            <span style="font-size: 18px; color: white;">Notifications</span>
+                            <i class='bx bx-cog' id="notificationSettings" style="font-size: 18px; cursor: pointer; color: white;"></i>
+                        </div>
+                        <div class="notification-box-content" style="padding: 10px; color: white;">
+                            <!-- Populate notifications here -->
+                            <p>No new notifications.</p>
+                        </div>
+                    `;
+                    notificationBox.style.position = "absolute";
+                    notificationBox.style.top = (bellRect.bottom + window.scrollY) + "px";
+                    notificationBox.style.right = (window.innerWidth - bellRect.right) + "px";
+                    notificationBox.style.backgroundColor = "#000";
+                    notificationBox.style.width = "300px";
+                    notificationBox.style.border = "1px solid #444";
+                    notificationBox.style.borderRadius = "5px";
+                    notificationBox.style.boxShadow = "0 4px 8px rgba(0, 0, 0, 0.2)";
+                    notificationBox.style.zIndex = 100;
+                    document.body.appendChild(notificationBox);
+
+                    const notificationSettings = notificationBox.querySelector("#notificationSettings");
+                    if (notificationSettings) {
+                        notificationSettings.addEventListener("click", function(event) {
+                            event.stopPropagation();
+                            window.location.href = "userNotificationSettings.html";
+                        });
+                    }
+
+                    // **render the fetched notifications**
+                    renderNotifications();
                 } else {
-                    notificationBox.style.display = "none";
+                    if (notificationBox.style.display === "none" || notificationBox.style.display === "") {
+                        const newBellRect = notificationBell.getBoundingClientRect();
+                        notificationBox.style.top = (newBellRect.bottom + window.scrollY) + "px";
+                        notificationBox.style.right = (window.innerWidth - newBellRect.right) + "px";
+                        notificationBox.style.display = "block";
+
+                        // **refresh on re-open**
+                        renderNotifications();
+                    } else {
+                        notificationBox.style.display = "none";
+                    }
                 }
+            });
+        }
+
+        // close dropdown when clicking outside
+        document.addEventListener("click", function(event) {
+            const notificationBox = document.getElementById("notificationBox");
+            if (notificationBox &&
+                !notificationBox.contains(event.target) &&
+                event.target.id !== "notificationBell"
+            ) {
+                notificationBox.style.display = "none";
             }
         });
-    }
 
-    document.addEventListener("click", function(event) {
-        const notificationBox = document.getElementById("notificationBox");
-        if (notificationBox && !notificationBox.contains(event.target) && event.target.id !== "notificationBell") {
-            notificationBox.style.display = "none";
+
+        function timeAgo(date) {
+          const now    = Date.now();
+          const diffMs = now - date.getTime();
+          const sec    = Math.floor(diffMs / 1000);
+          if (sec < 60) return `${sec}s ago`;
+          const min = Math.floor(sec / 60);
+          if (min < 60) return `${min}m ago`;
+          const hr = Math.floor(min / 60);
+          if (hr < 24) return `${hr}h ago`;
+          const days = Math.floor(hr / 24);
+          return `${days}d ago`;
+        }
+
+        // ─── helper functions (inside the same DOMContentLoaded) ───
+        function renderNotifications() {
+            const content = document.querySelector(".notification-box-content");
+            if (!content) return;
+
+            if (latestNotifications.length === 0) {
+                content.innerHTML = `<p>No new notifications.</p>`;
+            } else {
+                content.innerHTML = latestNotifications
+                    .map(n => {
+                        // convert Firestore timestamp to Date
+                        const dateObj = n.createdAt?.toDate?.() || new Date();
+                        const ago     = timeAgo(dateObj);
+
+                        return `
+                          <div class="notification-item" style="
+                            display: flex;
+                            justify-content: space-between;
+                            align-items: center;
+                            border-bottom: 1px solid #444;
+                            padding: 8px 0;
+                            margin: 4px 0;
+                          ">
+                            <span>${n.message}</span>
+                            <span style="
+                              font-size: 12px;
+                              color: #888;
+                              margin-left: 8px;
+                              white-space: nowrap;
+                            ">${ago}</span>
+                          </div>
+                        `;
+                    })
+                    .join("");
+            }
+        }
+
+        function updateBellBadge(count) {
+            let badge = document.getElementById("notif-badge");
+            if (count > 0) {
+                if (!badge) {
+                    badge = document.createElement("span");
+                    badge.id = "notif-badge";
+                    badge.className = "notification-badge";
+                    notificationBell.appendChild(badge);
+                }
+                badge.textContent = count;
+            } else if (badge) {
+                badge.remove();
+            }
         }
     });
-});
