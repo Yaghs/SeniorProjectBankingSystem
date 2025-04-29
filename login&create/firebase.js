@@ -64,7 +64,7 @@ document.getElementById("loginSubmit")?.addEventListener('click', async function
     console.log("login successful for:", username, "going to homepage");
     localStorage.setItem("loggedInUser", username);
 
-    window.location.href = "../homePage/homePage.html";
+    window.location.href = "/homePage/homePage.html";
 });
 
 function clearUsername() {
