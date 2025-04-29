@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-app.js";
-import { getFirestore, doc, getDoc, collection, getDocs, query, orderBy, limit, onSnapshot } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-firestore.js";
+import { getFirestore, doc, getDoc, collection, getDocs, query, orderBy, limit, onSnapshot, updateDoc } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-firestore.js";
 
 const TMDB_API_KEY = "bc7c4e7c62d9e223e196bbd15978fc51";
 const TMDB_BASE_URL = "https://api.themoviedb.org/3";
@@ -478,7 +478,7 @@ document.addEventListener("DOMContentLoaded", function() {  //notification bell 
 
         // 2) Your existing click handler, with renderNotifications() calls added
         if (notificationBell) {
-            notificationBell.addEventListener("click", function(event) {
+            notificationBell.addEventListener("click", async function(event) {
                 event.stopPropagation();
 
                 const bellRect = notificationBell.getBoundingClientRect();
@@ -520,6 +520,14 @@ document.addEventListener("DOMContentLoaded", function() {  //notification bell 
 
                     // **render the fetched notifications**
                     renderNotifications();
+                    // **clear the badge**
+                    updateBellBadge(0);
+                    // **mark all unread as read**
+                    const unread1 = latestNotifications.filter(n => !n.read);
+                    await Promise.all(unread1.map(n =>
+                        updateDoc(doc(db, "users", currentUser, "notifications", n.id), { read: true })
+                    ));
+
                 } else {
                     if (notificationBox.style.display === "none" || notificationBox.style.display === "") {
                         const newBellRect = notificationBell.getBoundingClientRect();
@@ -527,25 +535,21 @@ document.addEventListener("DOMContentLoaded", function() {  //notification bell 
                         notificationBox.style.right = (window.innerWidth - newBellRect.right) + "px";
                         notificationBox.style.display = "block";
 
-                        // **refresh on re-open**
+                        // **refresh and clear the badge**
                         renderNotifications();
+                        updateBellBadge(0);
+                        // **mark all unread as read**
+                        const unread2 = latestNotifications.filter(n => !n.read);
+                        await Promise.all(unread2.map(n =>
+                            updateDoc(doc(db, "users", currentUser, "notifications", n.id), { read: true })
+                        ));
+
                     } else {
                         notificationBox.style.display = "none";
                     }
                 }
             });
         }
-
-        // close dropdown when clicking outside
-        document.addEventListener("click", function(event) {
-            const notificationBox = document.getElementById("notificationBox");
-            if (notificationBox &&
-                !notificationBox.contains(event.target) &&
-                event.target.id !== "notificationBell"
-            ) {
-                notificationBox.style.display = "none";
-            }
-        });
 
 
         function timeAgo(date) {
@@ -599,17 +603,37 @@ document.addEventListener("DOMContentLoaded", function() {  //notification bell 
         }
 
         function updateBellBadge(count) {
-            let badge = document.getElementById("notif-badge");
-            if (count > 0) {
-                if (!badge) {
-                    badge = document.createElement("span");
-                    badge.id = "notif-badge";
-                    badge.className = "notification-badge";
-                    notificationBell.appendChild(badge);
-                }
-                badge.textContent = count;
-            } else if (badge) {
-                badge.remove();
+          let badge = document.getElementById("notif-badge");
+
+          if (count > 0) {
+            // ensure bell is position: relative for absolute badge placement
+            notificationBell.style.position = 'relative';
+
+            if (!badge) {
+              badge = document.createElement("span");
+              badge.id = "notif-badge";
+              badge.className = "notification-badge";
+
+              Object.assign(badge.style, {
+                position: 'absolute',
+                top: '0',
+                right: '0',
+                transform: 'translate(50%, -50%)',
+                backgroundColor: 'red',
+                color: 'white',
+                borderRadius: '50%',
+                padding: '2px 6px',
+                fontSize: '16px',
+                lineHeight: '1',
+                textAlign: 'center',
+                minWidth: '6px'
+              });
+
+              notificationBell.appendChild(badge);
             }
+            badge.textContent = count;
+          } else if (badge) {
+            badge.remove();
+          }
         }
     });

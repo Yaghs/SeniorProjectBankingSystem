@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-app.js";
-import { getFirestore, doc, getDoc, updateDoc, arrayUnion, arrayRemove, collection, query, where, getDocs, orderBy, limit, addDoc, Timestamp, deleteDoc, writeBatch } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-firestore.js";
+import { getFirestore, doc, getDoc, updateDoc, arrayUnion, arrayRemove, collection, query, where, getDocs, orderBy, limit, addDoc, Timestamp, deleteDoc, writeBatch, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-firestore.js";
 
 // our special api key
 const API_KEY = "bc7c4e7c62d9e223e196bbd15978fc51";
@@ -875,6 +875,28 @@ async function handleLikePost(event) {
                 likes: arrayUnion(loggedInUser)
             });
 
+            // ─── SEND notification to the post’s author ───
+            const postOwner = postData.username;
+            if (postOwner && postOwner !== loggedInUser) {
+              // fetch owner’s settings
+              const ownerRef  = doc(db, "users", postOwner);
+              const ownerSnap = await getDoc(ownerRef);
+              const ownerPrefs = ownerSnap.data()?.notificationPreferences || {};
+
+              // only send if they allow “like” notifications
+              if (ownerPrefs.likes_off) {
+                await addDoc(
+                  collection(db, "users", postOwner, "notifications"),
+                  {
+                    type: "like",
+                    message: `${loggedInUser} liked your post.`,
+                    createdAt: serverTimestamp(),
+                    read: false
+                  }
+                );
+              }
+            }
+
             // Update UI
             likeButton.innerHTML = `❤️ ${likes.length + 1}`;
             likeButton.classList.add('liked');
@@ -948,6 +970,28 @@ async function handleSubmitComment(event) {
         await updateDoc(postRef, {
             commentCount: currentCommentCount + 1
         });
+
+        // ─── SEND notification to the post’s author ───
+        const postOwner = postData.username;
+        if (postOwner && postOwner !== loggedInUser) {
+          // fetch owner’s settings
+          const ownerRef  = doc(db, "users", postOwner);
+          const ownerSnap = await getDoc(ownerRef);
+          const ownerPrefs = ownerSnap.data()?.notificationPreferences || {};
+
+          // only send if they allow comment notifications
+          if (ownerPrefs.comments_off) {
+            await addDoc(
+              collection(db, "users", postOwner, "notifications"),
+              {
+                type: "comment",
+                message: `${loggedInUser} commented on your post.`,
+                createdAt: serverTimestamp(),
+                read: false
+              }
+            );
+          }
+        }
 
         // Clear input and hide form
         commentInput.value = "";
