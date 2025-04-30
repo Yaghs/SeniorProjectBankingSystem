@@ -1,6 +1,6 @@
 {
   "projects": {
-    "default": "sample-dc6d0",
+    "default": "plottwistsp",
     "PlotTwistSP": "plottwistsp"
   },
   "targets": {},
