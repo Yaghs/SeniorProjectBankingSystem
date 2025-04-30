@@ -23,9 +23,22 @@
             </div>
         </div>
         <a href="hub.html">Message</a>
+        <a href="#" id="reviewBtn">+Review</a>
         <a href="communities.html">Communities</a>
+        <a href="#" id="notificationBell"><i class='bx bx-bell' style="font-size: 24px;"></i></a>
+        <select id="searchCategory">
+            <option value="">Search For...</option>
+            <option value="movies">Movies</option>
+            <option value="actors">Actors</option>
+            <option value="users">Users</option>
+            <option value="genres">Genres</option>
+            <option value="crew">Crew</option>
+        </select>
+        <input type="text" id="searchInput" placeholder="Search..." autocomplete="off">
     </div>
 </header>
+<div id="suggestions"></div>
+
 <main class="Hub">
     <!-- Left side: Stacked sidebars -->
     <div class="sidebar-stack">

@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>Communities | Plot Twist</title>
     <link rel="stylesheet" href="communities.css">
+    <link rel='stylesheet' href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css'>
     <script type="module" src="search.js"></script>
 </head>
 <body>
@@ -13,11 +14,29 @@
         <h1>Plot Twist</h1>
     </div>
     <div class="right">
-        <a href="../homePage/homePage.html">Home</a>
-        <a href="#">Activity</a>
-        <a href="#">+Review</a>
-        <a href="#" class="active">Communities</a>
-        <label for="searchInput"></label><input type="text" id="searchInput" placeholder="Search..." autocomplete="off">
+        <span id="username">Username</span>
+        <a href="homePage.html">Home</a>
+        <div class="dropdown">
+            <a href="#" id="accountLink">Account</a>
+            <div class="dropdown-content">
+                <a href="Profilepage.html">Profile</a>
+                <a href="userSettings.html">Settings</a>
+                <a href="#" class="sign-out">Sign out</a>
+            </div>
+        </div>
+        <a href="hub.html">Message</a>
+        <a href="#" id="reviewBtn">+Review</a>
+        <a href="communities.html">Communities</a>
+        <a href="#" id="notificationBell"><i class='bx bx-bell' style="font-size: 24px;"></i></a>
+        <select id="searchCategory">
+            <option value="">Search For...</option>
+            <option value="movies">Movies</option>
+            <option value="actors">Actors</option>
+            <option value="users">Users</option>
+            <option value="genres">Genres</option>
+            <option value="crew">Crew</option>
+        </select>
+        <input type="text" id="searchInput" placeholder="Search..." autocomplete="off">
     </div>
 </header>
 

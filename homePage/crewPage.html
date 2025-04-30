@@ -7,37 +7,39 @@
     <script type="module" src="search.js"></script>
     <script type="module" src="+review.js"></script>
     <link rel="stylesheet" href="crewPage.css">
+    <link rel='stylesheet' href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css'>
 </head>
 <body>
-    <header>
-        <div class="left">
-            <h1>Plot Twist</h1>
-        </div>
-        <div class="right">
-            <span id="username">Username</span>
-            <a href="homePage.html">Home</a>
-            <div class="dropdown">
-                <a href="#" id="accountLink">Account</a>
-                <div class="dropdown-content">
-                    <a href="Profilepage.html">Profile</a>
-                    <a href="userSettings.html">Settings</a>
-                    <a href="#" class="sign-out">Sign out</a>
-                </div>
+<header>
+    <div class="left">
+        <h1>Plot Twist</h1>
+    </div>
+    <div class="right">
+        <span id="username">Username</span>
+        <a href="homePage.html">Home</a>
+        <div class="dropdown">
+            <a href="#" id="accountLink">Account</a>
+            <div class="dropdown-content">
+                <a href="Profilepage.html">Profile</a>
+                <a href="userSettings.html">Settings</a>
+                <a href="#" class="sign-out">Sign out</a>
             </div>
-            <a href="#">Activity</a>
-            <a href="#" id="reviewBtn">+Review</a>
-            <a href="../homePage/communities.html">Communities</a>
-            <select id="searchCategory">
-                <option value="">Search For...</option>
-                <option value="movies">Movies</option>
-                <option value="actors">Actors</option>
-                <option value="users">Users</option>
-                <option value="genres">Genres</option>
-                <option value="crew">Crew</option>
-            </select>
-            <input type="text" id="searchInput" placeholder="Search..." autocomplete="off">
         </div>
-    </header>
+        <a href="hub.html">Message</a>
+        <a href="#" id="reviewBtn">+Review</a>
+        <a href="communities.html">Communities</a>
+        <a href="#" id="notificationBell"><i class='bx bx-bell' style="font-size: 24px;"></i></a>
+        <select id="searchCategory">
+            <option value="">Search For...</option>
+            <option value="movies">Movies</option>
+            <option value="actors">Actors</option>
+            <option value="users">Users</option>
+            <option value="genres">Genres</option>
+            <option value="crew">Crew</option>
+        </select>
+        <input type="text" id="searchInput" placeholder="Search..." autocomplete="off">
+    </div>
+</header>
     <div id="suggestions"></div>
 
     <div class="crew-container">
