@@ -5,13 +5,12 @@ const TMDB_API_KEY = "bc7c4e7c62d9e223e196bbd15978fc51";
 const TMDB_BASE_URL = "https://api.themoviedb.org/3";
 
 const firebaseConfig = {
-    apiKey: "AIzaSyD1LpIBMmZAiQFwberKbx2G29t6fNph3Xg",
-    authDomain: "sample-dc6d0.firebaseapp.com",
-    projectId: "sample-dc6d0",
-    storageBucket: "sample-dc6d0.appspot.com",
-    messagingSenderId: "650782048731",
-    appId: "1:650782048731:web:d2828c5b87f0a4e62367fe",
-    measurementId: "G-WJMEY6J7BR"
+    apiKey: "AIzaSyBkidFMwM_jHr5i4D55EEr_anJlrwrNvrI",
+    authDomain: "plottwistsp.firebaseapp.com",
+    projectId: "plottwistsp",
+    storageBucket: "plottwistsp.firebasestorage.app",
+    messagingSenderId: "605014060151",
+    appId: "1:605014060151:web:3e307d34e57d908fa8ea72"
 };
 
 const app = initializeApp(firebaseConfig);
@@ -104,7 +103,7 @@ document.addEventListener("DOMContentLoaded", function () {
     updateViewForAuth(user);
     loadPopularMovies();
     loadFriendsReviews();
-    loadRecommendedMovies();
+    //loadRecommendedMovies();
     getRandomActorFact();
     loadGenreBasedCarousels();
 
@@ -196,7 +195,7 @@ window.nextPopularMovie = function () {
     });
 };
 
-async function loadRecommendedMovies() {
+/*async function loadRecommendedMovies() {
     const username = localStorage.getItem("loggedInUser");
     if (!username) return;
 
@@ -249,7 +248,7 @@ async function loadRecommendedMovies() {
         console.error("Error loading recommended movies:", err);
         recommendedContainer.innerHTML = "<p>Failed to load recommendations.</p>";
     }
-}
+}*/
 
 
 

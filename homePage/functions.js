@@ -3,13 +3,12 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebas
 import {getFirestore, doc, getDoc, collection, getDocs, query, orderBy, limit, setDoc, deleteDoc} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 const firebaseConfig = {
-    apiKey: "AIzaSyD1LpIBMmZAiQFwberKbx2G29t6fNph3Xg",
-    authDomain: "sample-dc6d0.firebaseapp.com",
-    projectId: "sample-dc6d0",
-    storageBucket: "sample-dc6d0.appspot.com",
-    messagingSenderId: "650782048731",
-    appId: "1:650782048731:web:d2828c5b87f0a4e62367fe",
-    measurementId: "G-WJMEY6J7BR"
+    apiKey: "AIzaSyBkidFMwM_jHr5i4D55EEr_anJlrwrNvrI",
+    authDomain: "plottwistsp.firebaseapp.com",
+    projectId: "plottwistsp",
+    storageBucket: "plottwistsp.firebasestorage.app",
+    messagingSenderId: "605014060151",
+    appId: "1:605014060151:web:3e307d34e57d908fa8ea72"
 };
 
 const app = initializeApp(firebaseConfig);
@@ -220,7 +219,7 @@ async function loadFavoriteMovies(userID) {
 
                 newPlaceholder.addEventListener("click", async () => {
                     try {
-                        const response = await fetch(`https://api.themoviedb.org/3/search/movie?api_key=bc7c4e7c62d9e223e196bbd15978fc51&query=${encodeURIComponent(movieData.title)}`);
+                        const response = await fetch(`https://api.themoviedb.org/3/search/movie?api_key="bc7c4e7c62d9e223e196bbd15978fc51"&query=${encodeURIComponent(movieData.title)}`);
                         const data = await response.json();
 
                         // match title and year if possible
