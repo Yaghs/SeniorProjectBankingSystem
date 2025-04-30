@@ -4,9 +4,11 @@ import {
     doc,
     setDoc,
     getDoc,
+    deleteDoc,
     collection,
     getDocs,
     addDoc,
+    updateDoc,
     query,
     orderBy,
     limit,
@@ -47,6 +49,13 @@ const chatHeader = document.getElementById("chatHeader");
 const chatMessage = document.getElementById("chatMessage");
 const messageInput = document.getElementById("messageInput");
 const sendButton = document.getElementById("sendButton");
+
+
+window.addEventListener("DOMContentLoaded", () => {
+    document.getElementById("showRequestsBtn").addEventListener("click", () => {
+        showMessageRequest(currentUser);
+    });
+});
 
 console.log("DOM elements accessed:", {
     searchFriends: !!searchFriends,
@@ -523,26 +532,118 @@ function displayMessage(message) {
 }
 //check if the other user is follow current
 async function checkUser(currentUser,otherUser){
-    const followDoc = await  getDoc(doc(db,"users",otherUser));
-    if(followDoc.exists()){
-        const follow = followDoc.data();
-        return follow.following && follow.following.includes(currentUser) === true;
+    const followDoc = await getDoc(doc(db, "users", otherUser));
+    const messageAccessDoc = await getDoc(doc(db, "messageAccess", currentUser));
+
+    const hasAccess = messageAccessDoc.exists() && messageAccessDoc.data()[otherUser] === true;
+
+    if (hasAccess) {
+        return true;
     }
-    return false
+
+    if (followDoc.exists()) {
+        const follow = followDoc.data();
+        if (follow.following && follow.following.includes(currentUser)) {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 async function MessageRequest(currentUser,otherUser){
+    try {
+        const allow = doc(db, "messageAccess", currentUser);
+        await setDoc(allow, { [otherUser]: true }, { merge: true });
+
+        const allowOther = doc(db, "messageAccess", otherUser);
+        await setDoc(allowOther, { [currentUser]: true }, { merge: true });
+
+        const requestDoc = doc(db, "messageRequest", currentUser, "request", otherUser);
+        await updateDoc(requestDoc, { status: "accepted" });
+
+        console.log(`Message request accepted between ${currentUser} and ${otherUser}`);
+    } catch (error) {
+        console.error("Error accepting request:", error);
+    }
+}
+
+async function pendingRequest(currentUser){
+    const requestRef = collection(db,"messageRequest", currentUser,"request");
+    const snapshot = await getDocs(requestRef);
+
+    const requests = [];
+
+    snapshot.forEach(doc =>{
+        requests.push({id: doc.id, ...doc.data()});
+    });
+    return requests;
+}
+
+async function acceptRequest(currentUser,otherUser){
     try{
-        const request = doc(db,"messageRequest",otherUser,"request",currentUser);
-        await  setDoc(request,{
-            timestamp: serverTimestamp(),
-            fromUser: currentUser
-        });
-        console.log(`Message Request sent from ${currentUser} to ${otherUser}`)
-    }catch (error){
-        console.error("Error with sending message request")
+        const allow = doc(db, "messageAccess", currentUser);
+        await setDoc(allow, {
+                [otherUser]: true
+            },
+            {merge: true}
+        );
+        const allowother = doc(db, "messageAccess", otherUser);
+        await setDoc(allowother, {
+                [currentUser]: true
+            },
+            {merge: true}
+        );
+        const requestDoc = doc(db, "messageRequest", otherUser, "request", currentUser)
+        await updateDoc(requestDoc, {status: "accepted"})
+        await deleteDoc(requestDoc);
+        console.log(`Message request accepted between ${currentUser} and ${otherUser}`);
+    }catch(error){
+        console.error(error)
     }
 
+}
+async function rejectRequest(currentUser,otherUser) {
+    await deleteDoc(doc(db, "messageRequest", currentUser, "request", otherUser));
+}
+
+async function showMessageRequest(currentUser){
+    const container = document.getElementById("requestsContainer");
+    container.innerHTML = "";
+
+    const requests = await pendingRequest(currentUser);
+
+    if (requests.length === 0) {
+        container.innerHTML = "<p>No requests right now</p>";
+        return;
+    }
+
+    requests.forEach(({ id: otherUser, fromUser, timestamp }) => {
+        const requestDiv = document.createElement("div");
+        requestDiv.classList.add("request-item");
+
+        requestDiv.innerHTML = `<p><strong>${fromUser}</strong> wants to talk!</p>`;
+
+        const acceptBtn = document.createElement("button");
+        acceptBtn.textContent = "Accept";
+        acceptBtn.onclick = async () => {
+            await acceptRequest(currentUser, otherUser);
+            alert(`Accepted message from ${otherUser}`);
+            showMessageRequest(currentUser); // refresh list
+        };
+
+        const denyBtn = document.createElement("button");
+        denyBtn.textContent = "Deny";
+        denyBtn.onclick = async () => {
+            await rejectRequest(currentUser, otherUser);
+            alert(`Denied message from ${otherUser}`);
+            showMessageRequest(currentUser); // refresh list
+        };
+
+        requestDiv.appendChild(acceptBtn);
+        requestDiv.appendChild(denyBtn);
+        container.appendChild(requestDiv);
+    });
 }
 
 // Send a message
@@ -557,10 +658,10 @@ async function sendMessage() {
         return;
     }
 
-    if(!(await checkUser(currentUser,otherUser))){
-        alert("Send message request frist!")
-        await MessageRequest(currentUser,otherUser);
-        alert("Request sent, wait to see if they accepts")
+    if (!(await checkUser(currentUser, otherUser))) {
+        alert("Send message request first!");
+        await MessageRequest(currentUser, otherUser);
+        alert("Request sent, wait to see if they accept.");
         return;
     }
 
