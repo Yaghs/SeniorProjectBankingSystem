@@ -61,7 +61,7 @@ async function fetchKnownMovies(actorId) {
 
         // sorts movies be popularity using .sort()
         // .slice(0, 30) lists top 30 movies
-        const knownMovies = data.cast.sort((a, b) => b.popularity - a.popularity).slice(0, 30);
+        const knownMovies = data.cast.filter(movie => !movie.adult).sort((a, b) => b.popularity - a.popularity).slice(0, 30);
         // selects container where list of known movies will be displayed
         const knownMoviesDiv = document.getElementById("knownMovies");
 
@@ -69,6 +69,9 @@ async function fetchKnownMovies(actorId) {
 
         // loop through known movies
         knownMovies.forEach(movie => {
+            const isAdult = movie.adult;
+            const blurStyle = isAdult ? 'style="filter: blur(8px);"' : '';
+
             // create new <div>
             const movieItem = document.createElement("div");
             // add css class movie-item for styling
@@ -77,7 +80,7 @@ async function fetchKnownMovies(actorId) {
             movieItem.style.cursor = "pointer";
             // sets img and title for each movie
             movieItem.innerHTML = `
-                <img src="https://image.tmdb.org/t/p/w300${movie.poster_path}" alt="${movie.title}">
+                <img src="https://image.tmdb.org/t/p/w300${movie.poster_path}" alt="${movie.title}" ${blurStyle}>
                 <p>${movie.title}</p>
             `;
 
