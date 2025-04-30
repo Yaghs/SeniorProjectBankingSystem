@@ -71,7 +71,7 @@ function updateViewForAuth(user) {
                     <a href="#" class="sign-out">Sign out</a>
                 </div>
             </div>
-            <a href="#">Activity</a>
+            <a href="hub.html">Message</a>
             <a href="#" id="reviewBtn">+Review</a>
             <a href="../homePage/communities.html">Communities</a>
             <a href="#" id="notificationBell"><i class='bx bx-bell' style="font-size: 24px;"></i></a>
