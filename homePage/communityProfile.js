@@ -176,7 +176,7 @@ async function loadMembers(membersList) {
                 if (isCreator && username !== loggedInUser && !isAdmin) {
                     // Admin view with options to view profile or remove member
                     memberCard.innerHTML = `
-                        <img src="https://placehold.co/80x80/444/aaa?text=Member" alt="${userData.username}'s avatar" class="member-avatar">
+                        <img src="${userData.profilePicture || 'https://placehold.co/80x80/444/aaa?text=Member'}" alt="${userData.username}'s avatar" class="member-avatar">
                         <h3 class="member-name">${userData.username}</h3>
                         <span class="member-role${isAdmin ? ' admin' : ''}">${isAdmin ? 'Admin' : 'Member'}</span>
                         <div class="member-actions">
@@ -221,9 +221,9 @@ async function loadMembers(membersList) {
                 } else {
                     // Regular view - entire card is clickable
                     memberCard.innerHTML = `
-                        <img src="https://placehold.co/80x80/444/aaa?text=Member" alt="${userData.username}'s avatar" class="member-avatar">
-                        <h3 class="member-name">${userData.username}</h3>
-                        <span class="member-role${isAdmin ? ' admin' : ''}">${isAdmin ? 'Admin' : 'Member'}</span>
+                    <img src="${userData.profilePicture || 'https://placehold.co/80x80/444/aaa?text=Member'}" alt="${userData.username}'s avatar" class="member-avatar">
+                    <h3 class="member-name">${userData.username}</h3>
+                    <span class="member-role${isAdmin ? ' admin' : ''}">${isAdmin ? 'Admin' : 'Member'}</span>
                     `;
                     memberCard.style.cursor = "pointer";
 
@@ -487,11 +487,21 @@ async function loadReviews() {
 }
 
 function createReviewElement(review) {
-    const { userData, reviewData, movieGenres } = review;
+    const { userData, reviewData } = review;
 
     // Create review item container
     const reviewItem = document.createElement("div");
     reviewItem.className = "review-item";
+
+    // Add cursor style and click event for the entire card
+    reviewItem.style.cursor = "pointer";
+    reviewItem.addEventListener("click", (e) => {
+        // Only navigate if the click wasn't on another interactive element
+        // like the movie title which has its own click handler
+        if (!e.target.closest('.movie-title')) {
+            goToOtherReviewPage(userData.username, reviewData.title);
+        }
+    });
 
     // Format date as "Month Day, Year" if available
     let formattedDate = "";
@@ -530,12 +540,6 @@ function createReviewElement(review) {
     // Get movie poster if available, or use placeholder
     const moviePoster = reviewData.selectedPoster || `https://placehold.co/100x150/333/aaa?text=${encodeURIComponent(reviewData.title)}`;
 
-    // Create genre tags HTML
-    const genreTags = movieGenres && movieGenres.length > 0
-        ? `<div class="movie-genres">${movieGenres.map(genre =>
-            `<span class="genre-tag">${genre}</span>`).join('')}</div>`
-        : '';
-
     // Construct the HTML for the review
     reviewItem.innerHTML = `
         <div class="review-header">
@@ -551,7 +555,6 @@ function createReviewElement(review) {
         <div class="review-content">
             <div class="movie-poster-container">
                 <img src="${moviePoster}" alt="${reviewData.title} poster" class="movie-poster">
-                <!-- ${genreTags} -->
             </div>
             <div class="review-text-container">
                 <p class="review-text">${reviewData.reviewText || "No review text provided."}</p>
@@ -563,6 +566,12 @@ function createReviewElement(review) {
 
     return reviewItem;
 }
+
+window.goToOtherReviewPage = function (username, movieTitle) {
+    const encodedUser = encodeURIComponent(username);
+    const encodedMovie = encodeURIComponent(movieTitle);
+    window.location.href = `viewOtherReviewPage.html?user=${encodedUser}&movie=${encodedMovie}`;
+};
 
 // Function to load more reviews when "View More" is clicked
 function loadMoreReviews(allReviews, currentCount) {
@@ -652,22 +661,22 @@ async function loadDiscussionPosts() {
             }
 
             postElement.innerHTML = `
-                <div class="post-header">
-                    <img src="https://placehold.co/40x40/444/aaa?text=User" alt="${userData.username}'s avatar" class="user-avatar user-profile-link" data-username="${userData.username}">
-                    <div class="post-meta">
-                        <h3 class="username user-profile-link" data-username="${userData.username}">${userData.username}</h3>
-                        <span class="post-time">${timeAgo}</span>
+                    <div class="post-header">
+                        <img src="${userData.profilePicture || 'https://placehold.co/40x40/444/aaa?text=User'}" alt="${userData.username}'s avatar" class="user-avatar user-profile-link" data-username="${userData.username}">
+                        <div class="post-meta">
+                            <h3 class="username user-profile-link" data-username="${userData.username}">${userData.username}</h3>
+                            <span class="post-time">${timeAgo}</span>
+                        </div>
+                        ${deleteButton}
                     </div>
-                    ${deleteButton}
-                </div>
-                <p class="post-content">${formatPostContent(postData.content)}</p>
-                <div class="post-actions">
-                    <button class="like-btn ${(postData.likes && postData.likes.includes(loggedInUser)) ? 'liked' : ''}" data-post-id="${postDoc.id}">
-                        ${(postData.likes && postData.likes.includes(loggedInUser)) ? '❤️' : '🤍'} ${postData.likes ? postData.likes.length : 0}
-                    </button>
-                    <button class="comment-btn" data-post-id="${postDoc.id}">💬 ${postData.commentCount || 0}</button>
-                </div>
-            `;
+                    <p class="post-content">${formatPostContent(postData.content)}</p>
+                    <div class="post-actions">
+                        <button class="like-btn ${(postData.likes && postData.likes.includes(loggedInUser)) ? 'liked' : ''}" data-post-id="${postDoc.id}">
+                            ${(postData.likes && postData.likes.includes(loggedInUser)) ? '❤️' : '🤍'} ${postData.likes ? postData.likes.length : 0}
+                        </button>
+                        <button class="comment-btn" data-post-id="${postDoc.id}">💬 ${postData.commentCount || 0}</button>
+                    </div>
+                `;
 
             // If the post has comments, load and display them
             if (postData.commentCount > 0) {
@@ -717,7 +726,7 @@ async function loadDiscussionPosts() {
                     }
 
                     commentElement.innerHTML = `
-                        <img src="https://placehold.co/30x30/444/aaa?text=User" alt="${commentUserData.username}'s avatar" class="user-avatar-small user-profile-link" data-username="${commentUserData.username}">
+                        <img src="${commentUserData.profilePicture || 'https://placehold.co/30x30/444/aaa?text=User'}" alt="${commentUserData.username}'s avatar" class="user-avatar-small user-profile-link" data-username="${commentUserData.username}">
                         <div class="comment-content">
                             <div class="comment-header">
                                 <h4 class="username user-profile-link" data-username="${commentUserData.username}">${commentUserData.username}</h4>
@@ -1260,7 +1269,7 @@ async function handleViewMoreComments(event) {
             }
 
             commentElement.innerHTML = `
-                <img src="https://placehold.co/30x30/444/aaa?text=User" alt="${commentUserData.username}'s avatar" class="user-avatar-small user-profile-link" data-username="${commentUserData.username}">
+                <img src="${commentUserData.profilePicture || 'https://placehold.co/30x30/444/aaa?text=User'}" alt="${commentUserData.username}'s avatar" class="user-avatar-small user-profile-link" data-username="${commentUserData.username}">
                 <div class="comment-content">
                     <div class="comment-header">
                         <h4 class="username user-profile-link" data-username="${commentUserData.username}">${commentUserData.username}</h4>
