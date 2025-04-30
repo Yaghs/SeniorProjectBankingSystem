@@ -135,7 +135,22 @@ submitButton.addEventListener("click", async () => {
 
   try {
     const userRef = doc(db, "users", userId);
-    // For each selected genre, create a doc in the subcollection
+
+    if (isEditMode) {
+      // get current genres from Firebase
+      const existingGenresSnap = await getDocs(collection(db, "users", userId, "genres"));
+      const existingGenres = existingGenresSnap.docs.map(doc => doc.id);
+
+      // remove any genres that are no longer selected
+      for (const genreName of existingGenres) {
+        if (!selectedGenres.has(genreName)) {
+          const genreRef = doc(db, "users", userId, "genres", genreName);
+          await deleteDoc(genreRef);
+        }
+      }
+    }
+
+    // save all selected genres
     for (const genre of selectedGenreObjects) {
       const genreRef = doc(db, "users", userId, "genres", genre.name);
       await setDoc(genreRef, genre);

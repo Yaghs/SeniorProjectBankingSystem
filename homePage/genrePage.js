@@ -97,5 +97,3 @@ async function loadMovies(genreId, movieCountElement, movieGrid) {
         loading = false; // allow new fetches after this one completes
     }
 }
-
-
