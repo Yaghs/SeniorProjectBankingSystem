@@ -12,7 +12,9 @@ import {
     query,
     startAfter,
     updateDoc,
-    where
+    where,
+    addDoc,
+    serverTimestamp
 } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-firestore.js";
 
 // Firebase configuration
@@ -40,6 +42,32 @@ let currentSearch = "";
 let isLoading = false;
 const communitiesPerPage = 12;
 
+// Function to fetch user's genre preferences
+async function getUserGenres(username) {
+    if (!username) return [];
+
+    try {
+        const userGenresCollection = collection(db, "users", username, "genres");
+        const genresSnapshot = await getDocs(userGenresCollection);
+
+        if (genresSnapshot.empty) return [];
+
+        return genresSnapshot.docs.map(doc => doc.data().name);
+    } catch (error) {
+        console.error("Error fetching user genres:", error);
+        return [];
+    }
+}
+
+// Calculate genre match score between user genres and community genres
+function calculateGenreMatchScore(userGenres, communityGenres) {
+    if (!userGenres.length || !communityGenres.length) return 0;
+
+    // Count matching genres
+    const matchingGenres = userGenres.filter(genre => communityGenres.includes(genre));
+    return matchingGenres.length;
+}
+
 // Initialize the page
 document.addEventListener("DOMContentLoaded", function () {
     // Set up event listeners
@@ -57,6 +85,9 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     document.getElementById("loadMoreButton").addEventListener("click", loadMoreCommunities);
+
+    // Set default sort to "suggested"
+    currentSort = "suggested";
 
     // Initial load of communities
     loadCommunities();
@@ -151,6 +182,9 @@ async function loadCommunities(isNewQuery = false) {
 
         // Apply sort
         let sortField, sortDirection;
+        const isSuggestedSort = currentSort === "suggested";
+
+        // For other sorts, use the standard approach
         switch (currentSort) {
             case "newest":
                 sortField = "createdAt";
@@ -164,9 +198,12 @@ async function loadCommunities(isNewQuery = false) {
                 sortField = "memberCount";
                 sortDirection = "desc";
                 break;
+            case "suggested":
+                sortField = "memberCount";
+                sortDirection = "desc";
+                break;
             case "popular":
             default:
-                // Popular could be based on a combination of members and activity
                 sortField = "memberCount";
                 sortDirection = "desc";
                 break;
@@ -245,7 +282,8 @@ async function loadCommunities(isNewQuery = false) {
             // Filter out private communities if user is not a member
             filteredDocs = communitiesSnapshot.docs.filter(doc => {
                 const communityData = doc.data();
-                return !communityData.isPrivate || (loggedInUser && communityData.members.includes(loggedInUser));
+                // We no longer filter out private communities - show all communities
+                return true;
             });
         }
 
@@ -280,6 +318,36 @@ async function loadCommunities(isNewQuery = false) {
         } else {
             // Disable pagination when searching
             lastVisible = null;
+        }
+
+        // If we're using suggested sort and user is logged in, apply genre-based sorting
+        if (currentSort === "suggested" && loggedInUser) {
+            // Get user's genre preferences
+            const userGenres = await getUserGenres(loggedInUser);
+
+            if (userGenres.length > 0) {
+                // Add genre match score to each community
+                const enhancedDocs = filteredDocs.map(doc => {
+                    const data = doc.data();
+                    const genreMatchScore = calculateGenreMatchScore(userGenres, data.genres);
+                    return {
+                        doc: doc,
+                        genreMatchScore: genreMatchScore,
+                        memberCount: data.memberCount || 0
+                    };
+                });
+
+                // Sort by genre match score (descending) and then by member count (descending)
+                enhancedDocs.sort((a, b) => {
+                    if (a.genreMatchScore !== b.genreMatchScore) {
+                        return b.genreMatchScore - a.genreMatchScore; // Higher match score first
+                    }
+                    return b.memberCount - a.memberCount; // Then by member count
+                });
+
+                // Replace filtered docs with sorted docs
+                filteredDocs = enhancedDocs.map(item => item.doc);
+            }
         }
 
         // Process results for display
@@ -319,13 +387,17 @@ async function loadCommunities(isNewQuery = false) {
                 <div class="community-footer">
                     <span class="members-count">${communityData.memberCount || 0} members</span>
                     <div class="actions">
-                        ${isMember || !communityData.isPrivate ?
-                `<a href="../homePage/communityProfile.html?id=${communityId}" class="view-btn">View</a>` :
-                `<span class="locked-view-btn" title="Only members can view private communities"><i class="bx bxs-lock"></i> Members Only</span>`
+                        ${(!communityData.isPrivate || isMember) ?
+                                `<a href="../homePage/communityProfile.html?id=${communityId}" class="view-btn">View</a>` :
+                                `<span class="private-community-badge"></span>`
             }
-                        <button class="join-btn ${isMember ? 'joined' : ''}" data-id="${communityId}">
-                            ${isMember ? 'Leave' : 'Join'}
-                        </button>
+                        ${isMember ?
+                                `<button class="join-btn joined" data-id="${communityId}">Leave</button>` :
+                                (communityData.isPrivate ?
+                                        `<button class="request-join-btn" data-id="${communityId}" data-name="${communityData.name}">Request to Join</button>` :
+                                        `<button class="join-btn" data-id="${communityId}">Join</button>`
+                                )
+                            }
                     </div>
                 </div>
             </div>
@@ -342,6 +414,10 @@ async function loadCommunities(isNewQuery = false) {
         // Add event listeners to join buttons
         document.querySelectorAll(".join-btn").forEach(button => {
             button.addEventListener("click", handleJoinCommunity);
+        });
+
+        document.querySelectorAll(".request-join-btn").forEach(button => {
+            button.addEventListener("click", handleJoinRequest);
         });
 
         // Hide no results message
@@ -496,6 +572,79 @@ async function handleJoinCommunity(event) {
     } catch (error) {
         console.error("Error joining/leaving community:", error);
         alert("Error processing your request");
+    }
+}
+
+async function handleJoinRequest(event) {
+    if (!loggedInUser) {
+        alert("You need to be logged in to request to join communities");
+        return;
+    }
+
+    const button = event.currentTarget;
+    const communityId = button.getAttribute("data-id");
+    const communityName = button.getAttribute("data-name");
+
+    // Check if user already has a pending request
+    try {
+        const joinRequestsRef = collection(db, "joinRequests");
+        const requestQuery = query(
+            joinRequestsRef,
+            where("userId", "==", loggedInUser),
+            where("communityId", "==", communityId),
+            where("status", "==", "pending")
+        );
+        const requestSnap = await getDocs(requestQuery);
+
+        if (!requestSnap.empty) {
+            alert("You already have a pending request to join this community");
+            return;
+        }
+
+        // Get community creator information
+        const communityRef = doc(db, "communities", communityId);
+        const communitySnap = await getDoc(communityRef);
+
+        if (!communitySnap.exists()) {
+            alert("Community not found");
+            return;
+        }
+
+        const communityData = communitySnap.data();
+        const creatorId = communityData.createdBy;
+
+        // Create join request
+        const joinRequestRef = collection(db, "joinRequests");
+        await addDoc(joinRequestRef, {
+            userId: loggedInUser,
+            communityId: communityId,
+            communityName: communityName,
+            creatorId: creatorId,
+            status: "pending",
+            timestamp: serverTimestamp()
+        });
+
+        // Send notification to community creator
+        const notificationRef = collection(db, "users", creatorId, "notifications");
+        await addDoc(notificationRef, {
+            type: "joinRequest",
+            message: `${loggedInUser} has requested to join your community "${communityName}"`,
+            requesterId: loggedInUser,
+            communityId: communityId,
+            createdAt: serverTimestamp(),
+            read: false
+        });
+
+        // Update button status
+        button.textContent = "Request Pending";
+        button.classList.add("pending");
+        button.disabled = true;
+
+        alert("Join request sent. You'll be notified when the community owner responds.");
+
+    } catch (error) {
+        console.error("Error requesting to join community:", error);
+        alert("Error sending join request");
     }
 }
 

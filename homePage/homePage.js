@@ -1,5 +1,17 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-app.js";
-import { getFirestore, doc, getDoc, collection, getDocs, query, orderBy, limit, onSnapshot, updateDoc } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-firestore.js";
+import {
+    getFirestore,
+    doc,
+    getDoc,
+    collection,
+    getDocs,
+    query,
+    orderBy,
+    limit,
+    onSnapshot,
+    updateDoc,
+    serverTimestamp, addDoc, arrayUnion, where
+} from "https://www.gstatic.com/firebasejs/11.3.1/firebase-firestore.js";
 
 const TMDB_API_KEY = "bc7c4e7c62d9e223e196bbd15978fc51";
 const TMDB_BASE_URL = "https://api.themoviedb.org/3";
@@ -106,6 +118,7 @@ document.addEventListener("DOMContentLoaded", function () {
     //loadRecommendedMovies();
     getRandomActorFact();
     loadGenreBasedCarousels();
+    loadPendingJoinRequests();
 
     document.addEventListener("click", function (e) {
         if (e.target.classList.contains("sign-out")) {
@@ -416,6 +429,270 @@ window.scrollGenreCarousel = function (genreKey, direction) {
         behavior: "smooth"
     });
 };
+
+// Communities Join Request Functions
+async function handleAcceptJoinRequest(event) {
+    const requestId = event.currentTarget.getAttribute("data-id");
+
+    try {
+        // Get the request data
+        const requestRef = doc(db, "joinRequests", requestId);
+        const requestSnap = await getDoc(requestRef);
+
+        if (!requestSnap.exists()) {
+            alert("Join request not found");
+            return;
+        }
+
+        const requestData = requestSnap.data();
+        const { userId, communityId, communityName } = requestData;
+
+        // Update the request status
+        await updateDoc(requestRef, {
+            status: "accepted",
+            responseTimestamp: serverTimestamp()
+        });
+
+        // Add user to community members
+        const communityRef = doc(db, "communities", communityId);
+        const communitySnap = await getDoc(communityRef);
+
+        if (!communitySnap.exists()) {
+            alert("Community not found");
+            return;
+        }
+
+        const communityData = communitySnap.data();
+
+        await updateDoc(communityRef, {
+            members: arrayUnion(userId),
+            memberCount: (communityData.memberCount || 0) + 1
+        });
+
+        // Send notification to user
+        const notificationRef = collection(db, "users", userId, "notifications");
+        await addDoc(notificationRef, {
+            type: "joinRequestAccepted",
+            message: `Your request to join "${communityName}" has been accepted`,
+            communityId: communityId,
+            createdAt: serverTimestamp(),
+            read: false
+        });
+
+        // Reload all pending requests instead of trying to manipulate the DOM
+        await loadPendingJoinRequests();
+
+    } catch (error) {
+        console.error("Error accepting join request:", error);
+        alert("Error accepting join request");
+    }
+}
+
+async function handleDenyJoinRequest(event) {
+    const requestId = event.currentTarget.getAttribute("data-id");
+
+    try {
+        // Get the request data
+        const requestRef = doc(db, "joinRequests", requestId);
+        const requestSnap = await getDoc(requestRef);
+
+        if (!requestSnap.exists()) {
+            alert("Join request not found");
+            return;
+        }
+
+        const requestData = requestSnap.data();
+        const { userId, communityName } = requestData;
+
+        // Update the request status
+        await updateDoc(requestRef, {
+            status: "denied",
+            responseTimestamp: serverTimestamp()
+        });
+
+        // Send notification to user
+        const notificationRef = collection(db, "users", userId, "notifications");
+        await addDoc(notificationRef, {
+            type: "joinRequestDenied",
+            message: `Your request to join "${communityName}" has been denied`,
+            createdAt: serverTimestamp(),
+            read: false
+        });
+
+        // Reload all pending requests instead of trying to manipulate the DOM
+        await loadPendingJoinRequests();
+
+    } catch (error) {
+        console.error("Error denying join request:", error);
+        alert("Error denying join request");
+    }
+}
+
+async function loadPendingJoinRequests() {
+    const currentUser = localStorage.getItem("loggedInUser");
+    if (!currentUser) return;
+
+    try {
+        // First, remove any existing join requests section
+        const existingSection = document.getElementById("joinRequestsSection");
+        if (existingSection) {
+            existingSection.remove();
+        }
+
+        // Get communities created by the current user
+        const communitiesRef = collection(db, "communities");
+        const createdCommunitiesQuery = query(communitiesRef, where("createdBy", "==", currentUser));
+        const communitiesSnapshot = await getDocs(createdCommunitiesQuery);
+
+        if (communitiesSnapshot.empty) return; // User hasn't created any communities
+
+        // Get all pending join requests for the user's communities
+        const joinRequestsRef = collection(db, "joinRequests");
+        const pendingRequestsQuery = query(
+            joinRequestsRef,
+            where("creatorId", "==", currentUser),
+            where("status", "==", "pending")
+        );
+        const requestsSnapshot = await getDocs(pendingRequestsQuery);
+
+        if (requestsSnapshot.empty) return; // No pending requests
+
+        // Create the join requests section
+        let requestsSection = document.createElement("section");
+        requestsSection.id = "joinRequestsSection";
+        requestsSection.className = "join-requests-section";
+
+        // Find where to insert this section - after the welcome message
+        const welcomeMessage = document.querySelector(".welcome-message");
+        welcomeMessage.insertAdjacentElement("afterend", requestsSection);
+
+        // Populate with join requests
+        requestsSection.innerHTML = `
+            <h2>Pending Community Join Requests</h2>
+            <div class="join-requests-container">
+                ${requestsSnapshot.docs.map(doc => {
+            const requestData = doc.data();
+            return `
+                        <div class="join-request-item">
+                            <a href="OtherProfilePage.html?user=${encodeURIComponent(requestData.userId)}" class="request-username">${requestData.userId}</a> wants to join 
+                            <span class="request-community">${requestData.communityName}</span>
+                            <div class="request-actions">
+                                <button class="accept-request-btn" data-id="${doc.id}">Accept</button>
+                                <button class="deny-request-btn" data-id="${doc.id}">Deny</button>
+                            </div>
+                        </div>
+                    `;
+        }).join("")}
+            </div>
+        `;
+
+        // Add CSS for this section if it doesn't already exist
+        if (!document.getElementById("join-requests-style")) {
+            const style = document.createElement("style");
+            style.id = "join-requests-style";
+            style.textContent = `
+                .join-requests-section {
+                    padding: 20px;
+                    background-color: #2a2a2a;
+                    border-radius: 8px;
+                    margin: 20px;
+                    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+                }
+                
+                .join-requests-section h2 {
+                    color: white;
+                    border-bottom: 2px solid #555;
+                    padding-bottom: 10px;
+                    margin-top: 0;
+                }
+                
+                .join-requests-container {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 10px;
+                }
+                
+                .join-request-item {
+                    background-color: #333;
+                    padding: 15px;
+                    border-radius: 5px;
+                    display: flex;
+                    align-items: center;
+                    flex-wrap: wrap;
+                    color: white;
+                }
+                
+                .request-username {
+                    font-weight: bold;
+                    margin: 0 5px;
+                    color: #ffcc00;
+                    text-decoration: none;
+                    transition: all 0.2s ease;
+                }
+                
+                .request-username:hover {
+                    text-decoration: underline;
+                    color: #ffd700;
+                }
+                
+                .request-community {
+                    font-weight: bold;
+                    margin: 0 5px;
+                }
+                
+                .request-actions {
+                    margin-left: auto;
+                    display: flex;
+                    gap: 10px;
+                }
+                
+                .accept-request-btn, .deny-request-btn {
+                    padding: 8px 15px;
+                    border: none;
+                    border-radius: 4px;
+                    cursor: pointer;
+                    font-weight: bold;
+                }
+                
+                .accept-request-btn {
+                    background-color: #4CAF50;
+                    color: white;
+                }
+                
+                .deny-request-btn {
+                    background-color: #f44336;
+                    color: white;
+                }
+                
+                @media (max-width: 768px) {
+                    .join-request-item {
+                        flex-direction: column;
+                        align-items: flex-start;
+                        gap: 10px;
+                    }
+                    
+                    .request-actions {
+                        margin-left: 0;
+                        width: 100%;
+                        justify-content: flex-end;
+                    }
+                }
+            `;
+            document.head.appendChild(style);
+        }
+
+        // Add event listeners for accept/deny buttons
+        document.querySelectorAll(".accept-request-btn").forEach(button => {
+            button.addEventListener("click", handleAcceptJoinRequest);
+        });
+
+        document.querySelectorAll(".deny-request-btn").forEach(button => {
+            button.addEventListener("click", handleDenyJoinRequest);
+        });
+    } catch (error) {
+        console.error("Error loading join requests:", error);
+    }
+}
 
 // ------------------- ACTOR FACT --------------------
 
