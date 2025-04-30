@@ -61,7 +61,7 @@ async function fetchCrewMovies(crewId, crewRole) {
         const data = await response.json();
 
         // sorts movies be popularity using .sort()
-        const crewMovies = data.crew.filter(movie => movie.job === crewRole)
+        const crewMovies = data.crew.filter(movie => movie.job === crewRole && !movie.adult)
             .sort((a, b) => b.popularity - a.popularity);
 
         // selects container where list of known movies will be displayed
@@ -75,10 +75,14 @@ async function fetchCrewMovies(crewId, crewRole) {
             // add css class movie-item for styling
             movieItem.classList.add("movie-item");
             // sets img and title for each movie
+            const isAdult = movie.adult === true;
+            const blurClass = isAdult ? "blurred-poster" : "";
+
             movieItem.innerHTML = `
-                <img src="https://image.tmdb.org/t/p/w300${movie.poster_path}" alt="${movie.title}">
+                <img src="https://image.tmdb.org/t/p/w300${movie.poster_path}" alt="${movie.title}" class="${blurClass}">
                 <p>${movie.title}</p>
             `;
+
             // makes movie item clickable
             movieItem.addEventListener("click", () => {
                 // save selected movie into localStorage

@@ -54,7 +54,7 @@ searchInput.addEventListener("input", async () => {
 
 async function fetchMovies(query) {
     const response = await fetch(
-        `https://api.themoviedb.org/3/search/movie?api_key=${API_KEY}&query=${encodeURIComponent(query)}`
+        `https://api.themoviedb.org/3/search/movie?api_key=${API_KEY}&query=${encodeURIComponent(query)}&include_adult=false`
     );
     const data = await response.json();
     console.log("TMDb movie data:", data.results); // 👈
