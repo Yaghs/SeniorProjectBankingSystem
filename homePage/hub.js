@@ -558,8 +558,12 @@ async function MessageRequest(currentUser,otherUser){
         const allowOther = doc(db, "messageAccess", otherUser);
         await setDoc(allowOther, { [currentUser]: true }, { merge: true });
 
-        const requestDoc = doc(db, "messageRequest", currentUser, "request", otherUser);
-        await updateDoc(requestDoc, { status: "accepted" });
+        const requestDoc = doc(db, "messageRequest", otherUser, "request", currentUser);
+        await setDoc(requestDoc, {
+            fromUser: currentUser,
+            status: "pending",
+            timestamp: serverTimestamp()
+        }, { merge: true });
 
         console.log(`Message request accepted between ${currentUser} and ${otherUser}`);
     } catch (error) {
