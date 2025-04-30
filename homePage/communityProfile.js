@@ -87,12 +87,35 @@ async function loadCommunityData() {
 
         // Update join button based on membership
         const joinButton = document.getElementById("joinButton");
-        if (loggedInUser && communityData.members.includes(loggedInUser)) {
+        const isMember = loggedInUser && communityData.members.includes(loggedInUser);
+        if (isMember) {
             joinButton.textContent = "Leave";
             joinButton.classList.add("leave");
         } else {
             joinButton.textContent = "Join";
             joinButton.classList.remove("leave");
+        }
+
+        // Check if user has a pending join request
+        if (!isMember && communityData.isPrivate && loggedInUser) {
+            try {
+                const joinRequestsRef = collection(db, "joinRequests");
+                const requestQuery = query(
+                    joinRequestsRef,
+                    where("userId", "==", loggedInUser),
+                    where("communityId", "==", communityId),
+                    where("status", "==", "pending")
+                );
+                const requestSnap = await getDocs(requestQuery);
+
+                if (!requestSnap.empty) {
+                    joinButton.textContent = "Request Pending";
+                    joinButton.classList.add("pending");
+                    joinButton.disabled = true;
+                }
+            } catch (error) {
+                console.error("Error checking join request status:", error);
+            }
         }
 
         // Add Edit button for community creator
@@ -297,7 +320,61 @@ function makeMovieTitlesClickable() {
     });
 }
 
-// Load reviews
+async function getMovieGenres(movieTitle) {
+    try {
+        const response = await fetch(
+            `https://api.themoviedb.org/3/search/movie?api_key=${API_KEY}&query=${encodeURIComponent(movieTitle)}&page=1`
+        );
+        const data = await response.json();
+
+        if (data.results && data.results.length > 0) {
+            // Get the first result's genre IDs
+            const genreIds = data.results[0].genre_ids || [];
+
+            // Convert IDs to genre names
+            // Note: We need to maintain a map of genre IDs to names
+            const genreNames = [];
+
+            // Map of common genre IDs to names
+            const genreMap = {
+                28: "Action",
+                12: "Adventure",
+                16: "Animation",
+                35: "Comedy",
+                80: "Crime",
+                99: "Documentary",
+                18: "Drama",
+                10751: "Family",
+                14: "Fantasy",
+                36: "History",
+                27: "Horror",
+                10402: "Music",
+                9648: "Mystery",
+                10749: "Romance",
+                878: "Science Fiction",
+                10770: "TV Movie",
+                53: "Thriller",
+                10752: "War",
+                37: "Western"
+            };
+
+            // Map genre IDs to names
+            for (const id of genreIds) {
+                if (genreMap[id]) {
+                    genreNames.push(genreMap[id]);
+                }
+            }
+
+            return genreNames;
+        }
+
+        return [];
+    } catch (error) {
+        console.error("Error fetching movie genres:", error);
+        return [];
+    }
+}
+
 async function loadReviews() {
     try {
         const reviewsContainer = document.getElementById("reviewsList");
@@ -305,7 +382,7 @@ async function loadReviews() {
         // Add loading indicator
         reviewsContainer.innerHTML = `<div class="loading-indicator">Loading reviews from community members...</div>`;
 
-        // Get the community data to access member list
+        // Get the community data to access member list and genres
         const communityRef = doc(db, "communities", communityId);
         const communitySnap = await getDoc(communityRef);
 
@@ -317,6 +394,7 @@ async function loadReviews() {
 
         const communityData = communitySnap.data();
         const membersList = communityData.members || [];
+        const communityGenres = communityData.genres || [];
 
         // Array to store all reviews
         let allReviews = [];
@@ -335,22 +413,34 @@ async function loadReviews() {
                     const userData = userSnap.exists() ? userSnap.data() : { username: username };
 
                     // Process each review from this user
-                    userReviewsSnapshot.docs.forEach(reviewDoc => {
+                    for (const reviewDoc of userReviewsSnapshot.docs) {
                         const reviewData = reviewDoc.data();
 
                         // Skip reviews without movie titles or ratings
-                        if (!reviewData.title) return;
+                        if (!reviewData.title) continue;
 
-                        // Add review to array with additional metadata
-                        allReviews.push({
-                            id: reviewDoc.id,
-                            username: username,
-                            userData: userData,
-                            reviewData: reviewData,
-                            // Convert timestamp to Date object for sorting if available
-                            timestamp: reviewData.watchedDate ? new Date(reviewData.watchedDate) : new Date(0)
-                        });
-                    });
+                        // Fetch movie genres from TMDB
+                        const movieGenres = await getMovieGenres(reviewData.title);
+
+                        // Check if any movie genre matches the community genres
+                        const hasMatchingGenre = movieGenres.some(genre =>
+                            communityGenres.includes(genre)
+                        );
+
+                        // Only add reviews with matching genres
+                        if (hasMatchingGenre) {
+                            // Add review to array with additional metadata
+                            allReviews.push({
+                                id: reviewDoc.id,
+                                username: username,
+                                userData: userData,
+                                reviewData: reviewData,
+                                movieGenres: movieGenres,
+                                // Convert timestamp to Date object for sorting if available
+                                timestamp: reviewData.watchedDate ? new Date(reviewData.watchedDate) : new Date(0)
+                            });
+                        }
+                    }
                 }
             } catch (error) {
                 console.error(`Error fetching reviews for member ${username}:`, error);
@@ -368,7 +458,7 @@ async function loadReviews() {
         reviewsContainer.innerHTML = "";
 
         if (allReviews.length === 0) {
-            reviewsContainer.innerHTML = `<p class="no-items">No reviews yet from community members. Be the first to share your thoughts!</p>`;
+            reviewsContainer.innerHTML = `<p class="no-items">No reviews matching community genres yet. Be the first to share relevant movie reviews!</p>`;
             return;
         }
 
@@ -397,9 +487,8 @@ async function loadReviews() {
     }
 }
 
-// Helper function to create a review element
 function createReviewElement(review) {
-    const { userData, reviewData } = review;
+    const { userData, reviewData, movieGenres } = review;
 
     // Create review item container
     const reviewItem = document.createElement("div");
@@ -442,6 +531,12 @@ function createReviewElement(review) {
     // Get movie poster if available, or use placeholder
     const moviePoster = reviewData.selectedPoster || `https://placehold.co/100x150/333/aaa?text=${encodeURIComponent(reviewData.title)}`;
 
+    // Create genre tags HTML
+    const genreTags = movieGenres && movieGenres.length > 0
+        ? `<div class="movie-genres">${movieGenres.map(genre =>
+            `<span class="genre-tag">${genre}</span>`).join('')}</div>`
+        : '';
+
     // Construct the HTML for the review
     reviewItem.innerHTML = `
         <div class="review-header">
@@ -457,6 +552,7 @@ function createReviewElement(review) {
         <div class="review-content">
             <div class="movie-poster-container">
                 <img src="${moviePoster}" alt="${reviewData.title} poster" class="movie-poster">
+                <!-- ${genreTags} -->
             </div>
             <div class="review-text-container">
                 <p class="review-text">${reviewData.reviewText || "No review text provided."}</p>
