@@ -181,6 +181,7 @@ function displayPoster(index) {
             </button>
         </div>
     `;
+    attachTrailerButtonListener();
 }
 
 // navigate to previous poster
