@@ -131,7 +131,7 @@ header {
 }
 
 .profile-pic img {
-    width: 200px; /* Adjust as needed */
+    width: 200px;
     height: 200px;
     border-radius: 50%;
     border: 5px solid #333;
@@ -145,26 +145,29 @@ header {
 
 .bio-display {
     font-size: 1.1em;
+    margin-top: 10px;
     color: #ccc;
-    justify-content: flex-start;
-    margin-top: -25px;
+    text-align: start;
 }
 
 .user-header {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    gap: 80px;
+    gap: 20px;
     width: 100%;
 }
 
-.username_display {
-    width: 22%;
-}
-
 .username_display h1 {
+    display: flex;
+    align-items: center;
     font-size: 34px;
     color: white;
+    margin-bottom: 10px;
+    gap: 20px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
 }
 
 #Follow_button {
@@ -178,6 +181,7 @@ header {
     width: 100px;
     text-align: center;
     transition: background-color 0.3s ease;
+    margin-top: 10px;
 }
 
 #Follow_button:hover {
@@ -196,17 +200,17 @@ header {
 
 .following_info {
     display: flex;
-    justify-content: flex-end;
-    gap: 10px;
-    margin-top: 10px;
+    align-items: flex-end;
+    margin-left: auto;
+    gap: 35px;
     font-weight: bold;
     color: white;
-    width: 58%;
 }
 
 .following_info p{
-    margin-right: 15px;
-    margin-left: 15px;
+    margin-right: 20px;
+    margin-left: auto;
+    margin-top: 35px;
     font-size: 18px;
 }
 
@@ -315,16 +319,21 @@ header {
     object-fit: cover;
 }
 
-.dm{
-    font-size: 15px;
+.dm {
+    font-size: 18px;
+    padding: 5px 12px;
+    border-radius: 5px;
+    border: none;
+    background-color: #444;
     color: white;
-    align-self: center;
-    margin-right: auto;
-    margin-left: -300px;
-    margin-top: 70px;
-    padding: 5px 40px;
-    background: #65558F;
-    border: #65558F;
+    cursor: pointer;
+    text-align: center;
+    transition: background-color 0.3s ease;
+    margin-top: 10px;
+}
+.dm:hover {
+    background-color: yellow;
+    color: black;
 }
 
 .reviewBox {
