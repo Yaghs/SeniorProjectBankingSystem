@@ -51,8 +51,27 @@ async function loadReview() {
             ? new Date(reviewData.watchedDate).toLocaleDateString('en-US', { day: '2-digit', month: 'short', year: 'numeric' })
             : "Not Specified";
 
-        // Ensure poster is set
+        // ensure poster is set
         document.getElementById("MoviePoster").src = reviewData.selectedPoster || "https://via.placeholder.com/300?text=No+Image";
+        // display banner if available
+        const bannerImage = document.getElementById("bannerContainer");
+        const reviewContainer = document.querySelector(".review-container");
+
+        if (reviewData.selectedBanner) {
+            bannerImage.style.backgroundImage = `url(${reviewData.selectedBanner})`;
+            bannerImage.style.display = "flex";
+            reviewContainer.style.marginTop = "-40vh"; // overlay on banner
+        } else {
+            bannerImage.style.display = "none"; // hide banner space
+            Object.assign(reviewContainer.style, {
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "flex-start",
+                gap: "50px",
+                padding: "20px",
+                marginTop: "0px"
+            });
+        }
 
         document.getElementById("reviewedIcon").innerHTML = "<i class='bx bxs-show'></i>";
         document.getElementById("likedIcon").innerHTML = reviewData.liked ? "<i class='bx bxs-heart'></i>" : "<i class='bx bx-heart'></i>";

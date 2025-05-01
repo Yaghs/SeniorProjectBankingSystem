@@ -366,6 +366,65 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 });
 
+const changeBannerBtn = document.getElementById("changeBannerBtn");
+const bannerModal = document.getElementById("bannerReviewModal");
+const closeBannerBtn = bannerModal.querySelector(".poster-close");
+const bannerGrid = document.getElementById("bannerReviewGrid");
+const saveBannerBtn = document.getElementById("saveReviewBannerBtn");
+let selectedBannerUrl = "";
+
+// fetch backdrops (banners)
+async function fetchBanners(movieId) {
+    try {
+        const response = await fetch(
+            `https://api.themoviedb.org/3/movie/${movieId}?api_key=${API_KEY}&append_to_response=images&include_image_language=en,null`
+        );
+        const data = await response.json();
+        return data.images.backdrops || [];
+    } catch (error) {
+        return [];
+    }
+}
+
+function updateBannerGrid(banners) {
+    bannerGrid.innerHTML = "";
+    banners.forEach(banner => {
+        const img = document.createElement("img");
+        img.src = `https://image.tmdb.org/t/p/original${banner.file_path}`;
+        img.addEventListener("click", () => {
+            document.querySelectorAll("#bannerReviewGrid img").forEach(i => i.classList.remove("selected"));
+            img.classList.add("selected");
+            selectedBannerUrl = img.src;
+        });
+        bannerGrid.appendChild(img);
+    });
+}
+
+// open banner modal
+if (changeBannerBtn) {
+    changeBannerBtn.addEventListener("click", async () => {
+        const storedMovie = JSON.parse(localStorage.getItem("selectedMovie"));
+        if (!storedMovie) return;
+        const banners = await fetchBanners(storedMovie.id);
+        updateBannerGrid(banners);
+        bannerModal.style.display = "flex";
+    });
+}
+
+// then inside your banner modal close button
+closeBannerBtn.addEventListener("click", () => {
+    bannerModal.style.display = "none";
+    if (reviewForm) reviewForm.style.display = "block";
+});
+
+// Save selected banner
+if (saveBannerBtn) {
+    saveBannerBtn.addEventListener("click", () => {
+        bannerModal.style.display = "none";
+    });
+}
+
+
 // event listener for when you press the save button after writing a review
 document.getElementById("saveReview").addEventListener("click", async () => {
     // get user ID from localStorage
@@ -398,6 +457,7 @@ document.getElementById("saveReview").addEventListener("click", async () => {
         rating: rating || 0, // default rating if nothing is selected
         liked: liked,
         selectedPoster: selectedPoster, // stores chosen poster
+        selectedBanner: selectedBannerUrl, // stores chosen banner
         timestamp: serverTimestamp() // add timestamp for sorting
     };
 
