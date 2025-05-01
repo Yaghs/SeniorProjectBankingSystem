@@ -52,7 +52,10 @@
             <input type="file" id="fileinput" style="display: none;" accept="image/*" />
         </div>
         <div class="username_display">
-            <h1><span id="username_Id">Username</span></h1>
+            <div class="user-header">
+                <h1><span id="username_Id">Username</span></h1>
+                <button class="edit-bio" onclick="window.location.href='accountCenter.html';">Edit Profile</button>
+            </div>
             <div class="bio-display">
                 <p id="bioDisplayText">No bio available yet.</p>
             </div>
@@ -87,8 +90,6 @@
           </script>
             <p id="FollowingCount">Following: 0</p>
             <p id="FollowersCount">Followers: 0</p>
-            <!-- DM button -->
-            <button class="dm" onclick="window.location.href='hub.html';">Direct Message</button>
         </div>
     </div>
 </div>

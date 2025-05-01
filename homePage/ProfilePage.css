@@ -125,13 +125,12 @@ header {
 .Profile {
     display: flex;
     align-items: flex-start;
-    gap: 20px; /* Space between image and text */
+    gap: 20px;
     padding: 20px;
-
 }
 
 .profile-pic img {
-    width: 200px; /* Adjust as needed */
+    width: 200px;
     height: 200px;
     border-radius: 50%;
     border: 5px solid #333;
@@ -141,6 +140,13 @@ header {
 .profile-info {
     display: flex;
     flex-direction: column;
+}
+
+.user-header {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    width: 100%;
 }
 
 .username_display h1 {
@@ -156,6 +162,24 @@ header {
     max-width: 100%;
 }
 
+.edit-bio {
+    font-size: 18px;
+    padding: 5px 12px;
+    border-radius: 5px;
+    border: none;
+    background-color: #444;
+    color: white;
+    cursor: pointer;
+    text-align: center;
+    transition: background-color 0.3s ease;
+    margin-top: 10px;
+}
+
+.edit-bio:hover {
+    background-color: #f87204;
+    color: black;
+}
+
 .bio-display {
     font-size: 1.1em;
     margin-top: 10px;
@@ -165,17 +189,17 @@ header {
 
 .following_info {
     display: flex;
-    justify-content: flex-end;
+    align-items: flex-end;
+    margin-left: auto;
     gap: 10px;
-    margin-left: 250px;
     font-weight: bold;
     color: white;
 }
 
 .following_info p{
-    margin-right: 15px;
+    margin-right: 20px;
     margin-left: 25px;
-    margin-top: 25px;
+    margin-top: 35px;
     font-size: 18px;
 }
 
@@ -461,25 +485,6 @@ header {
     width: auto;
     object-fit: cover;
 }
-.dm{
-    font-size: 15px;
-    color: white;
-    align-self: center;
-    margin-right: auto;
-    margin-left: -300px;
-    margin-top: 70px;
-    padding: 5px 40px;
-    background: #65558F;
-    border: #65558F;
-
-
-}
-.Edit{
-    color: white;
-    background: #65558F;
-    border: #65558F;
-}
-
 
 .reviewBox {
     display: none;
@@ -976,22 +981,4 @@ body.dark-mode .following_info {
 }
 body.light-mode .following_info {
     color: black;
-}
-
-body.dark-mode .dm {
-    color: white;
-    background: #65558F;
-}
-body.light-mode .dm {
-    color: black;
-    background: #65558F;
-}
-
-body.dark-mode .Edit {
-    color: white;
-    background: #65558F;
-}
-body.light-mode .Edit {
-    color: black;
-    background: #65558F;
 }
