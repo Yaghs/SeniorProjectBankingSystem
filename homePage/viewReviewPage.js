@@ -165,6 +165,11 @@ async function loadReviewActionBox(movieTitle) {
                     if (reviewSnap.exists()) {
                         // populate with data
                         const reviewData = reviewSnap.data();
+                        localStorage.setItem("selectedMovie", JSON.stringify({
+                            id: reviewData.tmdbId,
+                            title: reviewData.title,
+                            release_date: reviewData.year ? `${reviewData.year}-01-01` : ""
+                        }));
 
                         // loads saved review text, watched date, watched before, selected poster and liked status
                         document.getElementById("reviewText").value = reviewData.reviewText || "";
@@ -194,6 +199,7 @@ async function loadReviewActionBox(movieTitle) {
                         document.getElementById("reviewSearchPage").style.display = "none";
                         document.getElementById("reviewForm").style.display = "block";
 
+                        setupPosterAndBannerButtons();
                     } else {
                         console.log("No review found. Edit button disabled.");
                     }
@@ -212,6 +218,32 @@ async function loadReviewActionBox(movieTitle) {
         console.error("Error loading review:", error);
     }
 }
+
+function setupPosterAndBannerButtons() {
+    const changePosterBtn = document.getElementById("changePosterBtn");
+    const changeBannerBtn = document.getElementById("changeBannerBtn");
+
+    if (changePosterBtn) {
+        changePosterBtn.addEventListener("click", async () => {
+            const storedMovie = JSON.parse(localStorage.getItem("selectedMovie"));
+            if (!storedMovie?.id) return;
+            const posters = await fetchPosters(storedMovie.id);
+            updatePosterGrid(posters);
+            document.getElementById("posterReviewModal").style.display = "flex";
+        });
+    }
+
+    if (changeBannerBtn) {
+        changeBannerBtn.addEventListener("click", async () => {
+            const storedMovie = JSON.parse(localStorage.getItem("selectedMovie"));
+            if (!storedMovie?.id) return;
+            const banners = await fetchBanners(storedMovie.id);
+            updateBannerGrid(banners);
+            document.getElementById("bannerReviewModal").style.display = "flex";
+        });
+    }
+}
+
 
 // resets ui for the review action box
 function resetReviewActionBox() {

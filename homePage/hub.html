@@ -5,6 +5,7 @@
     <title>DM Page</title>
     <link rel="stylesheet" href="hub.css">
     <link rel='stylesheet' href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css'>
+    <script type="module" src="+review.js"></script>
 </head>
 <body>
 <header>
@@ -38,6 +39,91 @@
     </div>
 </header>
 <div id="suggestions"></div>
+
+<div id="reviewBox" class="reviewBox">
+    <div class="reviewBoxContainer" id="reviewSearchPage">
+        <span class="close">&times;</span>
+        <h2>Add to your films</h2>
+        <input type="text" id="reviewSearch" placeholder="Search for a movie...">
+        <div id="reviewSuggestions" class="review-suggestions"></div>
+        <p>Or Add <span id="currentMovie" class="clickable"></span></p>
+    </div>
+
+    <div class="reviewForm" id="reviewForm">
+        <header class="reviewFormHeader">
+            <div class="left">
+                <h2 id="backBtn" class="backBtn">Back</h2>
+                <h2>I watched...</h2>
+            </div>
+            <div class="right">
+                <span class="close">&times;</span>
+            </div>
+        </header>
+
+        <div class="review-movie-details">
+            <div class="review-left-container">
+                <img id="reviewMoviePoster" src="" alt="Movie Poster">
+                <button id="changePosterBtn" class="change-poster-btn">Change Poster</button>
+                <button id="changeBannerBtn" class="change-poster-btn">Choose Banner</button>
+            </div>
+            <div class="review-right-container">
+                <div class="movie-title-container">
+                    <h2 id="reviewMovieTitle"></h2>
+                    <span id="reviewMovieYear"></span>
+                </div>
+                <div class="watch-options">
+                    <input type="checkbox" id="watchedCheckbox">
+                    <label for="watchedCheckbox">Watched on</label>
+                    <input type="date" id="watchedDate">
+                    <input type="checkbox" id="watchedBeforeCheckbox">
+                    <label for="watchedBeforeCheckbox">I've watched this film before</label>
+                </div>
+                <textarea id="reviewText" placeholder="Add a review..."></textarea>
+                <div class="tag-rating-container">
+                    <div class="tags-container">
+                        <div class="tags">
+                            <span class="tag-label">Tags</span>
+                            <span class="small-note">Press Tab to complete, Enter to create</span>
+                        </div>
+                        <input type="text" id="reviewTags" placeholder="eg. netflix">
+                    </div>
+
+                    <div class="rating-section">
+                        <span class="rating-label">Rating</span>
+                        <div class="rating-container">
+                            <span class="rating-star" data-value="1"><i class='bx bx-star'></i></span>
+                            <span class="rating-star" data-value="2"><i class='bx bx-star'></i></span>
+                            <span class="rating-star" data-value="3"><i class='bx bx-star'></i></span>
+                            <span class="rating-star" data-value="4"><i class='bx bx-star'></i></span>
+                            <span class="rating-star" data-value="5"><i class='bx bx-star'></i></span>
+                        </div>
+                    </div>
+                    <div class="like-section">
+                        <span class="like-label">Like</span>
+                        <span id="likeButton" class="like-btn"><i class='bx bx-heart'></i></span>
+                    </div>
+                </div>
+                <button id="saveReview" class="save-button">Save</button>
+            </div>
+        </div>
+    </div>
+    <div id="posterReviewModal" class="poster-modal">
+        <div class="poster-modal-content">
+            <button class="poster-close">&times;</button>
+            <h2>Choose New Poster</h2>
+            <div class="poster-grid" id="posterReviewGrid"></div>
+            <button id="saveReviewPosterBtn" class="save-button">Save</button>
+        </div>
+    </div>
+    <div id="bannerReviewModal" class="poster-modal">
+        <div class="poster-modal-content">
+            <button class="poster-close">&times;</button>
+            <h2>Choose New Banner</h2>
+            <div class="poster-grid" id="bannerReviewGrid"></div>
+            <button id="saveReviewBannerBtn" class="save-button">Save</button>
+        </div>
+    </div>
+</div>
 
 <main class="Hub">
     <!-- Left side: Stacked sidebars -->
