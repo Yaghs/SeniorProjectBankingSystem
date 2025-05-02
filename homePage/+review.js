@@ -30,6 +30,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const reviewSearchInput = document.getElementById("reviewSearch");
     const reviewSuggestions = document.getElementById("reviewSuggestions");
     const watchedDateInput = document.getElementById("watchedDate");
+    const changeBannerBtn = document.getElementById("changeBannerBtn");
 
     if (watchedDateInput) {
         // get today's date in YYYY-MM-DD format
@@ -424,7 +425,6 @@ if (saveBannerBtn) {
     });
 }
 
-
 // event listener for when you press the save button after writing a review
 document.getElementById("saveReview").addEventListener("click", async () => {
     // get user ID from localStorage
@@ -458,7 +458,8 @@ document.getElementById("saveReview").addEventListener("click", async () => {
         liked: liked,
         selectedPoster: selectedPoster, // stores chosen poster
         selectedBanner: selectedBannerUrl, // stores chosen banner
-        timestamp: serverTimestamp() // add timestamp for sorting
+        timestamp: serverTimestamp(), // add timestamp for sorting
+        tmdbId: movie.id
     };
 
     try {
