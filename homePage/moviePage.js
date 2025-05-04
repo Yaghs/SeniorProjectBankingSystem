@@ -1,6 +1,6 @@
 // import firebase dependencies
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getFirestore, doc, setDoc, getDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getFirestore, doc, setDoc, getDoc, getDocs, collection, query, where } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 // our special api key
 const API_KEY = "bc7c4e7c62d9e223e196bbd15978fc51";
 // retrieves selected movie's data from local storage
@@ -39,6 +39,7 @@ document.addEventListener("DOMContentLoaded", () => {
         document.title = movie.title;
         // fetch details on movie based on the movie id
         fetchMovieDetails(movie.id);
+        loadFriendsReviews(movie.title, movie.id);
     } else {
         // if move is not stored in local storage return home
         window.location.href = "homePage.html";
@@ -648,3 +649,71 @@ document.addEventListener("DOMContentLoaded", () => {
         }, 100);
     }
 });
+
+async function loadFriendsReviews(movieTitle, tmdbId) {
+    const currentUser = localStorage.getItem("loggedInUser");
+    console.log("Current User:", currentUser);
+    if (!currentUser) return;
+
+    // Fetch following subcollection instead of treating it like a field
+    const followingSnapshot = await getDocs(collection(db, "users", currentUser, "following"));
+    const following = followingSnapshot.docs.map(doc => doc.id);
+    console.log("Following list:", following);
+
+    const friendsListContainer = document.getElementById("friendsList");
+    const friendsCountDisplay = document.getElementById("friendsCount");
+
+    let count = 0;
+    friendsListContainer.innerHTML = ""; // Clear previous cards
+
+    for (const friend of following) {
+        console.log(`Checking friend: ${friend}`);
+
+        const reviewsRef = collection(db, "users", friend, "reviews");
+        let q = query(reviewsRef, where("tmdbId", "==", tmdbId));
+        const querySnap = await getDocs(q);
+
+        console.log(`Reviews found for ${friend}:`, querySnap.size);
+
+        if (!querySnap.empty) {
+            const reviewData = querySnap.docs[0].data();
+            console.log(`Review data for ${friend}:`, reviewData);
+
+            const friendProfileRef = doc(db, "users", friend);
+            const profileSnap = await getDoc(friendProfileRef);
+            const profilePicture = profileSnap.exists() ? profileSnap.data().profilePicture : "https://via.placeholder.com/60";
+            const rating = reviewData.rating || 0;
+
+            const card = document.createElement("div");
+            card.classList.add("friend-card");
+
+            let starsHtml = "";
+            let fullStars = Math.floor(rating);
+            const hasHalfStar = rating % 1 !== 0;
+
+            for (let i = 0; i < fullStars; i++) {
+                starsHtml += "<i class='bx bxs-star'></i>";
+            }
+            if (hasHalfStar) {
+                starsHtml += "<i class='bx bxs-star-half'></i>";
+            }
+            while (fullStars + (hasHalfStar ? 1 : 0) < 5) {
+                starsHtml += "<i class='bx bx-star'></i>";
+                fullStars++;
+            }
+
+            card.innerHTML = `
+                <img src="${profilePicture}" alt="${friend}">
+                <div class="rating">${starsHtml}</div>
+            `;
+
+            friendsListContainer.appendChild(card);
+            count++;
+        } else {
+            console.log(`${friend} has not reviewed this movie (tmdbId: ${tmdbId}).`);
+        }
+    }
+
+    friendsCountDisplay.textContent = `${count} friend${count !== 1 ? "s" : ""} watched`;
+    console.log(`Total friends who reviewed this movie: ${count}`);
+}

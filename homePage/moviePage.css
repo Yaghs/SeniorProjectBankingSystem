@@ -356,6 +356,13 @@ header {
     color: #56a4f8;
 }
 
+.review-action-column {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
 .review-action-box {
     background: #222;
     padding: 20px;
@@ -433,6 +440,53 @@ header {
     border-bottom: 2px solid #555;
     font-size: 14px;
     transition: color 0.3s ease;
+}
+
+.friends-review {
+    margin-top: -10px;
+    width: 100%;
+}
+
+.friends-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: white;
+    margin-bottom: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+.friends-header h3,
+.friends-header p {
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
+.friends-list {
+    display: grid;
+    grid-template-columns: repeat(4,1fr);
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.friend-card {
+    text-align: center;
+    color: white;
+}
+
+.friend-card img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid white;
+    margin-bottom: 5px;
+    margin-top: 5px;
+}
+
+.friend-card .rating {
+    font-size: 12px;
+    color: white;
 }
 
 .reviewBox {
