@@ -103,13 +103,14 @@ document.getElementById("createSubmit")?.addEventListener('click', async functio
                 username,
                 password,
                 dateJoined: serverTimestamp(),
-                theme: "dark"
+                theme: "dark",
+                profilePicture: "/imgs/blankpfp.webp"
             });
 
             localStorage.setItem("loggedInUser", username);
             clearAll();
             console.log("Redirecting to genreSelection.html");
-            window.location.href = "/genreSelection.html";
+            window.location.href = "/login&create/genreSelection.html";
         } catch (error) {
             console.error("firestore error:", error);
             alert("error saving data");
