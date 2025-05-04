@@ -1,6 +1,6 @@
 // Import Firebase dependencies
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getFirestore, doc, getDoc, getDocs, collection, query, where } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 // Firebase configuration
 const firebaseConfig = {
@@ -78,6 +78,7 @@ async function loadReview() {
 
         // Call function to load the action box
         loadReviewActionBox(movieTitle);
+        loadFriendsReviews(reviewData.title, reviewData.tmdbId);
 
     } else {
         alert("No review found for this movie.");
@@ -289,3 +290,91 @@ closeButtons.forEach(button => {
         reviewSuggestions.style.display = "none";
     });
 });
+
+async function loadFriendsReviews(movieTitle, tmdbId) {
+    const currentUser = localStorage.getItem("loggedInUser");
+    console.log("Current User:", currentUser);
+    if (!currentUser) return;
+
+    // fetch following subcollection
+    const followingSnapshot = await getDocs(collection(db, "users", currentUser, "following"));
+    const following = followingSnapshot.docs.map(doc => doc.id);
+    console.log("Following list:", following);
+
+    const friendsListContainer = document.getElementById("friendsList");
+    const friendsCountDisplay = document.getElementById("friendsCount");
+
+    let count = 0;
+    friendsListContainer.innerHTML = ""; // Clear previous cards
+
+    for (const friend of following) {
+        console.log(`Checking friend: ${friend}`);
+
+        // query friend's reviews for this movie
+        const reviewsRef = collection(db, "users", friend, "reviews");
+        let q = query(reviewsRef, where("tmdbId", "==", tmdbId));
+        const querySnap = await getDocs(q);
+
+        console.log(`Reviews found for ${friend}:`, querySnap.size);
+
+        if (!querySnap.empty) {
+            const reviewData = querySnap.docs[0].data();
+            console.log(`Review data for ${friend}:`, reviewData);
+
+            // fetch friend’s profile
+            const friendProfileRef = doc(db, "users", friend);
+            const profileSnap = await getDoc(friendProfileRef);
+
+            let profilePicture = "https://via.placeholder.com/60";
+            let displayName = friend; // fallback to username
+
+            if (profileSnap.exists()) {
+                const profileData = profileSnap.data();
+                profilePicture = profileData.profilePicture || profilePicture;
+                displayName = profileData.firstName || friend;
+            }
+
+            const rating = reviewData.rating || 0;
+
+            // create star icons for rating
+            let starsHtml = "";
+            let fullStars = Math.floor(rating);
+            const hasHalfStar = rating % 1 !== 0;
+
+            for (let i = 0; i < fullStars; i++) {
+                starsHtml += "<i class='bx bxs-star'></i>";
+            }
+            if (hasHalfStar) {
+                starsHtml += "<i class='bx bxs-star-half'></i>";
+            }
+            while (fullStars + (hasHalfStar ? 1 : 0) < 5) {
+                starsHtml += "<i class='bx bx-star'></i>";
+                fullStars++;
+            }
+
+            const card = document.createElement("div");
+            card.classList.add("friend-card");
+            card.innerHTML = `
+                <div class="friend-info">
+                    <img src="${profilePicture}" alt="${displayName}" class="friend-profile-pic">
+                    <span class="friend-name">${displayName}</span>
+                    <div class="rating">${starsHtml}</div>
+                </div>
+            `;
+
+            // click event to go to their review
+            card.querySelector("img").addEventListener("click", () => {
+                const url = `viewOtherReviewPage.html?user=${friend}&movie=${encodeURIComponent(movieTitle)}`;
+                window.location.href = url;
+            });
+
+            friendsListContainer.appendChild(card);
+            count++;
+        } else {
+            console.log(`${friend} has not reviewed this movie (tmdbId: ${tmdbId}).`);
+        }
+    }
+
+    friendsCountDisplay.textContent = `${count} friend${count !== 1 ? "s" : ""} watched`;
+    console.log(`Total friends who reviewed this movie: ${count}`);
+}

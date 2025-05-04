@@ -655,7 +655,7 @@ async function loadFriendsReviews(movieTitle, tmdbId) {
     console.log("Current User:", currentUser);
     if (!currentUser) return;
 
-    // Fetch following subcollection instead of treating it like a field
+    // fetch following subcollection
     const followingSnapshot = await getDocs(collection(db, "users", currentUser, "following"));
     const following = followingSnapshot.docs.map(doc => doc.id);
     console.log("Following list:", following);
@@ -669,6 +669,7 @@ async function loadFriendsReviews(movieTitle, tmdbId) {
     for (const friend of following) {
         console.log(`Checking friend: ${friend}`);
 
+        // query friend's reviews for this movie
         const reviewsRef = collection(db, "users", friend, "reviews");
         let q = query(reviewsRef, where("tmdbId", "==", tmdbId));
         const querySnap = await getDocs(q);
@@ -679,14 +680,22 @@ async function loadFriendsReviews(movieTitle, tmdbId) {
             const reviewData = querySnap.docs[0].data();
             console.log(`Review data for ${friend}:`, reviewData);
 
+            // fetch friend’s profile
             const friendProfileRef = doc(db, "users", friend);
             const profileSnap = await getDoc(friendProfileRef);
-            const profilePicture = profileSnap.exists() ? profileSnap.data().profilePicture : "https://via.placeholder.com/60";
+
+            let profilePicture = "https://via.placeholder.com/60";
+            let displayName = friend; // fallback to username
+
+            if (profileSnap.exists()) {
+                const profileData = profileSnap.data();
+                profilePicture = profileData.profilePicture || profilePicture;
+                displayName = profileData.firstName || friend;
+            }
+
             const rating = reviewData.rating || 0;
 
-            const card = document.createElement("div");
-            card.classList.add("friend-card");
-
+            // create star icons for rating
             let starsHtml = "";
             let fullStars = Math.floor(rating);
             const hasHalfStar = rating % 1 !== 0;
@@ -702,10 +711,21 @@ async function loadFriendsReviews(movieTitle, tmdbId) {
                 fullStars++;
             }
 
+            const card = document.createElement("div");
+            card.classList.add("friend-card");
             card.innerHTML = `
-                <img src="${profilePicture}" alt="${friend}">
-                <div class="rating">${starsHtml}</div>
+                <div class="friend-info">
+                    <img src="${profilePicture}" alt="${displayName}" class="friend-profile-pic">
+                    <span class="friend-name">${displayName}</span>
+                    <div class="rating">${starsHtml}</div>
+                </div>
             `;
+
+            // click event to go to their review
+            card.querySelector("img").addEventListener("click", () => {
+                const url = `viewOtherReviewPage.html?user=${friend}&movie=${encodeURIComponent(movieTitle)}`;
+                window.location.href = url;
+            });
 
             friendsListContainer.appendChild(card);
             count++;

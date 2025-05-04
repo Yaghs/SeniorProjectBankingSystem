@@ -66,30 +66,39 @@
                 </div>
 
             </div>
-            <div class="review-action-box">
-                <div class="review-icons">
-                    <span id="reviewedIcon" class="icon">
-                        <i class='bx bx-show'></i>
-                        <div class="icon-label" id="watchedLabel">Watch</div>
-                    </span>
-                    <span id="likedIcon" class="icon">
-                        <i class='bx bx-heart'></i>
-                        <div class="icon-label" id="likedLabel">Like</div>
-                    </span>
-                    <span id="watchlistIcon" class="icon">
-                        <i class='bx bx-plus'></i>
-                        <div class="icon-label">Watchlist</div>
-                    </span>
+            <div class="review-action-column">
+                <div class="review-action-box">
+                    <div class="review-icons">
+                        <span id="reviewedIcon" class="icon">
+                                <i class='bx bx-show'></i>
+                                <div class="icon-label" id="watchedLabel">Watch</div>
+                        </span>
+                        <span id="likedIcon" class="icon">
+                                <i class='bx bx-heart'></i>
+                                <div class="icon-label" id="likedLabel">Like</div>
+                        </span>
+                        <span id="watchlistIcon" class="icon">
+                                <i class='bx bx-plus'></i>
+                                <div class="icon-label">Watchlist</div>
+                        </span>
+                    </div>
+                    <p id="ratingLabel" class="rating-label">Rate</p>
+                    <p id="ratingDisplay" class="rating-stars">
+                        <span class="rating-star" data-value="1"><i class='bx bx-star'></i></span>
+                        <span class="rating-star" data-value="2"><i class='bx bx-star'></i></span>
+                        <span class="rating-star" data-value="3"><i class='bx bx-star'></i></span>
+                        <span class="rating-star" data-value="4"><i class='bx bx-star'></i></span>
+                        <span class="rating-star" data-value="5"><i class='bx bx-star'></i></span>
+                    </p>
+                    <span id="editReviewBtn" class="edit-review-btn">Edit Review</span>
                 </div>
-                <p id="ratingLabel" class="rating-label">Rate</p>
-                <p id="ratingDisplay" class="rating-stars">
-                    <span class="rating-star" data-value="1"><i class='bx bx-star'></i></span>
-                    <span class="rating-star" data-value="2"><i class='bx bx-star'></i></span>
-                    <span class="rating-star" data-value="3"><i class='bx bx-star'></i></span>
-                    <span class="rating-star" data-value="4"><i class='bx bx-star'></i></span>
-                    <span class="rating-star" data-value="5"><i class='bx bx-star'></i></span>
-                </p>
-                <span id="viewReviewBtn" class="view-review-btn">View Review</span>
+                <div class="friends-review">
+                    <div class="friends-header">
+                        <h3>Your Friends</h3>
+                        <p id="friendsCount">0 Watched</p>
+                    </div>
+                    <div class="friends-list" id="friendsList"></div>
+                </div>
             </div>
             <div id="reviewBox" class="reviewBox">
                 <div class="reviewBoxContainer" id="reviewSearchPage">

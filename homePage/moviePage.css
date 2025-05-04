@@ -363,6 +363,7 @@ header {
     flex-direction: column;
     align-items: center;
     gap: 20px;
+    flex: 0 0 250px;
 }
 
 .review-action-box {
@@ -482,8 +483,18 @@ header {
     border-radius: 50%;
     object-fit: cover;
     border: 2px solid white;
-    margin-bottom: 5px;
     margin-top: 5px;
+}
+
+.friend-profile-pic {
+    cursor: pointer;
+    border-radius: 50%;
+    transition: transform 0.2s;
+}
+
+.friend-profile-pic:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 5px #fff;
 }
 
 .friend-card .rating {
