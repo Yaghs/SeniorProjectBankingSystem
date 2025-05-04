@@ -88,6 +88,7 @@ header {
 
 /* SUGGESTIONS BOX */
 #suggestions {
+    font-family: 'Jura', sans-serif;
     width: 20%;
     height: 35%;
     margin: 0 auto;
@@ -115,6 +116,7 @@ header {
 }
 
 #searchCategory {
+    font-family: 'Jura', sans-serif;
     padding: 5px;
     font-size: 14px;
     border-radius: 4px;

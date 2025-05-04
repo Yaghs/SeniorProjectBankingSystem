@@ -94,6 +94,7 @@ header {
 }
 
 #suggestions {
+    font-family: 'Jura', sans-serif;
     width: 20%;
     height: 50%;
     margin: 0 auto;
@@ -122,6 +123,7 @@ header {
 }
 
 #searchCategory {
+    font-family: 'Jura', sans-serif;
     padding: 5px;
     font-size: 14px;
     border-radius: 4px;
@@ -335,6 +337,7 @@ header {
 }
 
 #reviewMovieYear {
+    font-family: 'Jura', sans-serif;
     color: #aaa;
     margin-left: 10px;
     font-size: 22px;
@@ -358,6 +361,7 @@ header {
 }
 
 #watchedDate {
+    font-family: 'Jura', sans-serif;
     background-color: white;
     color: black;
     border: none;
@@ -367,6 +371,7 @@ header {
 }
 
 #reviewText {
+    font-family: 'Jura', sans-serif;
     width: 87%;
     height: 150px;
     background-color: #e9ecf1;
@@ -416,6 +421,7 @@ header {
 }
 
 #reviewTags {
+    font-family: 'Jura', sans-serif;
     width: 95%;
     padding: 8px;
     border-radius: 4px;
@@ -648,6 +654,7 @@ h1 {
 
 /* Search input in sidebar */
 #searchfriends {
+    font-family: 'Jura', sans-serif;
     padding: 10px;
     border: 1px solid #444;
     border-radius: 5px;
@@ -701,6 +708,7 @@ h1 {
 }
 
 #messageInput {
+    font-family: 'Jura', sans-serif;
     background: #333;
     flex: 1;
     padding: 12px 15px;

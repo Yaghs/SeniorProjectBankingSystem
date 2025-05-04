@@ -94,6 +94,7 @@ header {
 }
 
 #suggestions {
+    font-family: 'Jura', sans-serif;
     width: 20%;
     height: 50%;
     margin: 0 auto;
@@ -121,6 +122,7 @@ header {
 }
 
 #searchCategory {
+    font-family: 'Jura', sans-serif;
     padding: 5px;
     font-size: 14px;
     border-radius: 4px;
@@ -147,6 +149,7 @@ header {
 }
 
 #sortDropdown {
+    font-family: 'Jura', sans-serif;
     padding: 5px;
     font-size: 16px;
     background: white;
@@ -171,6 +174,7 @@ h2 {
 }
 
 #movieGrid {
+    font-family: 'Jura', sans-serif;
     display: grid;
     grid-template-columns: repeat(7, 1fr);
     gap: 15px;
@@ -406,6 +410,7 @@ h2 {
 }
 
 #reviewMovieYear {
+    font-family: 'Jura', sans-serif;
     color: #aaa;
     margin-left: 10px;
     font-size: 22px;
@@ -429,6 +434,7 @@ h2 {
 }
 
 #watchedDate {
+    font-family: 'Jura', sans-serif;
     background-color: white;
     color: black;
     border: none;
@@ -438,6 +444,7 @@ h2 {
 }
 
 #reviewText {
+    font-family: 'Jura', sans-serif;
     width: 87%;
     height: 150px;
     background-color: #e9ecf1;
@@ -487,6 +494,7 @@ h2 {
 }
 
 #reviewTags {
+    font-family: 'Jura', sans-serif;
     width: 95%;
     padding: 8px;
     border-radius: 4px;

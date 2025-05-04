@@ -1,5 +1,5 @@
 body {
-    font-family: 'Jura',Arial, sans-serif;
+    font-family: 'Jura', Arial, sans-serif;
     margin: 0;
     padding: 0;
     background: #181818;
@@ -92,6 +92,7 @@ header {
 }
 
 #suggestions {
+    font-family: 'Jura', sans-serif;
     width: 20%;
     height: 50%;
     margin: 0 auto;
@@ -120,6 +121,7 @@ header {
 }
 
 #searchCategory {
+    font-family: 'Jura', sans-serif;
     padding: 5px;
     font-size: 14px;
     border-radius: 4px;

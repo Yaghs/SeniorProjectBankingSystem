@@ -93,6 +93,7 @@ header {
 
 /* SUGGESTIONS BOX */
 #suggestions {
+    font-family: 'Jura', sans-serif;
     width: 20%;
     height: 375%;
     margin: 0 auto;
@@ -121,6 +122,7 @@ header {
 }
 
 #searchCategory {
+    font-family: 'Jura', sans-serif;
     padding: 5px;
     font-size: 14px;
     border-radius: 4px;
@@ -621,6 +623,7 @@ footer {
 }
 
 #reviewMovieYear {
+    font-family: 'Jura', sans-serif;
     color: #aaa;
     margin-left: 10px;
     font-size: 22px;
@@ -644,6 +647,7 @@ footer {
 }
 
 #watchedDate {
+    font-family: 'Jura', sans-serif;
     background-color: white;
     color: black;
     border: none;
@@ -653,6 +657,7 @@ footer {
 }
 
 #reviewText {
+    font-family: 'Jura', sans-serif;
     width: 87%;
     height: 150px;
     background-color: #e9ecf1;
@@ -702,6 +707,7 @@ footer {
 }
 
 #reviewTags {
+    font-family: 'Jura', sans-serif;
     width: 95%;
     padding: 8px;
     border-radius: 4px;
@@ -875,6 +881,7 @@ footer {
 /*FEATURE FOR LOGGING OUT */
 .logged-out-message {
     color: #ccc;
+    font-family: 'Jura', sans-serif;
     font-size: 1.2rem;
     margin-top: 15px;
     text-align: center;

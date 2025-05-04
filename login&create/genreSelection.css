@@ -1,5 +1,5 @@
 body {
-  font-family: 'Jura',sans-serif;
+  font-family: 'Jura', sans-serif;
   background-color: #c4fdc4;
   display: flex;
   flex-direction: column;
@@ -33,6 +33,7 @@ body {
 }
 
 #submitGenres {
+  font-family: 'Jura', sans-serif;
   font-size: 1.5em;
   padding: 10px 20px;
   margin-top: 20px;

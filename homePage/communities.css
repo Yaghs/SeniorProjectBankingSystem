@@ -92,6 +92,7 @@ header {
 }
 
 #suggestions {
+    font-family: 'Jura', sans-serif;
     width: 20%;
     height: 50%;
     margin: 0 auto;
