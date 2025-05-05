@@ -110,6 +110,7 @@ header {
     right: 30px;
     overflow: hidden;
     color: black;
+    z-index: 1000;
 }
 
 .suggestion {
