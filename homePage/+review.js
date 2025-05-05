@@ -452,7 +452,7 @@ document.getElementById("saveReview").addEventListener("click", async () => {
         title: movieTitle,
         year: movie.release_date ? movie.release_date.split("-")[0] : "Unknown",
         watchedDate: watchedDate || "Not Provided", // default if no date applied
-        watchedBefore: watchedBefore,
+        watchedBefore: true,
         reviewText: reviewText || "", // if review text is empty, store empty string
         rating: rating || 0, // default rating if nothing is selected
         liked: liked,
