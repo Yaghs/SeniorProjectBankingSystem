@@ -76,6 +76,7 @@ header {
 }
 
 .right input[type="text"] {
+    font-family: 'Jura', sans-serif;
     padding: 5px 10px;
     font-size: 16px;
     border: 1px solid #ccc;
