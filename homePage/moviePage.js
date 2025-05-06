@@ -39,6 +39,7 @@ document.addEventListener("DOMContentLoaded", () => {
         document.title = movie.title;
         // fetch details on movie based on the movie id
         fetchMovieDetails(movie.id);
+        loadOverallRatings(movie.id);
         loadFriendsReviews(movie.title, movie.id);
     } else {
         // if move is not stored in local storage return home
@@ -736,4 +737,57 @@ async function loadFriendsReviews(movieTitle, tmdbId) {
 
     friendsCountDisplay.textContent = `${count} friend${count !== 1 ? "s" : ""} watched`;
     console.log(`Total friends who reviewed this movie: ${count}`);
+}
+
+async function loadOverallRatings(tmdbId) {
+    const ratingsCount = Array(10).fill(0);
+    let totalScore = 0;
+    let totalRatings = 0;
+
+    const usersSnap = await getDocs(collection(db, "users"));
+
+    for (const userDoc of usersSnap.docs) {
+        const userId = userDoc.id;
+        const reviewRef = collection(db, "users", userId, "reviews");
+        const q = query(reviewRef, where("tmdbId", "==", tmdbId));
+        const reviewSnap = await getDocs(q);
+
+        if (!reviewSnap.empty) {
+            const rating = reviewSnap.docs[0].data().rating || 0;
+            if (rating > 0) {
+                const index = Math.round(rating * 2) - 1;
+                ratingsCount[index]++;
+                totalScore += rating;
+                totalRatings++;
+            }
+        }
+    }
+
+    const average = totalRatings > 0 ? (totalScore / totalRatings).toFixed(1) : "0.0";
+    document.getElementById("averageScore").textContent = average;
+    document.getElementById("user-rating-number").textContent = `${totalRatings} Fan${totalRatings === 1 ? "" : "s"}`;
+
+    // Generate histogram
+    const chart = document.getElementById("ratingChart");
+    chart.innerHTML = "";
+
+    const max = Math.max(...ratingsCount);
+    ratingsCount.forEach((count, i) => {
+        const bar = document.createElement("div");
+        bar.className = "rating-bar";
+        const height = max > 0 ? (count / max) * 100 : 0;
+        bar.style.height = `${height}%`;
+
+        // Tooltip logic
+        const starValue = (i + 1) / 2;
+        const fullStars = Math.floor(starValue);
+        const hasHalf = starValue % 1 !== 0;
+        let stars = "";
+        for (let j = 0; j < fullStars; j++) stars += "★";
+        if (hasHalf) stars += "½";
+
+        bar.setAttribute("data-tooltip", `${count} ${stars} rating${count === 1 ? "" : "s"}`);
+
+        chart.appendChild(bar);
+    });
 }

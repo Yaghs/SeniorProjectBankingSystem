@@ -446,8 +446,98 @@ header {
     transition: color 0.3s ease;
 }
 
-.friends-review {
+.movie-overall-rating {
     margin-top: -10px;
+    width: 100%;
+}
+
+.movie-overall-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: white;
+    margin-bottom: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+.movie-overall-header h3,
+.movie-overall-header p {
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
+.rating-chart {
+    display: flex;
+    align-items: flex-end;
+    gap: 6px;
+    height: 60px;
+    margin-top: -25px;
+}
+
+.rating-bar {
+    width: 100%;
+    background-color: #485066;
+    position: relative;
+    margin: 0 2px;
+    border-radius: 3px;
+    transition: transform 0.2s;
+}
+
+.rating-bar:hover {
+    transform: scale(1.05);
+    z-index: 5;
+}
+
+.rating-bar::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    top: -35px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #2b2f3a;
+    color: #fff;
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+    z-index: 10;
+}
+
+.rating-bar:hover::after {
+    opacity: 1;
+}
+
+.rating-scale {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #7dd17d;
+    font-size: 16px;
+    padding: 0 2px;
+    margin-bottom: 15px;
+    margin-top: 5px;
+}
+.rating-scale i:first-child {
+    margin-right: auto;
+}
+.rating-scale i:last-child {
+    margin-left: auto;
+}
+
+.avg-score {
+    display: flex;
+    justify-content: end;
+    font-size: 2em;
+    font-weight: bold;
+    color: #cfcfcf;
+    margin-top: 5px;
+}
+
+.friends-review {
+    margin-top: -30px;
     width: 100%;
 }
 
