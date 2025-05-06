@@ -632,7 +632,7 @@ async function showMessageRequest(currentUser){
         acceptBtn.onclick = async () => {
             await acceptRequest(currentUser, otherUser);
             alert(`Accepted message from ${otherUser}`);
-            showMessageRequest(currentUser); // refresh list
+             requestDiv.remove()
         };
 
         const denyBtn = document.createElement("button");
