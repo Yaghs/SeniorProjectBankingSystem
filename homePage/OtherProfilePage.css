@@ -329,15 +329,15 @@ header {
     padding: 5px 12px;
     border-radius: 5px;
     border: none;
-    background-color: #444;
-    color: white;
+    background-color: yellow;
+    color: black;
     cursor: pointer;
     text-align: center;
     transition: background-color 0.3s ease;
     margin-top: 10px;
 }
 .dm:hover {
-    background-color: yellow;
+    background-color: #f87204;
     color: black;
 }
 
@@ -831,4 +831,22 @@ body.dark-mode {
     color: #ffffff;
 }
 
+body.light-mode .username_display h1 {
+    color: #0e0e0e;
+}
 
+body.light-mode .bio-display{
+    color: #0e0e0e;
+}
+
+body.light-mode .Fav_movies h1{
+    color: #0e0e0e;
+}
+
+body.light-mode .recentMovies h1{
+    color: #0e0e0e;
+}
+
+body.light-mode .bx{
+    color: #0e0e0e;
+}
