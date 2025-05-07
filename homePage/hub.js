@@ -368,13 +368,12 @@ async function searchUsers(searchTerm) {
                 firstName.includes(searchTerm) ||
                 lastName.includes(searchTerm)) {
                 const blocked =  getDoc(doc(db, "users", otherUser, "blocked", currentUser)) //if other user blocked you cant search them
-                if(!blocked.exists()) {
+
                     matchingUsers.push({
                         id: doc.id,
                         data: userData
                     });
                 }
-            }
         });
 
         console.log("Found matching users:", matchingUsers.length); // Debug message
