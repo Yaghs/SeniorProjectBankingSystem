@@ -1,5 +1,6 @@
 import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-firestore.js";
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-app.js";
+import { deleteDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-firestore.js";
 
 // 🔧 Firebase Config
 const firebaseConfig = {
@@ -68,7 +69,7 @@ document.getElementById('cancelSignOut')?.addEventListener('click', function () 
 });
 
 document.getElementById('confirmSignOut')?.addEventListener('click', function () {
-  window.location.href = "../login&create/login&create.html";
+  window.location.href = "../login&create/index.html";
 });
 
 (async function () {
@@ -109,4 +110,65 @@ document.getElementById('confirmSignOut')?.addEventListener('click', function ()
     console.log("Applied theme:", theme);
   }
 })();
+// Handle Delete Account
+document.getElementById("DeleteAccount")?.addEventListener("click", async function () {
+  const confirmed = confirm("Are you sure you want to delete your account? This action is irreversible.");
+  if (!confirmed) return;
 
+  const username = localStorage.getItem("loggedInUser");
+  if (!username) {
+    alert("User not logged in.");
+    return;
+  }
+
+  try {
+    // Delete subcollections (e.g., genres)
+    const genresSnap = await getDocs(collection(db, "users", username, "genres"));
+    for (const genreDoc of genresSnap.docs) {
+      await deleteDoc(doc(db, "users", username, "genres", genreDoc.id));
+    }
+
+    // Delete main user document
+    await deleteDoc(doc(db, "users", username));
+
+    // Clear local storage
+    localStorage.removeItem("loggedInUser");
+
+    alert("Your account has been deleted.");
+    window.location.href = "../login&create/login&create.html";
+  } catch (error) {
+    console.error("Error deleting account:", error);
+    alert("An error occurred while deleting your account. Please try again.");
+  }
+});
+
+// Handle Delete Account
+document.getElementById("DeleteAccount")?.addEventListener("click", async function () {
+  const confirmed = confirm("Are you sure you want to delete your account? This action is irreversible.");
+  if (!confirmed) return;
+
+  const username = localStorage.getItem("loggedInUser");
+  if (!username) {
+    alert("User not logged in.");
+    return;
+  }
+
+  try {
+    const genresSnap = await getDocs(collection(db, "users", username, "genres"));
+    for (const genreDoc of genresSnap.docs) {
+      await deleteDoc(doc(db, "users", username, "genres", genreDoc.id));
+    }
+
+    // Delete main user document
+    await deleteDoc(doc(db, "users", username));
+
+    // Clear local storage
+    localStorage.removeItem("loggedInUser");
+
+    alert("Your account has been deleted.");
+    window.location.href = "../login&create/index.html";
+  } catch (error) {
+    console.error("Error deleting account:", error);
+    alert("An error occurred while deleting your account. Please try again.");
+  }
+});
