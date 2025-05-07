@@ -350,6 +350,7 @@ async function searchUsers(searchTerm) {
         const usersRef = collection(db, "users");
         const usersSnap = await getDocs(usersRef);
 
+
         // Filter users by search term
         const matchingUsers = [];
 
@@ -366,10 +367,13 @@ async function searchUsers(searchTerm) {
             if (username.includes(searchTerm) ||
                 firstName.includes(searchTerm) ||
                 lastName.includes(searchTerm)) {
-                matchingUsers.push({
-                    id: doc.id,
-                    data: userData
-                });
+                const blocked =  getDoc(doc(db, "users", otherUser, "blocked", currentUser)) //if other user blocked you cant search them
+                if(!blocked.exists()) {
+                    matchingUsers.push({
+                        id: doc.id,
+                        data: userData
+                    });
+                }
             }
         });
 
@@ -534,6 +538,8 @@ async function checkUser(currentUser,otherUser){
     const followDoc = await getDoc(doc(db, "users", otherUser));
     const messageAccessDoc = await getDoc(doc(db, "messageAccess", currentUser));
 
+    const blocked = await getDoc(doc(db, "users", otherUser, "blocked", currentUser)) //if other user blocked you cant search them
+
     const hasAccess = messageAccessDoc.exists() && messageAccessDoc.data()[otherUser] === true;
 
     if (hasAccess) {
@@ -545,6 +551,9 @@ async function checkUser(currentUser,otherUser){
         if (follow.following && follow.following.includes(currentUser)) {
             return true;
         }
+    }
+    if(blocked.exists()){
+        return false
     }
 
     return false;
