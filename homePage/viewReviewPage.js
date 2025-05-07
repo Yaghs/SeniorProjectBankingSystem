@@ -1,6 +1,6 @@
 // Import Firebase dependencies
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getFirestore, doc, getDoc, getDocs, collection, query, where } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getFirestore, doc, getDoc, getDocs, collection, query, where, addDoc, serverTimestamp, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 // Firebase configuration
 const firebaseConfig = {
@@ -31,6 +31,12 @@ if (!movie) {
     alert("No movie selected.");
     window.location.href = "homePage.html";
 }
+const movieTitle = movie.title;
+// globally defined at top of script
+let selectedRating = 0;
+let selectedBannerUrl = "";
+let selectedPosterUrl = "";
+let wasLiked = false;
 
 // Function to fetch and display review
 async function loadReview() {
@@ -147,58 +153,51 @@ async function loadReviewActionBox(movieTitle) {
 
             // event listener for when edit review is clicked
             document.getElementById("editReviewBtn").addEventListener("click", async () => {
-                // fetch info from db
                 try {
-                    // gets selected movie from localStorage
                     const movie = JSON.parse(localStorage.getItem("selectedMovie"));
-                    // get logged in user from localStorage
                     const user = localStorage.getItem("loggedInUser");
 
-                    // if none exist, exit
                     if (!user || !movie) return;
 
-                    // firebase reference for movie review
                     const reviewRef = doc(db, "users", user, "reviews", movie.title);
-                    // fetches review document
                     const reviewSnap = await getDoc(reviewRef);
 
-                    // if review doc exists
                     if (reviewSnap.exists()) {
-                        // populate with data
                         const reviewData = reviewSnap.data();
+
+                        // update localStorage with latest selected movie info
                         localStorage.setItem("selectedMovie", JSON.stringify({
                             id: reviewData.tmdbId,
                             title: reviewData.title,
                             release_date: reviewData.year ? `${reviewData.year}-01-01` : ""
                         }));
 
-                        // loads saved review text, watched date, watched before, selected poster and liked status
+                        // Open the review form modal
+                        document.getElementById("reviewBox").style.display = "flex";
+                        document.getElementById("reviewSearchPage").style.display = "none";
+                        document.getElementById("reviewForm").style.display = "block";
+
+                        // populate UI fields
                         document.getElementById("reviewText").value = reviewData.reviewText || "";
                         document.getElementById("watchedDate").value = reviewData.watchedDate || "";
                         document.getElementById("watchedBeforeCheckbox").checked = reviewData.watchedBefore || false;
                         document.getElementById("reviewMoviePoster").src = reviewData.selectedPoster || "https://via.placeholder.com/300?text=No+Image";
-                        document.getElementById("likeButton").classList.toggle("liked", reviewData.liked);
 
-                        const userRating = reviewData.rating;
-                        // Math.floor determines number of full stars
-                        const fullStars = Math.floor(userRating);
-                        // userRating % 1 !=0 checks if rating includes half a star
-                        const hasHalfStar = userRating % 1 !== 0;
+                        selectedRating = reviewData.rating || 0;
+                        selectedBannerUrl = reviewData.selectedBanner || "";
+                        selectedPosterUrl = reviewData.selectedPoster || "";
+                        wasLiked = reviewData.liked || false;
 
-                        // ensure stars in review match saved rating
-                        document.querySelectorAll("#reviewForm .rating-container .rating-star i").forEach((star, index) => {
-                            if (index < fullStars) {
-                                star.className = "bx bxs-star"; // full star
-                            } else if (hasHalfStar && index === fullStars) {
-                                star.className = "bx bxs-star-half"; // half star
-                            } else {
-                                star.className = "bx bx-star"; // empty star
-                            }
-                        });
-                        // displays review form for editing
-                        document.getElementById("reviewBox").style.display = "flex";
-                        document.getElementById("reviewSearchPage").style.display = "none";
-                        document.getElementById("reviewForm").style.display = "block";
+                        // update like button visually
+                        const likeButton = document.getElementById("likeButton");
+                        if (wasLiked) {
+                            likeButton.classList.add("liked");
+                        } else {
+                            likeButton.classList.remove("liked");
+                        }
+
+                        // display correct stars based on stored rating
+                        updateStarsDisplay();
 
                         setupPosterAndBannerButtons();
                     } else {
@@ -289,6 +288,70 @@ closeButtons.forEach(button => {
         reviewSearchPage.style.display = "block";
         reviewSuggestions.style.display = "none";
     });
+});
+
+async function loadComments() {
+    const container = document.getElementById("commentsContainer");
+    container.innerHTML = ""; // Clear existing
+
+    const commentRef = collection(db, "users", username, "reviews", movieTitle, "comments");
+    const q = query(commentRef, orderBy("timestamp", "asc"));
+    const snap = await getDocs(q);
+
+    snap.forEach(docSnap => {
+        const data = docSnap.data();
+        const commentDiv = document.createElement("div");
+        commentDiv.className = "comment";
+        const currentUser = localStorage.getItem("loggedInUser");
+        const isCurrentUser = data.authorId === currentUser;
+
+        commentDiv.innerHTML = `
+          <span class="comment-author" role="button" onclick="visitUserProfile('${data.authorId}', ${isCurrentUser})">
+            ${data.authorFirstName}
+          </span>
+          <span class="comment-text">${data.comment}</span>
+        `;
+
+        container.appendChild(commentDiv);
+    });
+}
+
+window.visitUserProfile = function (userID, isCurrentUser = false) {
+    if (isCurrentUser) {
+        window.location.href = "ProfilePage.html";
+    } else {
+        window.location.href = `OtherProfilePage.html?user=${encodeURIComponent(userID)}`;
+    }
+};
+
+
+document.getElementById("postCommentBtn").addEventListener("click", async () => {
+    const commentText = document.getElementById("commentInput").value.trim();
+    if (!commentText) return;
+
+    const currentUser = localStorage.getItem("loggedInUser");
+    if (!currentUser) return alert("You must be logged in to comment.");
+
+    try {
+        const currentUserSnap = await getDoc(doc(db, "users", currentUser));
+        const commenterFirstName = currentUserSnap.exists() ? currentUserSnap.data().firstName : currentUser;
+
+        const commentRef = collection(db, "users", username, "reviews", movieTitle, "comments");
+
+        await addDoc(commentRef, {
+            authorId: currentUser,
+            authorFirstName: commenterFirstName,
+            comment: commentText,
+            timestamp: serverTimestamp()
+        });
+
+        document.getElementById("commentInput").value = "";
+        await loadComments();
+
+    } catch (err) {
+        console.error("Error posting comment:", err);
+        alert("Could not post comment.");
+    }
 });
 
 async function loadFriendsReviews(movieTitle, tmdbId) {
