@@ -198,7 +198,7 @@ function showContactAdminsOption() {
 // --- Show Initial Welcome Message when page loads ---
 document.addEventListener("DOMContentLoaded", function () {
     addMessage(
-        "Hi! Welcome to the Help Center page of the PlotTwist website. How can I help you today? (Please note: if you wish to speak to an admin, please type 'I want to speak to an admin')",
+        "Hi! Welcome to the Help Center page of the PlotTwist website. How can I help you today?')",
         "bot-message"
     );
 });

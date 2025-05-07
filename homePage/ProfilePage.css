@@ -989,3 +989,11 @@ body.dark-mode .following_info {
 body.light-mode .following_info {
     color: black;
 }
+
+body.light-mode .bio-display{
+    color: #0e0e0e;
+}
+
+body.light-mode .review-icons{
+    color: #0e0e0e;
+}

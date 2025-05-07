@@ -16,7 +16,7 @@ header {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
     position: sticky;
     top: 0;
-    z-index: 200;
+    z-index: 10;
 }
 
 .left h1 {
@@ -633,7 +633,7 @@ header {
 
 body.light-mode {
     background-color: #ffffff;
-    color: #000000;
+    color: #ffffff;
 }
 
 body.dark-mode {
@@ -725,4 +725,8 @@ body.light-mode .genre-tag {
 body.dark-mode .genre-tag {
     background-color: #333;
     color: white;
+}
+
+body.light-mode .community-name{
+    color: #0e0e0e;
 }
