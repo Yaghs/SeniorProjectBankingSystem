@@ -123,12 +123,13 @@ document.addEventListener("DOMContentLoaded", function () {
     document.addEventListener("click", function (e) {
         if (e.target.classList.contains("sign-out")) {
             e.preventDefault();
-            localStorage.removeItem("loggedInUser");
-            location.reload();
+            localStorage.clear();
+            window.location.replace("/login&create/index.html"); // no back access
         }
     });
 
     // Restrict review button if not logged in
+    // REMOVE IF IT DOESNT WORK
     const reviewBtn = document.getElementById("reviewBtn");
     if (reviewBtn) {
         reviewBtn.addEventListener("click", () => {
@@ -895,5 +896,9 @@ document.addEventListener("DOMContentLoaded", function () {
             badge.remove();
         }
     }
+
+
+
+
 });
 

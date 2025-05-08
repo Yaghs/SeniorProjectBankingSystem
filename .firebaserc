@@ -1,8 +1,5 @@
 {
   "projects": {
-    "default": "plottwistsp",
-    "PlotTwistSP": "plottwistsp"
-  },
-  "targets": {},
-  "etags": {}
+    "default": "sample-dc6d0"
+  }
 }
