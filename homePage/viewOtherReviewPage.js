@@ -97,6 +97,17 @@ async function loadReview() {
     }
 }
 
+const usernameSpan = document.getElementById("reviewUsername");
+usernameSpan.addEventListener("click", () => {
+    // navigate to profile page
+    const isCurrentUser = username === localStorage.getItem("loggedInUser");
+    if (isCurrentUser) {
+        window.location.href = "ProfilePage.html";
+    } else {
+        window.location.href = `OtherProfilePage.html?user=${encodeURIComponent(username)}`;
+    }
+});
+
 // Load the review when the page loads
 document.addEventListener("DOMContentLoaded", loadReview);
 

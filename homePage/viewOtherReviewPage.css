@@ -169,6 +169,14 @@ header {
     position: relative;
 }
 
+#reviewUsername {
+    cursor: pointer;
+}
+
+#reviewUsername:hover {
+    color: #56a4f8;
+}
+
 .review-container {
     display: flex;
     justify-content: center;
