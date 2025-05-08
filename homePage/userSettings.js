@@ -59,17 +59,28 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 
-document.getElementById('logOut')?.addEventListener('click', function (e) {
+
+document.getElementById("logOut")?.addEventListener("click", function (e) {
   e.preventDefault();
-  document.getElementById('signOutModal').style.display = 'block';
+  document.getElementById("signOutModal").style.display = "block";
 });
 
-document.getElementById('cancelSignOut')?.addEventListener('click', function () {
-  document.getElementById('signOutModal').style.display = 'none';
+document.getElementById("cancelSignOut")?.addEventListener("click", function () {
+  document.getElementById("signOutModal").style.display = "none";
 });
 
-document.getElementById('confirmSignOut')?.addEventListener('click', function () {
-  window.location.href = "../login&create/index.html";
+document.getElementById("confirmSignOut")?.addEventListener("click", function () {
+  localStorage.clear(); // ✅ Clear user session
+  window.location.replace("/login&create/index.html"); // ✅ Prevents back nav
+});
+
+
+document.addEventListener("click", function (e) {
+  if (e.target.classList.contains("sign-out")) {
+    e.preventDefault();
+    localStorage.clear();
+    window.location.replace("/login&create/index.html");
+  }
 });
 
 (async function () {
