@@ -172,3 +172,10 @@ document.getElementById("DeleteAccount")?.addEventListener("click", async functi
     alert("An error occurred while deleting your account. Please try again.");
   }
 });
+document.addEventListener("click", function (e) {
+  if (e.target.classList.contains("sign-out")) {
+    e.preventDefault();
+    localStorage.clear();
+    window.location.replace("/login&create/index.html");
+  }
+});
