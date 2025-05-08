@@ -373,5 +373,13 @@ document.addEventListener("DOMContentLoaded", async function () {
     reader.readAsDataURL(file);
   });
 
+  document.addEventListener("click", function (e) {
+    if (e.target.classList.contains("sign-out")) {
+      e.preventDefault();
+      localStorage.clear();
+      window.location.replace("/login&create/index.html");
+    }
+  });
+
 
 });

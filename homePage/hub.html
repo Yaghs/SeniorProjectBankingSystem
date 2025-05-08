@@ -157,5 +157,9 @@
 <!-- Add the script tag for hub.js -->
 <script type="module" src="hub.js"></script>
 <script type="module" src="Theme.js"></script>
+<script type="module">
+    import { enforceAuth } from "/login&create/auth.js";
+    enforceAuth();
+</script>
 </body>
 </html>

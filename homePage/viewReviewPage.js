@@ -441,3 +441,11 @@ async function loadFriendsReviews(movieTitle, tmdbId) {
     friendsCountDisplay.textContent = `${count} friend${count !== 1 ? "s" : ""} watched`;
     console.log(`Total friends who reviewed this movie: ${count}`);
 }
+
+document.addEventListener("click", function (e) {
+    if (e.target.classList.contains("sign-out")) {
+        e.preventDefault();
+        localStorage.clear();
+        window.location.replace("/login&create/index.html");
+    }
+});

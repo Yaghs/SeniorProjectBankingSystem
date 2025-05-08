@@ -62,7 +62,7 @@ document.getElementById("loginSubmit")?.addEventListener('click', async function
 
     console.log("login successful for:", username, "going to homepage");
     localStorage.setItem("loggedInUser", username);
-    //REMOVE IF IT DOESNT NOW
+    //REMOVE IF IT DOESNT WORK
     localStorage.setItem("sessionStart", Date.now());
 
     window.location.href = "/homePage/homePage.html";

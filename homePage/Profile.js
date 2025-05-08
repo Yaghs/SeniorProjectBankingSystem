@@ -246,6 +246,13 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 });
+document.addEventListener("click", function (e) {
+    if (e.target.classList.contains("sign-out")) {
+        e.preventDefault();
+        localStorage.clear();
+        window.location.replace("/login&create/index.html");
+    }
+});
 
 
 
