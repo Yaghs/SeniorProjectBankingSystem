@@ -17,6 +17,58 @@ const db = getFirestore(app);
 
 console.log("firebase initialized");
 
+const passwordInput = document.getElementById("password");
+const passwordError = document.getElementById("passwordError");
+const pwdRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{6,}$/;
+
+passwordInput?.addEventListener('input', () => {
+  if (!pwdRegex.test(passwordInput.value)) {
+    passwordError.textContent =
+      "Password must be at least 6 characters long, include uppercase, lowercase & a number!";
+  } else {
+    passwordError.textContent = "";
+  }
+});
+
+// ← INSERT: username setup (make sure this is **after** your password block)
+const usernameInput = document.getElementById("username");
+const usernameError = document.getElementById("usernameError");
+
+usernameInput?.addEventListener('input', () => {
+  if (usernameInput.value.trim().length < 3) {
+    usernameError.textContent =
+      "Username must be at least 3 characters long!";
+  } else {
+    usernameError.textContent = "";
+  }
+});
+
+// ← INSERT: email setup (make sure this is **after** your username block)
+const emailInput     = document.getElementById("email");
+const emailError     = document.getElementById("emailError");
+const validDomains   = [
+  "@gmail.com","@farmingdale.edu","@googlemail.com","@outlook.com","@hotmail.com",
+  "@live.com","@msn.com","@yahoo.com","@yahoo.co.uk","@yahoo.co.in","@aol.com",
+  "@icloud.com","@me.com","@mac.com","@gmx.com","@gmx.us","@gmx.co.uk","@mail.com",
+  "@yandex.com","@yandex.ru","@zoho.com","@inbox.com","@rediffmail.com","@runbox.com",
+  "@fastmail.com"
+];
+
+emailInput?.addEventListener('input', () => {
+  const val = emailInput.value.trim();
+  if (!validDomains.some(d => val.endsWith(d))) {
+    emailError.textContent =
+      "You must enter a valid email!";  // ← INSERT
+  } else {
+    emailError.textContent = "";
+  }
+});
+
+
+
+
+
+
 // login handler
 document.getElementById("loginSubmit")?.addEventListener('click', async function (e) {
     e.preventDefault();
@@ -89,6 +141,32 @@ document.getElementById("createSubmit")?.addEventListener('click', async functio
     if (!firstName || !lastName || !email || !username || !password) {
         alert("please fill all fields");
         return;
+    }
+
+    if (!validDomains.some(d => email.endsWith(d))) {
+      emailError.textContent =
+        "Email must end in one of: " + validDomains.join(", ");
+      return;
+    } else {
+      emailError.textContent = "";
+    }
+
+    if (username.length < 3) {
+      usernameError.textContent =
+        "Username must be at least 3 characters long.";
+      return;
+    } else {
+        usernameError.textContent = "";
+    }
+
+
+
+    if (!pwdRegex.test(password)){
+      passwordError.textContent =
+        "Password must be ≥6 chars, include uppercase, lowercase & a number.";
+      return;
+    } else {
+      passwordError.textContent = "";
     }
 
     const userRef = doc(db, "users", username);
