@@ -23,7 +23,7 @@
 # Join Communities
 ![Screenshot 2025-05-13 203204](https://github.com/user-attachments/assets/8c859574-5ffc-41dc-9cbb-576b8fee3b89)
 
-# Chat with your freinds 
+# Chat with your friends 
 ![Screenshot 2025-05-13 203545](https://github.com/user-attachments/assets/eda1997c-2842-4248-92c3-a3a07951d0c5)
 
 
