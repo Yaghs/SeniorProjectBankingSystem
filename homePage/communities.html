@@ -130,6 +130,14 @@
         <a href="../homePage/createCommunity.html" class="create-btn">Create Community</a>
     </div>
 </div>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const user = localStorage.getItem("loggedInUser");
+        if (user) {
+            document.getElementById("username").textContent = user;
+        }
+    });
+</script>
 
 <footer class="footer">
     <p>&copy; 2025 Plot Twist. All rights reserved.</p>
@@ -137,5 +145,9 @@
 
 <script type="module" src="communities.js"></script>
 <script type="module" src="Theme.js"></script>
+<script type="module">
+    import { enforceAuth } from "/login&create/auth.js";
+    enforceAuth();
+</script>
 </body>
 </html>

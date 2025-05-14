@@ -121,3 +121,10 @@ function getRoleTitle(job) {
     // default if role is not available
     return roleTitles[job] || "involved with";
 }
+document.addEventListener("click", function (e) {
+    if (e.target.classList.contains("sign-out")) {
+        e.preventDefault();
+        localStorage.clear();
+        window.location.replace("/login&create/index.html");
+    }
+});

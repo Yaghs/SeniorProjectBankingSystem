@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>DM Page</title>
+    <title>Messages | Plot Twist</title>
     <link href="https://fonts.googleapis.com/css2?family=Jura&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="hub.css">
     <link rel='stylesheet' href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css'>
@@ -127,25 +127,31 @@
 </div>
 
 <main class="Hub">
-    <!-- Left side: Stacked sidebars -->
+    <!-- Left side: Sidebar with search and users -->
     <div class="sidebar-stack">
-        <div class="sidebar" id="extra">
-            <input type="text" id="searchfriends" placeholder="Search..." autocomplete="off">
+        <!-- Search in sidebar -->
+        <div class="sidebar">
+            <h3>Messages</h3>
+            <input type="text" id="searchfriends" placeholder="Search users..." autocomplete="off">
+            <button id="showRequestsBtn" class="message-request-btn">
+                <i class='bx bx-envelope'></i> Message Requests
+                <span id="requestCount" class="request-count hidden">0</span>
+            </button>
+        </div>
 
-            </div>
-        <button id="showRequestsBtn">Show Message Requests</button>
-        <div id="requestsContainer">
-        </div>
-        </div>
+        <!-- Message requests container (initially hidden) -->
+        <div id="requestsContainer" class="requests-container"></div>
+
+        <!-- User list -->
         <div class="sidebar_chat" id="userList">
-
             <!-- Users will be loaded here by JS -->
-
+            <div class="loading-indicator">Loading conversations...</div>
+        </div>
     </div>
 
-    <!-- Right side: Full chat window -->
+    <!-- Right side: Chat window -->
     <div class="chat-window">
-        <div class="chat-header" id="chatHeader">Select or find a user to chat</div>
+        <div class="chat-header" id="chatHeader">Select a user to start chatting</div>
         <div class="chat-messages" id="chatMessage"></div>
         <div class="chat-input">
             <input type="text" id="messageInput" placeholder="Type your message">
@@ -154,8 +160,12 @@
     </div>
 </main>
 
-<!-- Add the script tag for hub.js -->
+<!-- Scripts -->
 <script type="module" src="hub.js"></script>
 <script type="module" src="Theme.js"></script>
+<script type="module">
+    import { enforceAuth } from "/login&create/auth.js";
+    enforceAuth();
+</script>
 </body>
 </html>

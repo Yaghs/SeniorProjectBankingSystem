@@ -240,7 +240,12 @@
 <!-- Profile functionality (follow logic, etc.) -->
 <script type="module" src="Profile.js"></script>
 <script type="module" src="Theme.js"></script>
+    <script type="module">
+    import { enforceAuth } from "/login&create/auth.js";
+    enforceAuth();
+</script>
 </body>
+
 </html>
 
 

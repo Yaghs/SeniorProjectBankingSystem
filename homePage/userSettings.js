@@ -1,7 +1,8 @@
 import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-firestore.js";
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-app.js";
+import { deleteDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-firestore.js";
 
-// 🔧 Firebase Config
+// Firebase Config
 const firebaseConfig = {
   apiKey: "AIzaSyBkidFMwM_jHr5i4D55EEr_anJlrwrNvrI",
   authDomain: "plottwistsp.firebaseapp.com",
@@ -14,7 +15,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// ✅ Navigation Click Handlers
+//Navigation Click Handlers
 document.addEventListener("DOMContentLoaded", function () {
   document.getElementById("aboutUs")?.addEventListener("click", () => window.location.href = "aboutUs.html");
   document.getElementById("communities")?.addEventListener("click", () => window.location.href = "myCommunities.html");
@@ -24,7 +25,7 @@ document.addEventListener("DOMContentLoaded", function () {
   document.getElementById("notifications")?.addEventListener("click", () => window.location.href = "userNotificationSettings.html");
 });
 
-// ✅ Save Settings Form
+// Save Settings Form
 document.addEventListener("DOMContentLoaded", function () {
   const form = document.getElementById("settingsForm");
   const messageEl = document.getElementById("message");
@@ -57,26 +58,19 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 });
 
-
-document.getElementById('logOut')?.addEventListener('click', function (e) {
-  e.preventDefault();
-  document.getElementById('signOutModal').style.display = 'block';
+//Simple Sign-Out (no confirmation)
+document.addEventListener("click", function (e) {
+  if (e.target.classList.contains("sign-out")) {
+    e.preventDefault();
+    localStorage.clear();
+    window.location.replace("/login&create/index.html"); // Prevents back nav
+  }
 });
 
-document.getElementById('cancelSignOut')?.addEventListener('click', function () {
-  document.getElementById('signOutModal').style.display = 'none';
-});
-
-document.getElementById('confirmSignOut')?.addEventListener('click', function () {
-  window.location.href = "../login&create/login&create.html";
-});
-
+//Theme Toggle
 (async function () {
   const toggle = document.getElementById("modeToggle");
   const username = localStorage.getItem("loggedInUser");
-
-  console.log("Toggle found:", toggle);
-  console.log("Logged-in user:", username);
 
   if (!toggle || !username) return;
 
@@ -84,29 +78,48 @@ document.getElementById('confirmSignOut')?.addEventListener('click', function ()
   const userSnap = await getDoc(userRef);
 
   let theme = "light";
-
   if (userSnap.exists()) {
-    console.log("User doc exists in Firestore");
     theme = userSnap.data().theme || "light";
-    console.log("Theme loaded from Firestore:", theme);
-  } else {
-    console.log("User doc not found in Firestore.");
   }
 
   applyTheme(theme);
-  toggle.checked = (theme === "dark");
+  toggle.checked = theme === "dark";
 
   toggle.addEventListener("change", async () => {
     const newTheme = toggle.checked ? "dark" : "light";
     applyTheme(newTheme);
-    console.log("Saving new theme:", newTheme);
     await setDoc(userRef, { theme: newTheme }, { merge: true });
   });
 
   function applyTheme(theme) {
     document.body.classList.remove("light-mode", "dark-mode");
     document.body.classList.add(`${theme}-mode`);
-    console.log("Applied theme:", theme);
   }
 })();
 
+//Delete Account
+document.getElementById("DeleteAccount")?.addEventListener("click", async function () {
+  const confirmed = confirm("Are you sure you want to delete your account? This action is irreversible.");
+  if (!confirmed) return;
+
+  const username = localStorage.getItem("loggedInUser");
+  if (!username) {
+    alert("User not logged in.");
+    return;
+  }
+
+  try {
+    const genresSnap = await getDocs(collection(db, "users", username, "genres"));
+    for (const genreDoc of genresSnap.docs) {
+      await deleteDoc(doc(db, "users", username, "genres", genreDoc.id));
+    }
+
+    await deleteDoc(doc(db, "users", username));
+    localStorage.clear();
+    alert("Your account has been deleted.");
+    window.location.replace("/login&create/index.html");
+  } catch (error) {
+    console.error("Error deleting account:", error);
+    alert("An error occurred while deleting your account. Please try again.");
+  }
+});

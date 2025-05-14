@@ -1,6 +1,6 @@
 // Import Firebase dependencies
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getFirestore, doc, getDoc, getDocs, collection, query, where, addDoc, serverTimestamp, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getFirestore, doc, getDoc, getDocs, collection, query, where, addDoc, serverTimestamp, orderBy, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 // Firebase configuration
 const firebaseConfig = {
@@ -37,6 +37,9 @@ let selectedRating = 0;
 let selectedBannerUrl = "";
 let selectedPosterUrl = "";
 let wasLiked = false;
+
+const posterGrid = document.getElementById("posterReviewGrid");
+const bannerGrid = document.getElementById("bannerReviewGrid");
 
 // Function to fetch and display review
 async function loadReview() {
@@ -203,14 +206,53 @@ async function loadReviewActionBox(movieTitle) {
                         const likeButton = document.getElementById("likeButton");
                         if (wasLiked) {
                             likeButton.classList.add("liked");
+                            likeButton.innerHTML = "<i class='bx bxs-heart'></i>"; // filled heart
                         } else {
                             likeButton.classList.remove("liked");
+                            likeButton.innerHTML = "<i class='bx bx-heart'></i>"; // outline heart
                         }
 
                         // display correct stars based on stored rating
                         updateStarsDisplay();
-
+                        // enable clicking on stars to update rating
+                        document.querySelectorAll(".rating-container .rating-star").forEach(star => {
+                            star.addEventListener("click", () => {
+                                selectedRating = parseInt(star.getAttribute("data-value"));
+                                updateStarsDisplay();
+                            });
+                        });
                         setupPosterAndBannerButtons();
+                        document.getElementById("saveReview").onclick = async () => {
+                            const user = localStorage.getItem("loggedInUser");
+                            const movie = JSON.parse(localStorage.getItem("selectedMovie"));
+                            if (!user || !movie) return;
+
+                            const reviewText = document.getElementById("reviewText").value.trim();
+                            const watchedDate = document.getElementById("watchedDate").value;
+                            const watchedBefore = document.getElementById("watchedBeforeCheckbox").checked;
+
+                            try {
+                                const reviewRef = doc(db, "users", user, "reviews", movie.title);
+                                await setDoc(reviewRef, {
+                                    tmdbId: movie.id,
+                                    title: movie.title,
+                                    year: movie.release_date?.split("-")[0] || "",
+                                    reviewText,
+                                    watchedDate,
+                                    watchedBefore,
+                                    rating: selectedRating,
+                                    liked: wasLiked,
+                                    selectedPoster: selectedPosterUrl,
+                                    selectedBanner: selectedBannerUrl
+                                });
+
+                                alert("Review updated successfully!");
+                                document.getElementById("reviewBox").style.display = "none";
+                            } catch (error) {
+                                console.error("Error saving review:", error);
+                                alert("Failed to save review.");
+                            }
+                        };
                     } else {
                         console.log("No review found. Edit button disabled.");
                     }
@@ -228,6 +270,91 @@ async function loadReviewActionBox(movieTitle) {
     } catch (error) {
         console.error("Error loading review:", error);
     }
+}
+
+function updateStarsDisplay() {
+    const stars = document.querySelectorAll(".rating-container .rating-star");
+    stars.forEach((star) => {
+        const value = parseInt(star.getAttribute("data-value"));
+        const icon = star.querySelector("i");
+
+        if (value <= selectedRating) {
+            icon.classList.remove("bx-star");
+            icon.classList.add("bxs-star");
+        } else {
+            icon.classList.remove("bxs-star");
+            icon.classList.add("bx-star");
+        }
+    });
+}
+
+// function to fetch posters when a movie is selected
+async function fetchPosters(movieId) {
+    // initiate request to api to get movie info
+    try {
+        // await bc its async
+        const response = await fetch(
+            `https://api.themoviedb.org/3/movie/${movieId}?api_key=${API_KEY}&append_to_response=images&include_image_language=en,null`
+        );
+        // convert api response to json
+        const data = await response.json();
+        // returns image posters
+        return data.images.posters || [];
+    } catch (error) {
+        // console.error("Error fetching posters:", error);
+        return [];
+    }
+}
+
+// function to update the poster grid
+function updatePosterGrid(posters) {
+    posterGrid.innerHTML = ""; // clear previous posters
+
+    // loops through all posters and returns all of them
+    posters.forEach(poster => {
+        // create new element <img>
+        const img = document.createElement("img");
+        // set img src to tmdb url path
+        img.src = `https://image.tmdb.org/t/p/original${poster.file_path}`;
+        // add event listener for selecting the poster
+        img.addEventListener("click", () => {
+            // remove "selected" class from all previously selected posters
+            document.querySelectorAll(".poster-grid img").forEach(img => img.classList.remove("selected"));
+            // adds selected class to the img that is being clicked
+            img.classList.add("selected");
+            // store img src in selectedPosterUrl
+            selectedPosterUrl = img.src;
+        });
+        // append each new poster in modal
+        posterGrid.appendChild(img);
+    });
+}
+
+// fetch backdrops (banners)
+async function fetchBanners(movieId) {
+    try {
+        const response = await fetch(
+            `https://api.themoviedb.org/3/movie/${movieId}?api_key=${API_KEY}&append_to_response=images&include_image_language=en,null`
+        );
+        const data = await response.json();
+        return data.images.backdrops || [];
+    } catch (error) {
+        return [];
+    }
+}
+
+function updateBannerGrid(banners) {
+    bannerGrid.innerHTML = "";
+    banners.forEach(banner => {
+        const img = document.createElement("img");
+        img.src = `https://image.tmdb.org/t/p/original${banner.file_path}`;
+        img.addEventListener("click", () => {
+            document.querySelectorAll("#bannerReviewGrid img").forEach(i => i.classList.remove("selected"));
+            img.classList.add("selected");
+            selectedBannerUrl = img.src;
+        });
+        bannerGrid.appendChild(img);
+    });
 }
 
 function setupPosterAndBannerButtons() {
@@ -452,3 +579,11 @@ async function loadFriendsReviews(movieTitle, tmdbId) {
     friendsCountDisplay.textContent = `${count} friend${count !== 1 ? "s" : ""} watched`;
     console.log(`Total friends who reviewed this movie: ${count}`);
 }
+
+document.addEventListener("click", function (e) {
+    if (e.target.classList.contains("sign-out")) {
+        e.preventDefault();
+        localStorage.clear();
+        window.location.replace("/login&create/index.html");
+    }
+});

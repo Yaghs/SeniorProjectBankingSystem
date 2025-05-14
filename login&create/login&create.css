@@ -87,3 +87,11 @@ button:hover {
     transform: translateX(0);
     opacity: 1;
 }
+
+.error-message {
+  color: red;
+  font-size: 0.875em;
+  display: block;
+  width: 90%;
+  text-align: left;
+}

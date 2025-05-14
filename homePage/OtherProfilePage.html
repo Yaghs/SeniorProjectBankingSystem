@@ -201,5 +201,9 @@
 </script>
 <script type="module" src="Theme.js"></script>
 <script type="module" src="OtherProfilePage.js"></script>
+<script type="module">
+    import { enforceAuth } from "/login&create/auth.js";
+    enforceAuth();
+</script>
 </body>
 </html>

@@ -508,4 +508,12 @@ document.addEventListener("DOMContentLoaded", async function() {
             window.location.href = `../homePage/communityProfile.html?id=${communityId}`;
         }
     });
+
+});
+document.addEventListener("click", function (e) {
+    if (e.target.classList.contains("sign-out")) {
+        e.preventDefault();
+        localStorage.clear();
+        window.location.replace("/login&create/index.html");
+    }
 });

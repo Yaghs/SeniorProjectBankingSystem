@@ -40,6 +40,7 @@ console.log("Firebase initialized"); // Debug message
 let currentUser = null;
 let currentChatUser = null;
 let messagesListener = null;
+let requestsVisible = false;
 
 // DOM elements
 const searchFriends = document.getElementById("searchfriends");
@@ -48,22 +49,9 @@ const chatHeader = document.getElementById("chatHeader");
 const chatMessage = document.getElementById("chatMessage");
 const messageInput = document.getElementById("messageInput");
 const sendButton = document.getElementById("sendButton");
-
-
-window.addEventListener("DOMContentLoaded", () => {
-    document.getElementById("showRequestsBtn").addEventListener("click", () => {
-        showMessageRequest(currentUser);
-    });
-});
-
-console.log("DOM elements accessed:", {
-    searchFriends: !!searchFriends,
-    userList: !!userList,
-    chatHeader: !!chatHeader,
-    chatMessage: !!chatMessage,
-    messageInput: !!messageInput,
-    sendButton: !!sendButton
-}); // Debug message
+const showRequestsBtn = document.getElementById("showRequestsBtn");
+const requestsContainer = document.getElementById("requestsContainer");
+const requestCount = document.getElementById("requestCount");
 
 // Initialize when DOM is loaded
 document.addEventListener("DOMContentLoaded", async () => {
@@ -83,6 +71,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Display username in header
     document.getElementById("username").textContent = currentUser;
 
+    // Check for message requests and update counter
+    await checkMessageRequests();
+
     // Check if a specific user was requested in URL params
     const urlParams = new URLSearchParams(window.location.search);
     const requestedUser = urlParams.get("user");
@@ -100,6 +91,29 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Setup event listeners
     setupEventListeners();
 });
+
+// Function to check for message requests and update the UI
+async function checkMessageRequests() {
+    if (!currentUser) return;
+
+    try {
+        const requests = await pendingRequest(currentUser);
+        const count = requests.length;
+
+        // Update request count badge
+        if (count > 0) {
+            requestCount.textContent = count;
+            requestCount.classList.remove("hidden");
+        } else {
+            requestCount.classList.add("hidden");
+        }
+
+        return count;
+    } catch (error) {
+        console.error("Error checking message requests:", error);
+        return 0;
+    }
+}
 
 // Function to get users the current user has chatted with
 async function getChatUserIds(currentUser) {
@@ -216,8 +230,6 @@ async function getChatUserIds(currentUser) {
 async function updateSidebar(currentUser) {
     console.log("Updating sidebar for:", currentUser); // Debug message
 
-    const sidebar = document.getElementById("userList");
-
     if (!currentUser) {
         alert("You must be logged in to view this section");
         return;
@@ -225,17 +237,25 @@ async function updateSidebar(currentUser) {
 
     try {
         // Clear previous content
-        sidebar.innerHTML = "";
+        userList.innerHTML = "<div class='loading-indicator'>Loading conversations...</div>";
 
         // Get users the current user has chatted with
         const chatUserIds = await getChatUserIds(currentUser);
 
         console.log("Found chat users:", chatUserIds.size);
 
+        // Clear loading indicator
+        userList.innerHTML = "";
+
         // If no chats found
         if (chatUserIds.size === 0) {
-            sidebar.innerHTML = "<div class='user-row'>No conversations yet</div>";
-            sidebar.innerHTML += "<div class='user-row' style='text-align: center; padding: 10px;'>Use the search box above to find users and start a conversation</div>";
+            userList.innerHTML = `
+                <div class='empty-state'>
+                    <i class='bx bx-message-square-detail' style='font-size: 48px; margin-bottom: 10px;'></i>
+                    <p>No conversations yet</p>
+                    <p class='empty-state-sub'>Search for users to start chatting</p>
+                </div>
+            `;
             return;
         }
 
@@ -250,43 +270,74 @@ async function updateSidebar(currentUser) {
 
             const userData = userDoc.data();
 
-            // Create user row in sidebar
-            const userDiv = document.createElement("div");
-            userDiv.classList.add("user-row");
-
-            // Get profile picture if available
-            const profilePic = userData.profilePicture
-                ? userData.profilePicture
-                : "https://as1.ftcdn.net/v2/jpg/00/64/67/52/1000_F_64675209_7ve2XQANuzuHjMZXP3aIYIpsDKEbF5dD.jpg";
-
-            // Display name (first name if available, username otherwise)
-            const displayName = userData.firstName || userId;
-
-            userDiv.innerHTML = `
-                <div class="user-info">
-                    <img src="${profilePic}" alt="${displayName}" style="width: 30px; height: 30px; border-radius: 50%; margin-right: 10px;">
-                    <strong>${displayName}</strong>
-                </div>
-                <div class="user-actions">
-                    <button class="chat-btn" data-user="${userId}">Chat</button>
-                </div>            
-            `;
-
-            sidebar.appendChild(userDiv);
+            // Create user row
+            await createUserRow(userId, userData, userList);
         }
-
-        // Add event listeners to chat buttons
-        sidebar.querySelectorAll('.chat-btn').forEach(button => {
-            button.addEventListener('click', function() {
-                const user = this.getAttribute('data-user');
-                console.log("Chat button clicked for user:", user); // Debug message
-                openChatWindow(user);
-            });
-        });
 
     } catch (error) {
         console.error("Error loading sidebar:", error);
-        sidebar.innerHTML = "<div class='user-row'>Error loading users</div>";
+        userList.innerHTML = "<div class='user-row'>Error loading users</div>";
+    }
+}
+
+// Create a user row in the sidebar
+async function createUserRow(userId, userData, container) {
+    // Get profile picture if available
+    const profilePic = userData.profilePicture
+        ? userData.profilePicture
+        : "https://as1.ftcdn.net/v2/jpg/00/64/67/52/1000_F_64675209_7ve2XQANuzuHjMZXP3aIYIpsDKEbF5dD.jpg";
+
+    // Display name (first name if available, username otherwise)
+    const displayName = userData.firstName || userId;
+
+    // Get unread message count
+    const unreadCount = await getUnreadMessageCount(currentUser, userId);
+    const unreadBadge = unreadCount > 0 ? `<span class="unread-badge">${unreadCount}</span>` : '';
+
+    // Create user row element
+    const userDiv = document.createElement("div");
+    userDiv.classList.add("user-row");
+    userDiv.setAttribute("data-user", userId);
+
+    userDiv.innerHTML = `
+        <div class="user-info">
+            <img src="${profilePic}" alt="${displayName}" class="user-avatar">
+            <div class="user-details">
+                <strong class="user-name">${displayName}</strong>
+                <span class="user-username">@${userId}</span>
+            </div>
+            ${unreadBadge}
+        </div>
+    `;
+
+    // Add click event to the entire row
+    userDiv.addEventListener('click', () => {
+        openChatWindow(userId);
+    });
+
+    // Add user row to container
+    container.appendChild(userDiv);
+}
+
+// Get unread message count for a specific user
+async function getUnreadMessageCount(currentUser, otherUser) {
+    try {
+        // Create chat ID (alphabetically sorted)
+        const chatId = [currentUser, otherUser].sort().join('_');
+
+        // Query for unread messages
+        const messagesRef = collection(db, "chats", chatId, "messages");
+        const unreadQuery = query(
+            messagesRef,
+            where("to", "==", currentUser),
+            where("read", "==", false)
+        );
+
+        const unreadSnapshot = await getDocs(unreadQuery);
+        return unreadSnapshot.size;
+    } catch (error) {
+        console.error("Error getting unread count:", error);
+        return 0;
     }
 }
 
@@ -329,21 +380,46 @@ function setupEventListeners() {
         });
     }
 
-    // Message requests button
-    const requestsButton = document.querySelector(".request_mess");
-    if (requestsButton) {
-        requestsButton.addEventListener("click", () => {
-            alert("Message requests feature coming soon!");
+    // Show message requests
+    if (showRequestsBtn) {
+        showRequestsBtn.addEventListener("click", async () => {
+            requestsVisible = !requestsVisible;
+
+            if (requestsVisible) {
+                // Show requests and update button
+                showRequestsBtn.classList.add("active");
+                requestsContainer.style.display = "block";
+                await showMessageRequest(currentUser);
+            } else {
+                // Hide requests and update button
+                showRequestsBtn.classList.remove("active");
+                requestsContainer.style.display = "none";
+                // Refresh sidebar with conversations
+                await updateSidebar(currentUser);
+            }
         });
     }
+
+    // Close message requests when clicking outside
+    document.addEventListener("click", (e) => {
+        // If requests are visible and click is outside the requests container and button
+        if (requestsVisible &&
+            !requestsContainer.contains(e.target) &&
+            !showRequestsBtn.contains(e.target)) {
+            requestsVisible = false;
+            showRequestsBtn.classList.remove("active");
+            requestsContainer.style.display = "none";
+            // Refresh sidebar with conversations
+            updateSidebar(currentUser);
+        }
+    });
 }
 
 // Search for users
 async function searchUsers(searchTerm) {
     console.log("Searching for users with term:", searchTerm); // Debug message
 
-    const sidebar = document.getElementById("userList");
-    sidebar.innerHTML = "<div class='user-row'>Searching...</div>";
+    userList.innerHTML = "<div class='loading-indicator'>Searching...</div>";
 
     try {
         // Get all users from Firestore
@@ -376,44 +452,69 @@ async function searchUsers(searchTerm) {
         console.log("Found matching users:", matchingUsers.length); // Debug message
 
         // Display results
+        userList.innerHTML = "";
+
         if (matchingUsers.length === 0) {
-            sidebar.innerHTML = "<div class='user-row'>No users found</div>";
+            userList.innerHTML = `
+                <div class='empty-state'>
+                    <i class='bx bx-search-alt' style='font-size: 36px; margin-bottom: 10px;'></i>
+                    <p>No users found</p>
+                    <p class='empty-state-sub'>Try a different search term</p>
+                </div>
+            `;
             return;
         }
 
-        sidebar.innerHTML = "";
-
-        matchingUsers.forEach(user => {
+        // Display matching users
+        for (const user of matchingUsers) {
             const userDiv = document.createElement("div");
-            userDiv.classList.add("user-row");
+            userDiv.classList.add("user-row", "search-result");
 
             const displayName = user.data.firstName || user.id;
             const profilePic = user.data.profilePicture || "https://as1.ftcdn.net/v2/jpg/00/64/67/52/1000_F_64675209_7ve2XQANuzuHjMZXP3aIYIpsDKEbF5dD.jpg";
 
             userDiv.innerHTML = `
                 <div class="user-info">
-                    <img src="${profilePic}" alt="${displayName}" style="width: 30px; height: 30px; border-radius: 50%; margin-right: 10px;">
-                    <strong>${displayName}</strong> (@${user.id})
+                    <img src="${profilePic}" alt="${displayName}" class="user-avatar">
+                    <div class="user-details">
+                        <strong class="user-name">${displayName}</strong>
+                        <span class="user-username">@${user.id}</span>
+                    </div>
                 </div>
                 <div class="user-actions">
                     <button class="chat-btn" data-user="${user.id}">Chat</button>
                 </div>
             `;
 
-            sidebar.appendChild(userDiv);
-        });
+            userList.appendChild(userDiv);
+        }
 
         // Add event listeners to chat buttons
-        sidebar.querySelectorAll('.chat-btn').forEach(button => {
-            button.addEventListener('click', function() {
+        userList.querySelectorAll('.chat-btn').forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.stopPropagation(); // Prevent row click
                 const user = this.getAttribute('data-user');
                 openChatWindow(user);
             });
         });
 
+        // Add event listeners to user rows
+        userList.querySelectorAll('.search-result').forEach(row => {
+            row.addEventListener('click', function() {
+                const userProfile = this.querySelector('.user-info').getAttribute('data-user') ||
+                    this.querySelector('.chat-btn').getAttribute('data-user');
+                window.location.href = `OtherProfilePage.html?user=${userProfile}`;
+            });
+        });
+
     } catch (error) {
         console.error("Error searching users:", error);
-        sidebar.innerHTML = "<div class='user-row'>Error searching users</div>";
+        userList.innerHTML = `
+            <div class='empty-state'>
+                <i class='bx bx-error-circle' style='font-size: 36px; margin-bottom: 10px;'></i>
+                <p>Error searching users</p>
+            </div>
+        `;
     }
 }
 
@@ -443,14 +544,23 @@ async function openChatWindow(otherUser) {
         const profilePic = userData.profilePicture || "https://as1.ftcdn.net/v2/jpg/00/64/67/52/1000_F_64675209_7ve2XQANuzuHjMZXP3aIYIpsDKEbF5dD.jpg";
 
         chatHeader.innerHTML = `
-            <div style="display: flex; align-items: center;">
-                <img src="${profilePic}" alt="${displayName}" style="width: 30px; height: 30px; border-radius: 50%; margin-right: 10px;">
-                <span>Chat with ${displayName} (@${otherUser})</span>
+            <div class="chat-user-info">
+                <img src="${profilePic}" alt="${displayName}" class="chat-avatar">
+                <div class="chat-user-details">
+                    <strong class="chat-user-name">${displayName}</strong>
+                    <span class="chat-user-username">@${otherUser}</span>
+                </div>
             </div>
+            <a href="OtherProfilePage.html?user=${otherUser}" class="view-profile-link" title="View Profile">
+                <i class='bx bx-user-circle'></i>
+            </a>
         `;
 
         // Clear previous messages
         chatMessage.innerHTML = "";
+
+        // Show loading indicator
+        chatMessage.innerHTML = `<div class="loading-message">Loading messages...</div>`;
 
         // Store current chat user
         currentChatUser = otherUser;
@@ -471,15 +581,46 @@ async function openChatWindow(otherUser) {
         // Create query sorted by timestamp
         const q = query(messagesRef, orderBy("timestamp", "asc"));
 
+        // Highlight active user in sidebar
+        document.querySelectorAll('.user-row').forEach(row => {
+            if (row.getAttribute('data-user') === otherUser) {
+                row.classList.add('active');
+                // Clear unread badge
+                const badge = row.querySelector('.unread-badge');
+                if (badge) badge.remove();
+            } else {
+                row.classList.remove('active');
+            }
+        });
+
+        // First check if we can message this user
+        if (!(await checkUser(currentUser, otherUser))) {
+            // Show message request UI
+            showMessageRequestPrompt(otherUser);
+            return;
+        }
+
         // Setup real-time listener for messages
         messagesListener = onSnapshot(q, (snapshot) => {
             console.log("Message snapshot received, changes:", snapshot.docChanges().length); // Debug message
+
+            // Clear loading message if it exists
+            const loadingMsg = chatMessage.querySelector('.loading-message');
+            if (loadingMsg) {
+                chatMessage.removeChild(loadingMsg);
+            }
 
             snapshot.docChanges().forEach((change) => {
                 if (change.type === "added") {
                     const message = change.doc.data();
                     console.log("New message:", message); // Debug message
                     displayMessage(message);
+
+                    // Mark message as read if it's to current user
+                    if (message.to === currentUser && !message.read) {
+                        updateDoc(change.doc.ref, { read: true })
+                            .catch(error => console.error("Error marking message as read:", error));
+                    }
                 }
             });
 
@@ -487,6 +628,12 @@ async function openChatWindow(otherUser) {
             chatMessage.scrollTop = chatMessage.scrollHeight;
         }, (error) => {
             console.error("Error setting up message listener:", error);
+            chatMessage.innerHTML = `
+                <div class="error-message">
+                    <i class='bx bx-error'></i>
+                    <p>Error loading messages. Please try again.</p>
+                </div>
+            `;
         });
 
         // Focus input field
@@ -496,6 +643,34 @@ async function openChatWindow(otherUser) {
         console.error("Error opening chat:", error);
         alert("Error opening chat: " + error.message);
     }
+}
+
+// Show message request prompt
+function showMessageRequestPrompt(otherUser) {
+    chatMessage.innerHTML = `
+        <div class="message-request-prompt">
+            <i class='bx bx-envelope-open'></i>
+            <h3>Start a conversation with ${otherUser}</h3>
+            <p>You need to send a message request before you can chat with this user.</p>
+            <button id="sendRequestBtn" class="request-btn">Send Message Request</button>
+        </div>
+    `;
+
+    document.getElementById("sendRequestBtn").addEventListener("click", async () => {
+        try {
+            await MessageRequest(currentUser, otherUser);
+            chatMessage.innerHTML = `
+                <div class="message-request-sent">
+                    <i class='bx bx-check-circle'></i>
+                    <h3>Request Sent!</h3>
+                    <p>We'll notify you when ${otherUser} accepts your request.</p>
+                </div>
+            `;
+        } catch (error) {
+            console.error("Error sending message request:", error);
+            alert("Error sending message request. Please try again.");
+        }
+    });
 }
 
 // Display a message in the chat window
@@ -529,129 +704,289 @@ function displayMessage(message) {
 
     chatMessage.appendChild(messageDiv);
 }
-//check if the other user is follow current
-async function checkUser(currentUser,otherUser){
-    const followDoc = await getDoc(doc(db, "users", otherUser));
-    const messageAccessDoc = await getDoc(doc(db, "messageAccess", currentUser));
 
-    const hasAccess = messageAccessDoc.exists() && messageAccessDoc.data()[otherUser] === true;
+// Check if the user is allowed to message another user
+async function checkUser(currentUser, otherUser) {
+    try {
+        // Check if the message access already exists
+        const messageAccessDoc = await getDoc(doc(db, "messageAccess", currentUser));
+        const hasAccess = messageAccessDoc.exists() && messageAccessDoc.data()[otherUser] === true;
 
-    if (hasAccess) {
-        return true;
-    }
-
-    if (followDoc.exists()) {
-        const follow = followDoc.data();
-        if (follow.following && follow.following.includes(currentUser)) {
+        if (hasAccess) {
             return true;
         }
-    }
 
-    return false;
+        // Check if the other user follows the current user
+        const followDoc = await getDoc(doc(db, "users", otherUser));
+        if (followDoc.exists()) {
+            const follow = followDoc.data();
+            if (follow.following && follow.following.includes(currentUser)) {
+                // Grant automatic access if they follow each other
+                await setDoc(doc(db, "messageAccess", currentUser), { [otherUser]: true }, { merge: true });
+                await setDoc(doc(db, "messageAccess", otherUser), { [currentUser]: true }, { merge: true });
+                return true;
+            }
+        }
+
+        // Check if the current user is blocked by the other user
+        const blockedDoc = await getDoc(doc(db, "users", otherUser, "blocked", currentUser));
+        if (blockedDoc.exists()) {
+            return false;
+        }
+
+        return false;
+    } catch (error) {
+        console.error("Error checking message access:", error);
+        return false;
+    }
 }
 
-async function MessageRequest(currentUser,otherUser){
+// Send a message request
+async function MessageRequest(currentUser, otherUser) {
     try {
-        const allow = doc(db, "messageAccess", currentUser);
-        await setDoc(allow, { [otherUser]: true }, { merge: true });
-
-        const allowOther = doc(db, "messageAccess", otherUser);
-        await setDoc(allowOther, { [currentUser]: true }, { merge: true });
-
+        // Create request in the otherUser's requests collection
         const requestDoc = doc(db, "messageRequest", otherUser, "request", currentUser);
         await setDoc(requestDoc, {
             fromUser: currentUser,
             status: "pending",
             timestamp: serverTimestamp()
+        });
+
+        // Add notification
+        await addDoc(collection(db, "users", otherUser, "notifications"), {
+            type: "message_request",
+            message: `${currentUser} wants to chat with you.`,
+            createdAt: serverTimestamp(),
+            read: false
+        });
+
+        console.log(`Message request sent from ${currentUser} to ${otherUser}`);
+        return true;
+    } catch (error) {
+        console.error("Error sending message request:", error);
+        throw error;
+    }
+}
+
+// Get pending message requests
+async function pendingRequest(currentUser) {
+    try {
+        const requestRef = collection(db, "messageRequest", currentUser, "request");
+        const snapshot = await getDocs(requestRef);
+
+        const requests = [];
+        snapshot.forEach(doc => {
+            requests.push({ id: doc.id, ...doc.data() });
+        });
+
+        return requests;
+    } catch (error) {
+        console.error("Error getting pending requests:", error);
+        return [];
+    }
+}
+
+// Accept a message request
+async function acceptRequest(currentUser, otherUser) {
+    try {
+        // Grant message access in both directions
+        await setDoc(doc(db, "messageAccess", currentUser), {
+            [otherUser]: true
         }, { merge: true });
 
+        await setDoc(doc(db, "messageAccess", otherUser), {
+            [currentUser]: true
+        }, { merge: true });
+
+        // Update request status to accepted
+        const requestDoc = doc(db, "messageRequest", currentUser, "request", otherUser);
+        await updateDoc(requestDoc, { status: "accepted" });
+
+        // Delete the request
+        await deleteDoc(requestDoc);
+
+        // Add notification to other user
+        await addDoc(collection(db, "users", otherUser, "notifications"), {
+            type: "message_request_accepted",
+            message: `${currentUser} accepted your message request.`,
+            createdAt: serverTimestamp(),
+            read: false
+        });
+
         console.log(`Message request accepted between ${currentUser} and ${otherUser}`);
+        return true;
     } catch (error) {
         console.error("Error accepting request:", error);
+        throw error;
     }
 }
 
-async function pendingRequest(currentUser){
-    const requestRef = collection(db,"messageRequest", currentUser,"request");
-    const snapshot = await getDocs(requestRef);
-
-    const requests = [];
-
-    snapshot.forEach(doc =>{
-        requests.push({id: doc.id, ...doc.data()});
-    });
-    return requests;
-}
-
-async function acceptRequest(currentUser,otherUser){
-    try{
-        const allow = doc(db, "messageAccess", currentUser);
-        await setDoc(allow, {
-                [otherUser]: true
-            },
-            {merge: true}
-        );
-        const allowother = doc(db, "messageAccess", otherUser);
-        await setDoc(allowother, {
-                [currentUser]: true
-            },
-            {merge: true}
-        );
-        const requestDoc = doc(db, "messageRequest", otherUser, "request", currentUser)
-        await updateDoc(requestDoc, {status: "accepted"})
-        await deleteDoc(requestDoc);
-        console.log(`Message request accepted between ${currentUser} and ${otherUser}`);
-    }catch(error){
-        console.error(error)
+// Reject a message request
+async function rejectRequest(currentUser, otherUser) {
+    try {
+        // Delete the request
+        await deleteDoc(doc(db, "messageRequest", currentUser, "request", otherUser));
+        console.log(`Message request rejected from ${otherUser}`);
+        return true;
+    } catch (error) {
+        console.error("Error rejecting request:", error);
+        throw error;
     }
-
-}
-async function rejectRequest(currentUser,otherUser) {
-    await deleteDoc(doc(db, "messageRequest", currentUser, "request", otherUser));
 }
 
-async function showMessageRequest(currentUser){
+// Show message requests
+async function showMessageRequest(currentUser) {
     const container = document.getElementById("requestsContainer");
-    container.innerHTML = "";
+    container.innerHTML = "<div class='loading-indicator'>Loading requests...</div>";
 
-    const requests = await pendingRequest(currentUser);
+    try {
+        const requests = await pendingRequest(currentUser);
 
-    if (requests.length === 0) {
-        container.innerHTML = "<p>No requests right now</p>";
-        return;
+        // Clear loading indicator
+        container.innerHTML = "";
+
+        if (requests.length === 0) {
+            container.innerHTML = `
+                <div class="empty-requests">
+                    <i class='bx bx-envelope-open'></i>
+                    <p>No message requests</p>
+                </div>
+            `;
+            return;
+        }
+
+        // Process each request
+        for (const request of requests) {
+            const { id: otherUser, fromUser, timestamp } = request;
+
+            // Get user data
+            const userDoc = await getDoc(doc(db, "users", otherUser));
+            if (!userDoc.exists()) continue;
+
+            const userData = userDoc.data();
+            const displayName = userData.firstName || otherUser;
+            const profilePic = userData.profilePicture || "https://as1.ftcdn.net/v2/jpg/00/64/67/52/1000_F_64675209_7ve2XQANuzuHjMZXP3aIYIpsDKEbF5dD.jpg";
+
+            // Create request element
+            const requestDiv = document.createElement("div");
+            requestDiv.classList.add("request-item");
+
+            // Format timestamp
+            let timeDisplay = "Recently";
+            if (timestamp) {
+                const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp.seconds * 1000);
+                timeDisplay = date.toLocaleDateString();
+            }
+
+            requestDiv.innerHTML = `
+                <div class="request-user-info">
+                    <img src="${profilePic}" alt="${displayName}" class="request-avatar">
+                    <div class="request-details">
+                        <strong class="request-name">${displayName}</strong>
+                        <span class="request-username">@${otherUser}</span>
+                        <span class="request-time">${timeDisplay}</span>
+                    </div>
+                </div>
+                <div class="request-actions">
+                    <button class="accept-btn" data-user="${otherUser}">Accept</button>
+                    <button class="reject-btn" data-user="${otherUser}">Decline</button>
+                </div>
+            `;
+
+            container.appendChild(requestDiv);
+        }
+
+        // Add event listeners for accept/reject buttons
+        container.querySelectorAll('.accept-btn').forEach(btn => {
+            btn.addEventListener('click', async function() {
+                const otherUser = this.getAttribute('data-user');
+                try {
+                    this.textContent = "Accepting...";
+                    this.disabled = true;
+
+                    await acceptRequest(currentUser, otherUser);
+
+                    // Remove the request item
+                    this.closest('.request-item').remove();
+
+                    // Open chat with this user
+                    openChatWindow(otherUser);
+
+                    // Update request count
+                    await checkMessageRequests();
+
+                    // If no more requests, hide the container
+                    if (container.children.length === 0) {
+                        container.innerHTML = `
+                            <div class="empty-requests">
+                                <i class='bx bx-envelope-open'></i>
+                                <p>No more message requests</p>
+                            </div>
+                        `;
+                    }
+                } catch (error) {
+                    console.error("Error accepting request:", error);
+                    this.textContent = "Accept";
+                    this.disabled = false;
+                    alert("Error accepting request. Please try again.");
+                }
+            });
+        });
+
+        container.querySelectorAll('.reject-btn').forEach(btn => {
+            btn.addEventListener('click', async function() {
+                const otherUser = this.getAttribute('data-user');
+                try {
+                    this.textContent = "Declining...";
+                    this.disabled = true;
+
+                    await rejectRequest(currentUser, otherUser);
+
+                    // Remove the request item
+                    this.closest('.request-item').remove();
+
+                    // Update request count
+                    await checkMessageRequests();
+
+                    // If no more requests, hide the container
+                    if (container.children.length === 0) {
+                        container.innerHTML = `
+                            <div class="empty-requests">
+                                <i class='bx bx-envelope-open'></i>
+                                <p>No more message requests</p>
+                            </div>
+                        `;
+                    }
+                } catch (error) {
+                    console.error("Error rejecting request:", error);
+                    this.textContent = "Decline";
+                    this.disabled = false;
+                    alert("Error declining request. Please try again.");
+                }
+            });
+        });
+
+        // Add click event to user info to view profile
+        container.querySelectorAll('.request-user-info').forEach(info => {
+            info.addEventListener('click', function() {
+                const username = this.querySelector('.request-username').textContent.substring(1); // Remove @ symbol
+                window.location.href = `OtherProfilePage.html?user=${username}`;
+            });
+        });
+
+    } catch (error) {
+        console.error("Error showing message requests:", error);
+        container.innerHTML = `
+            <div class="error-message">
+                <i class='bx bx-error'></i>
+                <p>Error loading message requests. Please try again.</p>
+            </div>
+        `;
     }
-
-    requests.forEach(({ id: otherUser, fromUser, timestamp }) => {
-        const requestDiv = document.createElement("div");
-        requestDiv.classList.add("request-item");
-
-        requestDiv.innerHTML = `<p><strong>${fromUser}</strong> wants to talk!</p>`;
-
-        const acceptBtn = document.createElement("button");
-        acceptBtn.textContent = "Accept";
-        acceptBtn.onclick = async () => {
-            await acceptRequest(currentUser, otherUser);
-            alert(`Accepted message from ${otherUser}`);
-            showMessageRequest(currentUser); // refresh list
-        };
-
-        const denyBtn = document.createElement("button");
-        denyBtn.textContent = "Deny";
-        denyBtn.onclick = async () => {
-            await rejectRequest(currentUser, otherUser);
-            alert(`Denied message from ${otherUser}`);
-            showMessageRequest(currentUser); // refresh list
-        };
-
-        requestDiv.appendChild(acceptBtn);
-        requestDiv.appendChild(denyBtn);
-        container.appendChild(requestDiv);
-    });
 }
 
 // Send a message
 async function sendMessage() {
-    const otherUser = currentChatUser;
     const text = messageInput.value.trim();
 
     console.log("Sending message:", text, "to user:", currentChatUser); // Debug message
@@ -661,14 +996,13 @@ async function sendMessage() {
         return;
     }
 
-    if (!(await checkUser(currentUser, otherUser))) {
-        alert("Send message request first!");
-        await MessageRequest(currentUser, otherUser);
-        alert("Request sent, wait to see if they accept.");
-        return;
-    }
-
     try {
+        // Check if we can message this user
+        if (!(await checkUser(currentUser, currentChatUser))) {
+            alert("You cannot message this user until they accept your request.");
+            return;
+        }
+
         // Create chat ID (alphabetically sorted)
         const chatId = [currentUser, currentChatUser].sort().join('_');
 
@@ -692,7 +1026,10 @@ async function sendMessage() {
                 [currentUser]: true,
                 [currentChatUser]: true
             },
-            lastUpdated: serverTimestamp()
+            lastUpdated: serverTimestamp(),
+            lastMessage: text,
+            lastMessageTime: serverTimestamp(),
+            lastMessageSender: currentUser
         }, { merge: true });
 
         console.log("Message added successfully"); // Debug message
@@ -709,57 +1046,176 @@ async function sendMessage() {
     }
 }
 
+// Initialize notification bell functionality
+document.addEventListener("DOMContentLoaded", function () {
+    const notificationBell = document.getElementById("notificationBell");
+    const currentUser = localStorage.getItem("loggedInUser");
+    if (!currentUser) return;
 
-// Add CSS for messages
-const style = document.createElement('style');
-style.textContent = `
-    .message {
-        max-width: 70%;
-        margin-bottom: 10px;
-        padding: 10px;
-        border-radius: 10px;
-        position: relative;
-    }
-    
-    .sent {
-        align-self: flex-end;
-        background-color: #65558F;
-        color: white;
-        margin-left: auto;
-    }
-    
-    .received {
-        align-self: flex-start;
-        background-color: #444;
-        color: white;
-    }
-    
-    .message-content {
-        word-wrap: break-word;
-    }
-    
-    .message-time {
-        font-size: 0.7em;
-        color: rgba(255,255,255,0.7);
-        text-align: right;
-        margin-top: 5px;
-    }
-    
-    .unread-badge {
-        background-color: red;
-        color: white;
-        border-radius: 50%;
-        padding: 3px 6px;
-        font-size: 0.8em;
-        margin-left: 5px;
-    }
-    
-    .user-info {
-        display: flex;
-        align-items: center;
-    }
-`;
+    let latestNotifications = [];
+    const notifQ = query(
+        collection(db, "users", currentUser, "notifications"),
+        orderBy("createdAt", "desc")
+    );
+    onSnapshot(notifQ, snapshot => {
+        latestNotifications = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+        updateBellBadge(latestNotifications.filter(n => !n.read).length);
+        if (document.getElementById("notificationBox")?.style.display !== "none") {
+            renderNotifications();
+        }
+    });
 
-document.head.appendChild(style);
+    if (notificationBell) {
+        notificationBell.addEventListener("click", async function (event) {
+            event.stopPropagation();
 
-console.log("Hub.js fully loaded"); // Debug message
+            const bellRect = notificationBell.getBoundingClientRect();
+            let notificationBox = document.getElementById("notificationBox");
+
+            if (!notificationBox) {
+                notificationBox = document.createElement("div");
+                notificationBox.id = "notificationBox";
+                notificationBox.className = "notification-box";
+                notificationBox.innerHTML = `
+                    <div class="notification-box-header" style="display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid #444;">
+                        <span style="font-size: 18px; color: white;">Notifications</span>
+                        <i class='bx bx-cog' id="notificationSettings" style="font-size: 18px; cursor: pointer; color: white;"></i>
+                    </div>
+                    <div class="notification-box-content" style="padding: 10px; color: white;">
+                        <p>No new notifications.</p>
+                    </div>
+                `;
+                notificationBox.style.position = "fixed";  // ← FIXED instead of absolute
+                notificationBox.style.top = bellRect.bottom + "px";
+                notificationBox.style.right = (window.innerWidth - bellRect.right) + "px";
+                notificationBox.style.backgroundColor = "#000";
+                notificationBox.style.width = "300px";
+                notificationBox.style.border = "1px solid #444";
+                notificationBox.style.borderRadius = "5px";
+                notificationBox.style.boxShadow = "0 4px 8px rgba(0, 0, 0, 0.2)";
+                notificationBox.style.zIndex = 100;
+                document.body.appendChild(notificationBox);
+
+                const notificationSettings = notificationBox.querySelector("#notificationSettings");
+                if (notificationSettings) {
+                    notificationSettings.addEventListener("click", function (event) {
+                        event.stopPropagation();
+                        window.location.href = "userNotificationSettings.html";
+                    });
+                }
+
+                renderNotifications();
+                updateBellBadge(0);
+                const unread1 = latestNotifications.filter(n => !n.read);
+                await Promise.all(unread1.map(n =>
+                    updateDoc(doc(db, "users", currentUser, "notifications", n.id), { read: true })
+                ));
+            } else {
+                if (notificationBox.style.display === "none" || notificationBox.style.display === "") {
+                    const newBellRect = notificationBell.getBoundingClientRect();
+                    notificationBox.style.top = newBellRect.bottom + "px";
+                    notificationBox.style.right = (window.innerWidth - newBellRect.right) + "px";
+                    notificationBox.style.display = "block";
+
+                    renderNotifications();
+                    updateBellBadge(0);
+                    const unread2 = latestNotifications.filter(n => !n.read);
+                    await Promise.all(unread2.map(n =>
+                        updateDoc(doc(db, "users", currentUser, "notifications", n.id), { read: true })
+                    ));
+                } else {
+                    notificationBox.style.display = "none";
+                }
+            }
+        });
+    }
+
+    function timeAgo(date) {
+        const now = Date.now();
+        const diffMs = now - date.getTime();
+        const sec = Math.floor(diffMs / 1000);
+        if (sec < 60) return `${sec}s ago`;
+        const min = Math.floor(sec / 60);
+        if (min < 60) return `${min}m ago`;
+        const hr = Math.floor(min / 60);
+        if (hr < 24) return `${hr}h ago`;
+        const days = Math.floor(hr / 24);
+        return `${days}d ago`;
+    }
+
+    function renderNotifications() {
+        const content = document.querySelector(".notification-box-content");
+        if (!content) return;
+
+        if (latestNotifications.length === 0) {
+            content.innerHTML = `<p>No new notifications.</p>`;
+        } else {
+            content.innerHTML = latestNotifications
+                .map(n => {
+                    const dateObj = n.createdAt?.toDate?.() || new Date();
+                    const ago = timeAgo(dateObj);
+                    return `
+                      <div class="notification-item" style="
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                        border-bottom: 1px solid #444;
+                        padding: 8px 0;
+                        margin: 4px 0;
+                      ">
+                        <span>${n.message}</span>
+                        <span style="
+                          font-size: 12px;
+                          color: #888;
+                          margin-left: 8px;
+                          white-space: nowrap;
+                        ">${ago}</span>
+                      </div>
+                    `;
+                })
+                .join("");
+        }
+    }
+
+    function updateBellBadge(count) {
+        let badge = document.getElementById("notif-badge");
+
+        if (count > 0) {
+            notificationBell.style.position = 'relative';
+
+            if (!badge) {
+                badge = document.createElement("span");
+                badge.id = "notif-badge";
+                badge.className = "notification-badge";
+
+                Object.assign(badge.style, {
+                    position: 'absolute',
+                    top: '0',
+                    right: '0',
+                    transform: 'translate(50%, -50%)',
+                    backgroundColor: 'red',
+                    color: 'white',
+                    borderRadius: '50%',
+                    padding: '2px 6px',
+                    fontSize: '16px',
+                    lineHeight: '1',
+                    textAlign: 'center',
+                    minWidth: '6px'
+                });
+
+                notificationBell.appendChild(badge);
+            }
+            badge.textContent = count;
+        } else if (badge) {
+            badge.remove();
+        }
+    }
+    document.addEventListener("click", function (e) {
+        if (e.target.classList.contains("sign-out")) {
+            e.preventDefault();
+            localStorage.clear();
+            window.location.replace("/login&create/index.html");
+        }
+    });
+});
+
