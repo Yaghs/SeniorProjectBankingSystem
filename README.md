@@ -16,14 +16,14 @@
 ![Screenshot 2025-05-13 203330](https://github.com/user-attachments/assets/6fed85e1-8d2d-4e23-9313-6de0ee87ab38)
 
 
-# create custom profile
+# Create custom profile
 ![Screenshot 2025-05-13 203453](https://github.com/user-attachments/assets/140db8c2-7bce-4d3a-97a4-3f0b6580b3a6)
 ![Screenshot 2025-05-13 203509](https://github.com/user-attachments/assets/ceaa33d0-3c60-4498-9e0e-50afbe0398a9)
 
 # Join Communities
 ![Screenshot 2025-05-13 203204](https://github.com/user-attachments/assets/8c859574-5ffc-41dc-9cbb-576b8fee3b89)
 
-# chat with your freinds 
+# Chat with your freinds 
 ![Screenshot 2025-05-13 203545](https://github.com/user-attachments/assets/eda1997c-2842-4248-92c3-a3a07951d0c5)
 
 
