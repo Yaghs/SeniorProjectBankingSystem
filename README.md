@@ -9,6 +9,7 @@
 
 # Look for and reveiw movies
 ![Screenshot 2025-05-13 203414](https://github.com/user-attachments/assets/eb74da76-c854-40b4-9804-1f5c61321a49)
+![Screenshot 2025-05-13 204047](https://github.com/user-attachments/assets/050c3f19-dc18-4870-ae2c-f66c75008d49)
 
 
 # Get notified when stuff is happening 
