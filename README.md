@@ -10,24 +10,28 @@
 
 
 # Look for and reveiw movies
-![Screenshot 2025-05-13 203414](https://github.com/user-attachments/assets/eb74da76-c854-40b4-9804-1f5c61321a49)
-![Screenshot 2025-05-13 204047](https://github.com/user-attachments/assets/050c3f19-dc18-4870-ae2c-f66c75008d49)
+![review](https://github.com/user-attachments/assets/169ce579-6e03-4958-8c19-8cab5b241450)
+
 
 
 # Get notified when stuff is happening 
-![Screenshot 2025-05-13 203330](https://github.com/user-attachments/assets/6fed85e1-8d2d-4e23-9313-6de0ee87ab38)
+![Nots](https://github.com/user-attachments/assets/611bb235-8079-479b-a616-7eb0306fd282)
+
 
 
 # Create custom profile
 ![Screenshot 2025-05-13 235655](https://github.com/user-attachments/assets/e0a428ba-9c3a-4faf-8a42-58451e8b2863)
+![profile](https://github.com/user-attachments/assets/499ef76c-c7ec-4a6c-8a3f-d96889e8a2eb)
+
+
 
 # Join Communities
 ![communities](https://github.com/user-attachments/assets/ce26c99a-3b3b-48fc-ae5f-a3ecb14e9e4b)
 ![communities2](https://github.com/user-attachments/assets/cb350e80-4311-4601-a2ab-9e8b1c05fa32)
+![biochange](https://github.com/user-attachments/assets/4a620846-14b9-4f56-8fdf-17221a862a5e)
 
 
 # Chat with your friends 
-
 ![chat](https://github.com/user-attachments/assets/fe765b06-f994-4a85-9e65-7c49c1e0fd96)
 
 
