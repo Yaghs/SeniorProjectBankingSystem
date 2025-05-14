@@ -4,7 +4,7 @@
 ![Screenshot 2025-05-13 202828](https://github.com/user-attachments/assets/0ef0ecb4-f0ee-4205-b918-2858c2e89369)
 ![Screenshot 2025-05-13 203044](https://github.com/user-attachments/assets/bab16db9-e3fb-4ef3-8d09-4c01c8c44fcb)
 
-#Log in 
+# Log in 
 ![Screenshot 2025-05-13 203107](https://github.com/user-attachments/assets/cb7b1869-6d7f-4000-bac0-3f1911b0f8f2)
 
 # Look for and reveiw movies
