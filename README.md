@@ -1,11 +1,13 @@
 ## Plottwist
 
 # Create an account and set your favortive gernes 
-![Screenshot 2025-05-13 202828](https://github.com/user-attachments/assets/0ef0ecb4-f0ee-4205-b918-2858c2e89369)
-![Screenshot 2025-05-13 203044](https://github.com/user-attachments/assets/bab16db9-e3fb-4ef3-8d09-4c01c8c44fcb)
+![Screenshot 2025-05-13 235227](https://github.com/user-attachments/assets/97e956bd-4f2e-4a1e-9123-9ee582838b76)
+![Screenshot 2025-05-13 235500](https://github.com/user-attachments/assets/bd6081ce-a6ef-4028-9aaf-cc6ec79e5044)
+
 
 # Log in 
-![Screenshot 2025-05-13 203107](https://github.com/user-attachments/assets/cb7b1869-6d7f-4000-bac0-3f1911b0f8f2)
+![Screenshot 2025-05-13 235542](https://github.com/user-attachments/assets/105ae3cc-83db-40be-b378-4d7ff03e386f)
+
 
 # Look for and reveiw movies
 ![Screenshot 2025-05-13 203414](https://github.com/user-attachments/assets/eb74da76-c854-40b4-9804-1f5c61321a49)
@@ -17,14 +19,16 @@
 
 
 # Create custom profile
-![Screenshot 2025-05-13 203453](https://github.com/user-attachments/assets/140db8c2-7bce-4d3a-97a4-3f0b6580b3a6)
-![Screenshot 2025-05-13 203509](https://github.com/user-attachments/assets/ceaa33d0-3c60-4498-9e0e-50afbe0398a9)
+![Screenshot 2025-05-13 235655](https://github.com/user-attachments/assets/e0a428ba-9c3a-4faf-8a42-58451e8b2863)
 
 # Join Communities
-![Screenshot 2025-05-13 203204](https://github.com/user-attachments/assets/8c859574-5ffc-41dc-9cbb-576b8fee3b89)
+![communities](https://github.com/user-attachments/assets/ce26c99a-3b3b-48fc-ae5f-a3ecb14e9e4b)
+![communities2](https://github.com/user-attachments/assets/cb350e80-4311-4601-a2ab-9e8b1c05fa32)
+
 
 # Chat with your friends 
-![Screenshot 2025-05-13 203545](https://github.com/user-attachments/assets/eda1997c-2842-4248-92c3-a3a07951d0c5)
+
+![chat](https://github.com/user-attachments/assets/fe765b06-f994-4a85-9e65-7c49c1e0fd96)
 
 
 
