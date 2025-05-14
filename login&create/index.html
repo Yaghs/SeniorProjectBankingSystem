@@ -25,10 +25,15 @@
     <h2>Create Account</h2>
     <form id="createAcct-form">
         <input type="firstName" name="firstName" placeholder="First Name" id="firstName" required>
+        <div id="firstNameError" class="error-message"></div>
         <input type="lastName" name="lastName" placeholder="Last Name" id="lastName" required>
+        <div id="lastNameError" class="error-message"></div>
         <input type="email" name="email" placeholder="Email" id="email" required>
+        <div id="emailError" class="error-message"></div>
         <input type="text" name="username" placeholder="Username" id="username" required>
+        <div id="usernameError" class="error-message"></div>
         <input type="password" name="password" placeholder="Password" id="password" required>
+        <div id="passwordError" class="error-message"></div>
         <button type="submit" id="createSubmit">Sign Up</button>
         <div class="back2login" onclick="login()">Back To Log In</div>
     </form>
