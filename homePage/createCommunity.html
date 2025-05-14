@@ -165,6 +165,14 @@
         </div>
     </form>
 </div>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const user = localStorage.getItem("loggedInUser");
+        if (user) {
+            document.getElementById("username").textContent = user;
+        }
+    });
+</script>
 
 <footer class="footer">
     <p>&copy; 2025 Plot Twist. All rights reserved.</p>
